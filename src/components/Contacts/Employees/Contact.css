@@ -1,0 +1,8 @@
+.Contact {
+  padding: 10px 0;
+}
+@media only screen and (max-width: 600px) {
+  .Contact {
+    font-size: smaller;
+  }
+}

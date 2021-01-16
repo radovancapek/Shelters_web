@@ -1,0 +1,42 @@
+.Button {
+  appearance: none;
+  background-color: var(--orange-primary);
+  padding: 5px 20px;
+  font-size: 20px;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &_light {
+    color: var(--secondary);
+  }
+
+  &_dark {
+    color: var(--primary);
+  }
+
+  &_small {
+    font-size: 14px;
+  }
+}
+
+.Input {
+
+  &_checkbox {
+    color: var(--orange-primary) !important;
+    border-radius: 3px !important;
+    height: 15px !important;
+    width: 15px !important;
+
+    .checked {
+      background-color: var(--orange-primary);
+      border: var(--orange-secondary);
+    }
+  }
+
+  &_text {
+    border: none;
+    padding: 5px 20px;
+  }
+}

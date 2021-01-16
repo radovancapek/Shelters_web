@@ -1,0 +1,44 @@
+.Home {
+  &_item {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    opacity: 0.9;
+    box-shadow: 14px 14px 20px 0px var(--primary-transparent);
+    cursor: pointer;
+
+    &_link {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      font-size: 5vw;
+      font-family: 'Emblema One';
+      text-decoration: none;
+      color: var(--primary);
+    }
+
+    &--1 {
+      grid-row: HomeRS / 6;
+      grid-column: HomeCS / 5;
+      background-color: var(--orange-primary);
+    }
+    &--2 {
+      grid-row: 5 / HomeRE;
+      grid-column: 3 / 6;
+      background-color: var(--orange-secondary);
+    }
+    &--3 {
+      grid-row: 3 / 7;
+      grid-column: 4 / HomeCE;
+      background-color: var(--orange-therciary);
+    }
+
+    &:hover {
+      z-index: 100;
+      opacity: 1;
+    }
+  }
+}

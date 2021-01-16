@@ -1,0 +1,12 @@
+.Home {
+  width: 100%;
+  display: grid;
+  grid-template-rows: [RS] 10% [HomeRS] repeat(7, 1fr) [HomeRE] 20% [RE];
+  grid-template-columns: [CS] 20% [HomeCS] repeat(5, 1fr) [HomeCE] 20% [CE];
+  height: 100%;
+}
+
+.wrapper {
+  width: 100%;
+  height: 100%;
+}

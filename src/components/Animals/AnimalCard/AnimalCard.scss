@@ -1,0 +1,39 @@
+.animal_card {
+  overflow: hidden;
+  background-color: var(--white);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 14px 14px 20px 0px var(--primary-transparent);
+
+  &_name {
+    font-family: "Emblema One";
+    font-size: 20px;
+    text-align: center;
+    height: 15%;
+  }
+
+  &_image {
+    max-width: 100%;
+    max-height: 70%;
+    height: auto;
+    width: auto;
+    margin: auto;
+  }
+
+  &_info {
+    display: flex;
+    height: 15%;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+
+    &_age {
+
+    }
+
+    &_dist {
+
+    }
+  }
+}

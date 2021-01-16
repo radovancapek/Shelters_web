@@ -1,0 +1,142 @@
+.addAnimal {
+  width: 100%;
+
+  &_form {
+    width: 100%;
+    max-height: 100%;
+    display: grid;
+    grid-template-rows: 1% repeat(10, 1fr) 5%;
+    grid-template-columns: 10% repeat(3, 1fr) 3% repeat(2, 1fr) 10%;
+    gap: 20px;
+    justify-items: stretch;
+
+    &_buttons {
+      grid-row: 2/3;
+      grid-column: 2/4;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      justify-items: stretch;
+      align-items: stretch;
+
+      .Button {
+        width: auto !important;
+      }
+
+      .true{
+        background-color: var(--orange-secondary);
+      }
+    }
+
+    &_name {
+      grid-row: 3/4;
+      grid-column: 2/4;
+    }
+
+    &_age {
+      grid-row: 4/5;
+      grid-column: 2/4;
+    }
+
+    &_behavior {
+      grid-row: 2/5;
+      grid-column: 4/5;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: space-between;
+
+      & > * {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+
+        label {
+          margin-right: 10px;
+        }
+      }
+    }
+
+    &_desc {
+      grid-row: 5/7;
+      grid-column: 2/5;
+
+      &_textArea {
+        border-color: var(--secondary);
+        background-color: transparent;
+        height: 100px;
+        width: 100%;
+        padding: 10px;
+      }
+    }
+
+    &_map {
+      grid-row: 7/11;
+      grid-column: 2/5;
+      background-color: #323F4B;
+
+      &_iframe {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    &_mainImage {
+      grid-row: 2/7;
+      grid-column: 6/8;
+      background-color: var(--secondary);
+      flex: auto;
+      text-align: center;
+
+      .imageIcon {
+        height: 100%;
+        width: 80%;
+      }
+    }
+
+    .gallery {
+      grid-row: 7/11;
+      grid-column: 6/8;
+      display: grid;
+      grid-template-rows: repeat(2, minmax(0, 1fr)); //minmax zachova stejny pomer velikosti radku nehlede na velikost obsahu
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      justify-content: stretch;
+      align-items: stretch;
+
+      .galleryImage {
+        height: 100%;
+        width: 100%;
+        background-color: var(--secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        * {
+          max-height: 100%;
+          max-width: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+
+      .addImage {
+        font-size: 50px;
+
+        &_input {
+          display: none
+        }
+      }
+    }
+
+    .submit {
+      grid-row: 11/12;
+      grid-column: 4/7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      justify-self: center;
+    }
+  }
+}

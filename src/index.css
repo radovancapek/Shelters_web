@@ -1,13 +1,63 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=Emblema+One&family=Montserrat&display=swap');
+
+.lighttheme {
+  --primary: #1A1C20;
+  --secondary: #F5F7FA;
+  --grad-first: #F5F7FA;
+  --grad-second: #B3B7C7;
+  --primary-transparent: rgba(31, 41, 51, 0.2);
+  --secondary-transparent: rgba(245, 247, 250, 0.2);
+  --orange-primary: #F0A500;
+  --orange-secondary: #CF7500;
+  --orange-therciary: #ffc000;
+  --orange-transparent: rgba(240, 165, 0, 0.33);
+  --white: #f5f7fa;
+}
+
+.darktheme {
+  --primary: #F5F7FA;
+  --secondary: #1A1C20;
+  --grad-first: #121415;
+  --grad-second: #323F4B;
+  --primary-transparent: rgba(245, 247, 250, 0.2);
+  --secondary-transparent: rgba(31, 41, 51, 0.2);
+  --orange-primary: #F0A500;
+  --orange-secondary: #CF7500;
+  --orange-therciary: #ffc000;
+  --orange-transparent: rgba(240, 165, 0, 0.33);
+
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  monospace;
 }
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  margin: 1px;
+  font-family: 'Montserrat';
+}
+
+@media only screen and (max-width: 1500px) {
+  body {
+    padding-top: 0;
+  }
+}
+
