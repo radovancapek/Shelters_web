@@ -32,6 +32,7 @@ class AnimalCard extends Component {
                     <p className="animal_card_info_age">věk: {this.props.animal.age}</p>
                     <p className="animal_card_info_dist">vzdálenost: 5 km</p>
                 </div>
+                {this.props.largeCard ? (<div className="animal_card_desc"><p>{this.props.animal.desc}</p></div>) : (null)}
             </div>
         )
     }

@@ -14,11 +14,11 @@ const App = () => {
       <div id="App" className={style.lighttheme}>
         <Layout>
           <Switch>
-            <Route path={["/add", "/profile", "/other", "/animals"]}>
+            <Route path={["/add", "/profile", "/others", "/animals", "/dogs", "/cats"]}>
               <InnerLayout>
-                <Route path="/choose" component={Swipe} animalType={"dogs"}/>
-                <Route path="/choose" component={Swipe} />
-                <Route path="/choose" component={Swipe} />
+                <Route path="/dogs" render={(props) => <Swipe animalType="dogs" {...props} /> }/>
+                <Route path="/cats" render={(props) => <Swipe animalType="cats" {...props} /> }/>
+                <Route path="/others" render={(props) => <Swipe animalType="others" {...props} /> }/>
                 <Route path="/profile" component={ProfilePage} />
                 <Route path="/animals" component={Animals} />
                 <Route path="/add" component={AddAnimal} />
