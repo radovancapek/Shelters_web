@@ -46,8 +46,6 @@ class Animals extends Component {
                 {mounted ? (<div className="wrapper">{animalCards}</div>) : (
                     <div>loading</div>
                 )}
-
-
             </div>
 
         )

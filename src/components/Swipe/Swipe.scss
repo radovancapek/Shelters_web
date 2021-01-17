@@ -1,0 +1,34 @@
+.swipe {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 80px auto 80px;
+    grid-template-rows: 4fr 1fr;
+    grid-template-areas: "menu swipe none" "menu buttons none";
+
+    &_menu {
+        grid-area: menu;
+    }
+
+    .animal_card {
+        grid-area: swipe;
+        justify-self: center;
+        width: 30%;
+        height: 100%;
+        position: relative;
+    }
+
+    .buttons {
+        grid-area: buttons;
+        justify-self: center;
+        align-self: start;
+        display: flex;
+        justify-content: space-between;
+        padding-top: 20px;
+
+        * {
+            margin: 0 10px;
+            width: 100px;
+        }
+    }
+}

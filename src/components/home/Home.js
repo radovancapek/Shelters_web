@@ -11,7 +11,7 @@ class Home extends Component {
 
           <div className="Home">
             <HomeItem
-              link="/other"
+              link="/dogs"
               text="Ostatní"
               className="Home_item Home_item--1"
             />
@@ -21,7 +21,7 @@ class Home extends Component {
               className="Home_item Home_item--2"
             />
             <HomeItem
-              link="/dogs"
+              link="/choose"
               text="Psi"
               className="Home_item Home_item--3"
             />

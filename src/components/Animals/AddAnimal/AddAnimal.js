@@ -38,7 +38,7 @@ class AddAnimal extends Component {
         };
     }
 
-    componentDidMount(): void {
+    componentDidMount() {
         const tmpBehaviorMap = {};
         Const.BEHAVIOR_MAP.get(this.state.animalType).map((behavior) => {
             tmpBehaviorMap[behavior] = false;
@@ -57,7 +57,7 @@ class AddAnimal extends Component {
 
     addAnimal = e => {
         e.preventDefault();
-        const animalRef = db.collection(this.state.animalType).add(
+        db.collection(this.state.animalType).add(
             {
                 name: this.state.name,
                 age: parseInt(this.state.age, 10),
