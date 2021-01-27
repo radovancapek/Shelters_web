@@ -2,19 +2,103 @@
     width: 100%;
     height: 100%;
     display: grid;
-    grid-template-columns: 80px auto 80px;
-    grid-template-rows: 4fr 1fr;
-    grid-template-areas: "menu swipe none" "menu buttons none";
+    grid-template-columns: min-content auto 80px;
+    grid-template-rows: 4fr 1fr 1fr;
+    grid-template-areas: "menu swipe ." "menu buttons ." ". . .";
 
     &_menu {
         grid-area: menu;
+        align-self: center;
+        height: 150px;
+        width: 75px;
+        border-bottom-right-radius: 100px;
+        border-top-right-radius: 100px;
+        background-color: var(--secondary);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        &_icon {
+            width: 30px !important;
+            height: 30px !important;
+            margin-right: 10px;
+        }
+
+        &_obsah {
+            display: none;
+            h2 {
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+            .MuiTypography-body1 {
+                font-size: 14px !important;
+            }
+
+            .MuiCheckbox-colorSecondary.Mui-checked {
+                color: var(--orange-primary);
+            }
+
+            .MuiCheckbox-root {
+                color: var(--orange-primary);
+                width: 25px;
+                height: 25px;
+            }
+            .MuiFormControlLabel-root {
+                margin-left: 0;
+            }
+
+            &_size {
+                flex-direction: row !important;
+            }
+
+            .MuiSlider-root {
+                margin-right: 50px;
+                margin-left: 10px;
+                width: auto;
+                color: var(--orange-primary);
+            }
+            .MuiSlider-markLabel {
+                display: none;
+            }
+            .PrivateValueLabel-thumb-5.PrivateValueLabel-open-6 .PrivateValueLabel-offset-7 {
+                transform: scale(0.8) translateY(25px);
+            }
+            .PrivateValueLabel-circle-8 {
+                border-radius: 50%;
+            }
+        }
+        &_button {
+            max-width: 50%;
+            margin-top: 25px;
+        }
+    }
+
+    .open {
+        height: 600px;
+        width: 300px;
+        border-bottom-right-radius: 300px;
+        border-top-right-radius: 300px;
+
+        .swipe_menu_icon {
+            display: none;
+        }
+
+        .swipe_menu_obsah {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding-left: 15px;
+            padding-right: 25px;
+            overflow: hidden;
+        }
     }
 
     .animal_card {
         grid-area: swipe;
         justify-self: center;
-        width: 30%;
-        height: 100%;
+        width: 400px;
+        height: 500px;
         position: relative;
     }
 

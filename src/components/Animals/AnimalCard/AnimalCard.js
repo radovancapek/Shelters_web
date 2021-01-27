@@ -1,7 +1,8 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import "./AnimalCard.scss";
-import {storage} from "../../Firebase/Firebase"
+import { storage } from "../../Firebase/Firebase"
 
+//TODO vzdalenost podle polohy nas a zvirete
 class AnimalCard extends Component {
 
     constructor(props) {
@@ -12,7 +13,7 @@ class AnimalCard extends Component {
     }
 
     setImageUrl = (url) => {
-        this.setState({imageUrl: url});
+        this.setState({ imageUrl: url });
     }
 
     render() {
@@ -27,10 +28,10 @@ class AnimalCard extends Component {
         return (
             <div className="animal_card">
                 <p className="animal_card_name">{this.props.animal.name}</p>
-                <img className="animal_card_image" alt={this.props.animal.name} src={this.state.imageUrl}/>
+                <img className="animal_card_image" alt={this.props.animal.name} src={this.state.imageUrl} />
                 <div className="animal_card_info">
                     <p className="animal_card_info_age">věk: {this.props.animal.age}</p>
-                    <p className="animal_card_info_dist">vzdálenost: 5 km</p>
+                    <p className="animal_card_info_dist">vzdálenost: TODO km</p>
                 </div>
                 {this.props.largeCard ? (<div className="animal_card_desc"><p>{this.props.animal.desc}</p></div>) : (null)}
             </div>
