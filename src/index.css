@@ -1,36 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Emblema+One&family=Montserrat&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Emblema+One&family=Montserrat&display=swap");
 
 .lighttheme {
-  --primary: #1A1C20;
-  --secondary: #F5F7FA;
-  --grad-first: #F5F7FA;
-  --grad-second: #B3B7C7;
+  --primary: #1a1c20;
+  --secondary: #f5f7fa;
+  --grad-first: #f5f7fa;
+  --grad-second: #b3b7c7;
   --primary-transparent: rgba(31, 41, 51, 0.2);
   --secondary-transparent: rgba(245, 247, 250, 0.2);
-  --orange-primary: #F0A500;
-  --orange-secondary: #CF7500;
+  --orange-primary: #f0a500;
+  --orange-secondary: #cf7500;
   --orange-therciary: #ffc000;
   --orange-transparent: rgba(240, 165, 0, 0.33);
   --white: #f5f7fa;
 }
 
 .darktheme {
-  --primary: #F5F7FA;
-  --secondary: #1A1C20;
+  --primary: #f5f7fa;
+  --secondary: #1a1c20;
   --grad-first: #121415;
-  --grad-second: #323F4B;
+  --grad-second: #323f4b;
   --primary-transparent: rgba(245, 247, 250, 0.2);
   --secondary-transparent: rgba(31, 41, 51, 0.2);
-  --orange-primary: #F0A500;
-  --orange-secondary: #CF7500;
+  --orange-primary: #f0a500;
+  --orange-secondary: #cf7500;
   --orange-therciary: #ffc000;
   --orange-transparent: rgba(240, 165, 0, 0.33);
-
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-  monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 * {
@@ -46,25 +44,29 @@ code {
 
 html {
   box-sizing: border-box;
-  height:100%; 
+  height: 100%;
   overflow: hidden;
 }
 
 body {
   margin: 1px;
-  font-family: 'Montserrat';
+  font-family: "Montserrat";
   font-weight: 400;
-  position:absolute; top:0; bottom:0; right:0; left:0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
 }
 
 button {
-    background-color: var(--orange-primary);
-    border: none;
-    text-transform: capitalize;
-    font-size: 18px;
-    padding: 5px;
-    font-family: 'Montserrat';
-    font-weight: 600;
+  background-color: var(--orange-primary);
+  border: none;
+  text-transform: capitalize;
+  font-size: 18px;
+  padding: 5px;
+  font-family: "Montserrat";
+  font-weight: 600;
 }
 
 @media only screen and (max-width: 1500px) {
@@ -72,4 +74,3 @@ button {
     padding-top: 0;
   }
 }
-

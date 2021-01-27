@@ -1,7 +1,7 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import "./Animals.scss";
 import AnimalCard from "./AnimalCard/AnimalCard";
-import {db} from "../Firebase/Firebase"
+import { db } from "../Firebase/Firebase"
 
 class Animals extends Component {
 
@@ -24,10 +24,10 @@ class Animals extends Component {
         querySnapshot.forEach((doc) => {
             dogs.push(doc.data())
         });
-        this.setState({animals: dogs});
+        this.setState({ animals: dogs });
     }
 
-    loadData(){
+    loadData() {
         db.collection("dogs")
             .onSnapshot(this.onCollectionUpdate);
     }
@@ -37,7 +37,7 @@ class Animals extends Component {
         let animalCards;
         animalCards = this.state.animals.map((animal, i) => {
             return (
-                <AnimalCard animal={animal} key={i} className="card"/>
+                <AnimalCard animal={animal} key={i} className="card" />
             );
         });
 

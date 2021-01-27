@@ -11,24 +11,22 @@ import AddAnimal from "./components/Animals/AddAnimal/AddAnimal";
 
 const App = () => {
   return (
-      <div id="App" className={style.lighttheme}>
-        <Layout>
-          <Switch>
-            <Route path={["/add", "/profile", "/others", "/animals", "/dogs", "/cats"]}>
-              <InnerLayout>
-                <Route path="/dogs" render={(props) => <Swipe animalType="dogs" {...props} /> }/>
-                <Route path="/cats" render={(props) => <Swipe animalType="cats" {...props} /> }/>
-                <Route path="/others" render={(props) => <Swipe animalType="others" {...props} /> }/>
-                <Route path="/profile" component={ProfilePage} />
-                <Route path="/animals" component={Animals} />
-                <Route path="/add" component={AddAnimal} />
-              </InnerLayout>
-            </Route>
-            <Route path="/home" component={Home} />
-            <Redirect from="/" exact to="/home" />
-          </Switch>
-        </Layout>
-      </div>
+    <div id="App" className={style.lighttheme}>
+      <Layout>
+        <Switch>
+          <Route path={["/add", "/profile", "/swipe", "/animals"]}>
+            <InnerLayout>
+              <Route path="/swipe" render={(props) => <Swipe animalType="dogs" />} />
+              <Route path="/profile" component={ProfilePage} />
+              <Route path="/animals" component={Animals} />
+              <Route path="/add" component={AddAnimal} />
+            </InnerLayout>
+          </Route>
+          <Route path="/home" component={Home} />
+          <Redirect from="/" exact to="/home" />
+        </Switch>
+      </Layout>
+    </div>
   );
 }
 
