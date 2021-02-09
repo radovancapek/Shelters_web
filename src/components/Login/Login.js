@@ -98,7 +98,6 @@ class Login extends Component {
         if (this.state.email.length > 0 && this.state.password.length > 0) {
             this.setState({loginErrorMessage: null});
         }
-
         this.setState(prevState => ({
             dialogSendButtonDisabled: prevState.resetPasswordEmail.length === 0
         }));
@@ -182,7 +181,7 @@ class Login extends Component {
                     <div className="Button submit" onClick={this.login}>
                         {this.state.loginState === Const.UPLOADING ?
                             <CircularProgress progress={this.state.percentUploaded}/>
-                            : "Potvrdit"}</div>
+                            : "Přihlásit"}</div>
                     <div className="forgot_password" onClick={this.forgotPasswordClick}>
                         Zapomneli jste heslo?
                     </div>
