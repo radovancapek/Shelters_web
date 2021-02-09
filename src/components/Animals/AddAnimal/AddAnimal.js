@@ -42,6 +42,7 @@ class AddAnimal extends Component {
         const tmpBehaviorMap = {};
         Const.BEHAVIOR_MAP.get(this.state.animalType).map((behavior) => {
             tmpBehaviorMap[behavior] = false;
+            return null;
         });
         this.setState({
             behaviorMap: tmpBehaviorMap
@@ -130,6 +131,7 @@ class AddAnimal extends Component {
         const tmpBehaviorMap = {};
         Const.BEHAVIOR_MAP.get(type).map((behavior) => {
             tmpBehaviorMap[behavior] = false;
+            return null;
         });
         this.setState({
             behaviorMap: tmpBehaviorMap,

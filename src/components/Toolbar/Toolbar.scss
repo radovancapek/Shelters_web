@@ -6,6 +6,10 @@
   width: 100%;
   //justify-content: space-between;
 
+  * {
+    background: transparent;
+  }
+
   .collapsed_items {
     display: none;
     position: fixed;
@@ -99,6 +103,13 @@
           font-size: 15px;
         }
       }
+      &.bordered {
+        p {
+          font-family: "Emblema One";
+          color: var(--orange-primary);
+        }
+      }
+
     }
   }
 

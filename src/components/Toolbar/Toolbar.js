@@ -1,50 +1,58 @@
 import React, {Component} from "react";
 import "./Toolbar.scss";
-import {NavLink} from "react-router-dom";
+import {Link, withRouter} from "react-router-dom";
 import PrivateToolbar from "./PrivateToolbar";
 import PublicToolbar from "./PublicToolbar";
-import ShelterToolbar from "./ShelterToolbar";
+import { auth } from "../Firebase/Firebase"
 
 class Toolbar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            openedMenu: false,
+            toolbar: null
         };
-
-        this.handleClick = this.handleClick.bind(this);
-        this.handleClickOutside = this.handleClickOutside.bind(this);
     }
 
-    handleClick() {
-        this.setState({openedMenu: !this.state.openedMenu});
+    componentDidMount() {
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                this.setState({toolbar: <PrivateToolbar logout={this.logout} />});
+            } else {
+                this.setState({toolbar: <PublicToolbar />});
+            }
+        });
     }
 
-    handleClickOutside() {
-        this.setState({openedMenu: false});
-        console.log("a");
+    logout = () => {
+        auth.signOut().then(() => {
+            this.props.history.push('/');
+        }).catch((error) => {
+            console.log("logout error " + error.message);
+        });
     }
+
 
     render() {
+
         let toolbar;
-        if(this.props.shelterLogged) {
-            toolbar = <ShelterToolbar />
-        } else if(this.props.logged) {
+        if(auth.currentUser) {
             toolbar = <PrivateToolbar />
         } else {
             toolbar = <PublicToolbar />
         }
+
+
         return (
             <div className="toolbar">
                 <div className="toolbar_logo">
                     {!this.props.home ?
-                        <NavLink to="/home" className="toolbar_items_item_home">HOME</NavLink>
+                        <Link to="/home" className="toolbar_items_item_home">HOME</Link>
                         : null}
                 </div>
-                {toolbar}
+                {this.state.toolbar || toolbar}
             </div>
         );
     }
 }
 
-export default Toolbar;
+export default withRouter(Toolbar);

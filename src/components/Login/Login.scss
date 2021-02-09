@@ -1,0 +1,40 @@
+.login {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+
+  .buttons {
+    display: flex;
+    margin-bottom: 20px;
+
+    .true {
+      background-color: var(--orange-therciary);
+    }
+  }
+
+  .forgot_password {
+    margin-top: 5px;
+    font-size: 11px;
+    color: var(--orange-secondary);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .Button {
+    margin: 5px;
+  }
+
+  .form {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .Input {
+      height: 50px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+  }
+}

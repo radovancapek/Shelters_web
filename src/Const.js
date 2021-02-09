@@ -1,6 +1,9 @@
 export const DOGS = "dogs"
 export const CATS = "cats"
 export const OTHER = "other"
+export const USER = "user"
+export const SHELTER = "shelter"
+
 
 export const SIZE_BIG = "size_big";
 export const SIZE_MEDIUM = "size_medium";
@@ -40,5 +43,7 @@ export const BEHAVIOR_MAP = new Map ([
     [CATS, CAT_BEHAVIOR],
     [OTHER, OTHER_BEHAVIOR]
 ])
+
+export const UPLOADING = "uploading";
 
 

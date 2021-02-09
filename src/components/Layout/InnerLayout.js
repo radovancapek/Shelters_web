@@ -4,7 +4,7 @@ import Toolbar from "../Toolbar/Toolbar";
 
 const innerLayout = (props) => (
   <div className="innerLayout">
-    <Toolbar home={false} logged={false} shelterLogged={true} />
+    <Toolbar home={false} logged={false} shelterLogged={false} />
     <main className="innerMain">{props.children}</main>
   </div>
 );

@@ -18,21 +18,30 @@
         justify-content: center;
         align-items: center;
         flex-direction: column;
+        transition: all 0.5s ease;
+        -webkit-transition: all 0.5s ease;
+        -o-transition: all 0.5s ease;
+        -moz-transition: all 0.5s ease;
 
         &_icon {
+            position: relative;
             width: 30px !important;
             height: 30px !important;
             margin-right: 10px;
+            cursor: pointer;
         }
 
         &_obsah {
-            display: none;
-            h2 {
+            opacity: 0;
+            height: 0;
+            transition: opacity 0s;
+            h3 {
                 margin-top: 20px;
                 margin-bottom: 10px;
             }
             .MuiTypography-body1 {
                 font-size: 14px !important;
+                margin-left: 5px;
             }
 
             .MuiCheckbox-colorSecondary.Mui-checked {
@@ -47,14 +56,21 @@
             .MuiFormControlLabel-root {
                 margin-left: 0;
             }
+            &_animal {
+                .MuiRadio-root {
+                    color: var(--orange-primary);
+                }
+                .MuiRadio-colorSecondary.Mui-checked {
+                    color: var(--orange-primary);
+                }
+            }
 
             &_size {
                 flex-direction: row !important;
             }
 
             .MuiSlider-root {
-                margin-right: 50px;
-                margin-left: 10px;
+                margin: -20px 50px 30px 10px;
                 width: auto;
                 color: var(--orange-primary);
             }
@@ -64,8 +80,23 @@
             .PrivateValueLabel-thumb-5.PrivateValueLabel-open-6 .PrivateValueLabel-offset-7 {
                 transform: scale(0.8) translateY(25px);
             }
+            .PrivateValueLabel-thumb-8.PrivateValueLabel-open-9 .PrivateValueLabel-offset-10 {
+                transform: scale(0.8) translateY(55px);
+            }
             .PrivateValueLabel-circle-8 {
                 border-radius: 50%;
+            }
+            .PrivateSwitchBase-root-1 {
+                padding: 0;
+            }
+            .PrivateValueLabel-circle-11 {
+                transform: rotate(-225deg);
+            }
+            .PrivateValueLabel-label-12 {
+                transform: rotate(225deg);
+            }
+            &_behavior {
+                height: 125px;
             }
         }
         &_button {
@@ -85,12 +116,21 @@
         }
 
         .swipe_menu_obsah {
+            height: auto;
+            opacity: 1;
             display: flex;
             flex-direction: column;
             width: 100%;
             padding-left: 15px;
             padding-right: 25px;
             overflow: hidden;
+
+            transition: opacity 0.5s ease;
+            -webkit-transition: opacity 0.5s ease;
+            -o-transition: opacity 0.5s ease;
+            -moz-transition: opacity 0.5s ease;
+            -webkit-transition-delay: 0.5s;
+            transition-delay: 0.4s;
         }
     }
 

@@ -6,6 +6,11 @@ const ShelterToolbar = () => {
     return (
         <ul className="toolbar_items">
             <li className="toolbar_items_item">
+                <NavLink to="/choice" className="toolbar_items_item_link">
+                    <p className="toolbar_items_item_text">Vybirat</p>
+                </NavLink>
+            </li>
+            <li className="toolbar_items_item">
                 <NavLink to="/animals" className="toolbar_items_item_link">
                     <p className="toolbar_items_item_text">Prochazet</p>
                 </NavLink>

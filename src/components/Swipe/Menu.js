@@ -9,14 +9,14 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Slider from '@material-ui/core/Slider';
 import * as Const from "../../Const"
+import RadioGroup from "@material-ui/core/RadioGroup";
+import Radio from "@material-ui/core/Radio";
 
 class Menu extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            dog: true,
-            cat: false,
-            others: false,
+            animalType: Const.CATS,
             small: false,
             medium: false,
             large: false,
@@ -25,13 +25,7 @@ class Menu extends Component {
     }
 
     componentDidMount() {
-        const tmpBehaviorMap = {};
-        Const.BEHAVIOR_MAP.get(this.props.animalType).map((behavior) => {
-            tmpBehaviorMap[behavior] = false;
-        });
-        this.setState({
-            behaviorMap: tmpBehaviorMap
-        });
+        this.setBehaviorMap(this.state.animalType);
     }
 
     handleClickOutside = evt => {
@@ -48,15 +42,30 @@ class Menu extends Component {
         return `${value}°C`;
     }
 
+    setBehaviorMap = (type) => {
+        const tmpBehaviorMap = {};
+        Const.BEHAVIOR_MAP.get(type).map((behavior) => {
+            tmpBehaviorMap[behavior] = false;
+            return null;
+        });
+        this.setState({
+            behaviorMap: tmpBehaviorMap
+        });
+    }
+
     handleCheckboxChange = e => {
         const key = e.target.name;
         const value = e.target.checked;
         const tmpBehaviorMap = this.state.behaviorMap;
         tmpBehaviorMap[key] = value;
-        console.log(e.target.name + " " + e.target.checked);
         this.setState(prevState => ({
             behaviorMap: tmpBehaviorMap
         }));
+    }
+
+    handleAnimalTypeChange = e => {
+        this.setState({animalType: e.target.value})
+        this.setBehaviorMap(e.target.value);
     }
 
     filter = () => {
@@ -64,7 +73,7 @@ class Menu extends Component {
     }
 
     render() {
-        const { dog, cat, others, small, medium, large } = this.state;
+        const { small, medium, large } = this.state;
 
         let behaviorCheckboxes =
             Object.entries(this.state.behaviorMap).map(([key, value], i) => {
@@ -86,25 +95,16 @@ class Menu extends Component {
             <div className={this.props.menuOpen ? 'swipe_menu open' : 'swipe_menu'} onClick={this.props.onClick}>
                 <FontAwesomeIcon icon={faBars} className="swipe_menu_icon" />
                 <div className="swipe_menu_obsah">
-                    <FormControl component="fieldset">
-                        <h2>Mám zájem o:</h2>
-                        <FormGroup>
-                            <FormControlLabel
-                                control={<Checkbox checked={dog} onChange={this.handleChange} name="dog" className="swipe_menu_obsah_checkbox" />}
-                                label="Pes"
-                            />
-                            <FormControlLabel
-                                control={<Checkbox checked={cat} onChange={this.handleChange} name="cat" />}
-                                label="Kočka"
-                            />
-                            <FormControlLabel
-                                control={<Checkbox checked={others} onChange={this.handleChange} name="others" />}
-                                label="Ostatní"
-                            />
-                        </FormGroup>
+                    <FormControl component="fieldset" className="swipe_menu_obsah_animal">
+                        <h3>Mám zájem o:</h3>
+                        <RadioGroup aria-label="animalType" name="animalTypeRadioGroup" value={this.state.animalType} onChange={this.handleAnimalTypeChange}>
+                            <FormControlLabel value="dogs" control={<Radio />} label="Psi" />
+                            <FormControlLabel value="cats" control={<Radio />} label="Kočky" />
+                            <FormControlLabel value="other" control={<Radio />} label="Ostatní" />
+                        </RadioGroup>
                     </FormControl>
                     <FormControl component="fieldset">
-                        <h2>Velikost zvířete:</h2>
+                        <h3>Velikost zvířete:</h3>
                         <FormGroup className="swipe_menu_obsah_size">
                             <FormControlLabel
                                 control={<Checkbox checked={small} onChange={this.handleChange} name="small" className="swipe_menu_obsah_checkbox" />}
@@ -120,7 +120,7 @@ class Menu extends Component {
                             />
                         </FormGroup>
                     </FormControl>
-                    <h2>Věk zvířete:</h2>
+                    <h3>Věk zvířete:</h3>
                     <Slider
                         defaultValue={[0, 20]}
                         getAriaValueText={this.valuetext}
@@ -129,7 +129,7 @@ class Menu extends Component {
                         min={0}
                         max={20}
                     />
-                    <div>{behaviorCheckboxes}</div>
+                    <div className="swipe_menu_obsah_behavior">{behaviorCheckboxes}</div>
                     <button className="swipe_menu_button" onClick={this.filter}>Filtrovat</button>
                 </div>
             </div>
