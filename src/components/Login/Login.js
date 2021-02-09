@@ -16,6 +16,7 @@ class Login extends Component {
         super(props);
         this.state = {
             name: "",
+            loginErrorMessage: null,
             email: "",
             resetPasswordEmail: "",
             dialogErrorMessage: null,
@@ -55,10 +56,15 @@ class Login extends Component {
     }
 
     login = () => {
-        this.setState({loginState: Const.UPLOADING});
         let email = this.state.email;
         let password = this.state.password;
 
+        if ((email.length === 0) || (password.length === 0)) {
+            this.setState({loginErrorMessage: "Žádné pole nesmí být prázdné"});
+            return;
+        }
+
+        this.setState({loginState: Const.UPLOADING});
         auth.signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
                 this.setState({
@@ -67,8 +73,21 @@ class Login extends Component {
                 });
             })
             .catch((error) => {
-                this.setState({error: error});
-                console.log(error.message);
+                this.setState({loginState: ""});
+                switch (error.code) {
+                    case "auth/invalid-email":
+                        this.setState({loginErrorMessage: "Zadaná adresa není ve správném formátu."})
+                        break;
+                    case "auth/user-not-found":
+                        this.setState({loginErrorMessage: "Uživatel s touto e-mailovou adresou nebyl nalezen."})
+                        break;
+                    case "auth/wrong-password":
+                        this.setState({loginErrorMessage: "Nesprávné heslo."})
+                        break;
+                    default:
+                        this.setState({loginErrorMessage: "Chyba"})
+                        break;
+                }
             });
     }
 
@@ -76,9 +95,14 @@ class Login extends Component {
         this.setState({
             [e.target.name]: e.target.value
         });
+        if (this.state.email.length > 0 && this.state.password.length > 0) {
+            this.setState({loginErrorMessage: null});
+        }
+
         this.setState(prevState => ({
             dialogSendButtonDisabled: prevState.resetPasswordEmail.length === 0
         }));
+
     }
 
     sendPasswordReset = () => {
@@ -151,6 +175,10 @@ class Login extends Component {
                     <input className="Input Input_text" type="password" name="password"
                            placeholder="Heslo"
                            onChange={this.updateInput} value={this.state.password}/>
+                    {this.state.loginErrorMessage ?
+                        <div className="error_message">{this.state.loginErrorMessage}</div>
+                        : null
+                    }
                     <div className="Button submit" onClick={this.login}>
                         {this.state.loginState === Const.UPLOADING ?
                             <CircularProgress progress={this.state.percentUploaded}/>
@@ -172,7 +200,7 @@ class Login extends Component {
                                disabled={this.state.dialogInputDisabled}
                                onChange={this.updateInput} value={this.state.resetPasswordEmail}/>
                         {this.state.dialogErrorMessage ?
-                            <div className="dialog_error_message">{this.state.dialogErrorMessage}</div>
+                            <div className="error_message">{this.state.dialogErrorMessage}</div>
                             : null
                         }
                         {this.state.dialogSuccessMessage ?

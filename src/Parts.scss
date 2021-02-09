@@ -53,14 +53,15 @@
 }
 
 .dialog {
-  .dialog_error_message {
-    margin-top: 5px;
-    color: red;
-    font-style: italic;
-    font-size: 14px;
-  }
   .dialog_success_message {
     margin-top: 15px;
     color: forestgreen;
   }
+}
+
+.error_message {
+  margin-top: 5px;
+  color: red;
+  font-style: italic;
+  font-size: 14px;
 }
