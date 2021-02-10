@@ -1,10 +1,10 @@
 import React from "react";
 import "./GalleryImage.scss";
 
-const GalleryImage = (src) => {
+const GalleryImage = (props) => {
     return (
-        <div className="galleryImage">
-            <img src={src.src} alt="" />
+        <div className={"galleryImage " + props.selected} onClick={props.onClick}>
+            <img src={props.src} alt="" />
         </div>
     );
 }

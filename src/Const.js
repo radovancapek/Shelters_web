@@ -1,3 +1,4 @@
+export const ANIMALS = "animals"
 export const DOGS = "dogs"
 export const CATS = "cats"
 export const OTHER = "other"

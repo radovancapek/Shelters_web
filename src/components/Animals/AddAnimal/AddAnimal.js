@@ -1,12 +1,14 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import "./AddAnimal.scss";
-import { db, storage } from "../../Firebase/Firebase"
+import {db, storage} from "../../Firebase/Firebase"
 import * as Const from "../../../Const"
 import Checkbox from '@material-ui/core/Checkbox';
-import { faImage } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faImage} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import GalleryImage from "../AnimalCard/GalleryImage";
 import CircularProgress from '@material-ui/core/CircularProgress';
+import {ANIMALS, UPLOADING} from "../../../Const";
+import {v4 as uuidv4} from 'uuid';
 
 
 class AddAnimal extends Component {
@@ -19,12 +21,17 @@ class AddAnimal extends Component {
             age: "",
             image: "",
             filenames: [],
+            imagesStoragePaths: [],
             downloadURLs: [],
             isUploading: false,
             uploadProgress: 0,
             file: null,
             newFile: null,
             url: "",
+            mainImageUrl: null,
+            mainImageIndex: 0,
+            mainImageStoragePath: null,
+            selectedImageIndex: 0,
             urlList: [],
             newFiles: [],
             files: [],
@@ -56,63 +63,76 @@ class AddAnimal extends Component {
     }
 
 
-    addAnimal = e => {
-        e.preventDefault();
-        db.collection(this.state.animalType).add(
+    addAnimal = () => {
+        db.collection(ANIMALS).add(
             {
+                type: this.state.animalType,
                 name: this.state.name,
                 age: parseInt(this.state.age, 10),
                 desc: this.state.desc,
-                behaviorMap: this.state.behaviorMap
+                behaviorMap: this.state.behaviorMap,
+                image: this.state.mainImageStoragePath,
+                images: this.state.imagesStoragePaths
             }
-        )
-        this.setState({
-            name: ""
-        });
+        ).then(() => {
+            this.setState({uploadState: 'done'})
+        })
     };
 
     handleChange = (e) => {
         e.preventDefault();
-        this.setState({
-            newFile: e.target.files[0],
-            files: [...this.state.files, e.target.files[0]],
-            urlList: [...this.state.urlList, URL.createObjectURL(e.target.files[0])],
-            url: URL.createObjectURL(e.target.files[0]),
-            showImagePlaceholder: false
-        })
+        if(e.target.files[0]){
+            const url = URL.createObjectURL(e.target.files[0]);
+            this.setState({
+                newFile: e.target.files[0],
+                files: [...this.state.files, e.target.files[0]],
+                urlList: [...this.state.urlList, url],
+                showImagePlaceholder: false
+            })
+            if(!this.state.mainImageUrl) {
+                this.setState({
+                    mainImageIndex: 0
+                })
+            }
+        }
     }
 
     handleUpload = (e) => {
         e.preventDefault();
-        this.setState({ uploadState: "uploading" });
+        this.setState({uploadState: UPLOADING});
         const promises = [];
         let files = this.state.files;
-
         for (let i = 0; i < files.length; i++) {
-            console.log("aaa " + files[i].name);
-            const uploadTask = storage.ref(`/images/${files[i].name}`).put(files[i]);
+            const imageStoragePath = "/images/" + this.state.name + "-" + uuidv4();
+            if(i === this.state.mainImageIndex) {
+                this.setState({mainImageStoragePath: imageStoragePath});
+            }
+            const uploadTask = storage.ref(imageStoragePath).put(files[i]);
+            promises.push(uploadTask);
             uploadTask.on("state_changed",
                 snapshot => {
                     const percentUploaded = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                    this.setState({ percentUploaded });
+                    this.setState({percentUploaded});
                 },
                 error => {
                     console.log(error.code);
-                    this.setState({ uploadState: 'error' });
+                    this.setState({uploadState: 'error'});
                 },
-
-                async () => {
-                    const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                    console.log(downloadURL);
+                () => {
+                    const downloadURL = uploadTask.snapshot.ref.getDownloadURL();
                     this.setState({
-                        uploadState: 'done',
-                        downloadURLs: [...this.state.downloadURLs, downloadURL]
+                        downloadURLs: [...this.state.downloadURLs, downloadURL],
+                        imagesStoragePaths: [...this.state.imagesStoragePaths, imageStoragePath]
                     })
                     // the web storage url for our file
                 });
+
         }
-        Promise.all(promises)
-            .then(() => alert('All files uploaded'))
+        Promise.allSettled(promises)
+            .then(() => {
+                console.log('All files uploaded');
+                this.addAnimal();
+            })
             .catch(err => console.log(err.code));
     }
 
@@ -121,7 +141,6 @@ class AddAnimal extends Component {
         const value = e.target.checked;
         const tmpBehaviorMap = this.state.behaviorMap;
         tmpBehaviorMap[key] = value;
-        console.log(e.target.name + " " + e.target.checked);
         this.setState(prevState => ({
             behaviorMap: tmpBehaviorMap
         }));
@@ -164,10 +183,20 @@ class AddAnimal extends Component {
         }
     }
 
+    setMainImage = (i, e) => {
+        this.setState({
+            mainImageIndex: i
+        });
+    }
+
     render() {
         let galleryImages = this.state.urlList.map((url, i) => {
+            let selected = "";
+            if(i === this.state.mainImageIndex) {
+                selected = " selected";
+            }
             return (
-                <GalleryImage src={url} key={i} />
+                <GalleryImage src={url} selected={selected} onClick={(e) => {this.setMainImage(i, e)}} key={i}/>
             );
         });
 
@@ -177,10 +206,10 @@ class AddAnimal extends Component {
                     <div className={"addAnimal_form_input_behavior_" + i} key={i}>
                         <label>{key}</label>
                         <Checkbox type="checkbox"
-                            className="Input Input_checkbox"
-                            name={key}
-                            checked={value}
-                            onChange={this.handleCheckboxChange}
+                                  className="Input Input_checkbox"
+                                  name={key}
+                                  checked={value}
+                                  onChange={this.handleCheckboxChange}
                         />
                     </div>
                 );
@@ -196,25 +225,25 @@ class AddAnimal extends Component {
                             onClick={() => this.changeAnimalType(Const.DOGS)}>Pes
                         </div>
                         <div className={"Button Button_light Button_small " + this.state.catsActive}
-                            id="buttonCats"
-                            onClick={() => this.changeAnimalType(Const.CATS)}>Kocka
+                             id="buttonCats"
+                             onClick={() => this.changeAnimalType(Const.CATS)}>Kocka
                         </div>
                         <div className={"Button Button_light Button_small " + this.state.otherActive}
-                            id="buttonOther"
-                            onClick={() => this.changeAnimalType(Const.OTHER)}>Ostatni
+                             id="buttonOther"
+                             onClick={() => this.changeAnimalType(Const.OTHER)}>Ostatni
                         </div>
                     </div>
                     <input className="Input Input_text addAnimal_form_name" type="text" name="name"
-                        placeholder="Jmeno"
-                        onChange={this.updateInput} value={this.state.name} />
+                           placeholder="Jmeno"
+                           onChange={this.updateInput} value={this.state.name}/>
                     <input className="Input Input_text addAnimal_form_age" type="text" name="age" placeholder="Vek"
-                        onChange={this.updateInput} value={this.state.age} />
+                           onChange={this.updateInput} value={this.state.age}/>
                     <div className="addAnimal_form_behavior">
                         {behaviorCheckboxes}
                     </div>
                     <div className="addAnimal_form_desc">
                         <textarea name="desc" placeholder="Popis" onChange={this.updateInput}
-                            className="addAnimal_form_desc_textArea" />
+                                  className="addAnimal_form_desc_textArea"/>
                     </div>
                     <div className="addAnimal_form_map">
                         <iframe
@@ -224,26 +253,26 @@ class AddAnimal extends Component {
                             aria-hidden="false"
                             tabIndex="0"
                             title="koleje"
-                            className="addAnimal_form_map_iframe" />
+                            className="addAnimal_form_map_iframe"/>
                     </div>
                     <div className="addAnimal_form_mainImage">
-                        {this.state.showImagePlaceholder ?
-                            <FontAwesomeIcon className="imageIcon" icon={faImage} />
+                        {this.state.urlList[this.state.mainImageIndex] ?
+                            <GalleryImage src={this.state.urlList[this.state.mainImageIndex]} />
                             :
-                            null
+                            <FontAwesomeIcon className="imageIcon" icon={faImage}/>
                         }
                     </div>
                     <div className="gallery">
                         {galleryImages}
                         <div className="addImage galleryImage">
-                            <input id="files" type="file" onChange={this.handleChange} className="addImage_input" />
-                            <label for="files" className="addImage_label">+</label>
+                            <input id="files" type="file" onChange={this.handleChange} className="addImage_input"/>
+                            <label htmlFor="files" className="addImage_label">+</label>
                         </div>
                     </div>
 
-                    <div className="Button light submit" onClick={this.addAnimal}>
+                    <div className="Button light submit" onClick={this.handleUpload}>
                         {this.state.uploadState === "uploading" ?
-                            <CircularProgress progress={this.state.percentUploaded} />
+                            <CircularProgress progress={this.state.percentUploaded}/>
                             : "Potvrdit"}</div>
                 </form>
             </div>
