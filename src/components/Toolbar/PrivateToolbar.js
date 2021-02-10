@@ -22,6 +22,11 @@ const PrivateToolbar = (props) => {
                 </NavLink>
             </li>
             <li className="toolbar_items_item">
+                <NavLink to="/add" className="toolbar_items_item_link">
+                    <p className="toolbar_items_item_text">Pridat zvire</p>
+                </NavLink>
+            </li>
+            <li className="toolbar_items_item">
                 <NavLink to="/profile" className="toolbar_items_item_link">
                     <p className="toolbar_items_item_text">Profil</p>
                 </NavLink>
