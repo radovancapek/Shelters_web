@@ -3,7 +3,7 @@ import "./Login.scss";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import * as Const from "../../Const";
 import {auth} from "../Firebase/Firebase"
-import {Redirect} from "react-router-dom";
+import {withRouter} from "react-router-dom";
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -67,10 +67,15 @@ class Login extends Component {
         this.setState({loginState: Const.UPLOADING});
         auth.signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
-                this.setState({
-                    logInRedirect: true,
-                    loginState: ""
-                });
+                let from;
+                if (this.props.location.state) {
+                    from = this.props.location.state.from || {from: {pathname: '/'}}
+                } else {
+                    from = {pathname: '/'}
+                }
+                this.props.history.push(from);
+
+                console.log("history push to " + from);
             })
             .catch((error) => {
                 this.setState({loginState: ""});
@@ -147,13 +152,12 @@ class Login extends Component {
     }
 
     render() {
-        const {from} = this.props.location.state || {from: {pathname: '/'}}
-        if (this.state.logInRedirect) {
-            console.log("login redirect from " + this.props.from);
-            return (
-                <Redirect to={from}/>
-            )
-        }
+        // if (auth.currentUser) {
+        //     return (
+        //         <Redirect to={"/"}/>
+        //     )
+        // }
+
         return (
             <div className="login">
                 <form className="form" onSubmit={this.addAnimal}>
@@ -223,4 +227,4 @@ class Login extends Component {
     }
 }
 
-export default Login;
+export default withRouter(Login);

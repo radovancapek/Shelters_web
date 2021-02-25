@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import "./AddAnimal.scss";
-import {db, storage} from "../../Firebase/Firebase"
+import {db, storage, auth} from "../../Firebase/Firebase"
 import * as Const from "../../../Const"
 import Checkbox from '@material-ui/core/Checkbox';
 import {faImage} from "@fortawesome/free-solid-svg-icons";
@@ -72,7 +72,8 @@ class AddAnimal extends Component {
                 desc: this.state.desc,
                 behaviorMap: this.state.behaviorMap,
                 image: this.state.mainImageStoragePath,
-                images: this.state.imagesStoragePaths
+                images: this.state.imagesStoragePaths,
+                user: auth.currentUser.uid
             }
         ).then(() => {
             this.setState({uploadState: 'done'})
@@ -99,6 +100,7 @@ class AddAnimal extends Component {
 
     handleUpload = (e) => {
         e.preventDefault();
+        console.log("uid " + auth.currentUser.uid);
         this.setState({uploadState: UPLOADING});
         const promises = [];
         let files = this.state.files;

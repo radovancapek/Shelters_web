@@ -17,6 +17,11 @@ const PrivateToolbar = (props) => {
                 </NavLink>
             </li>
             <li className="toolbar_items_item">
+                <NavLink to="/myanimals" className="toolbar_items_item_link">
+                    <p className="toolbar_items_item_text">Moje zvířata</p>
+                </NavLink>
+            </li>
+            <li className="toolbar_items_item">
                 <NavLink to="/messages" className="toolbar_items_item_link">
                     <p className="toolbar_items_item_text">Zpravy</p>
                 </NavLink>

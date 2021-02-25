@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import "./AnimalCard.scss";
 import { storage } from "../../Firebase/Firebase"
+import {faImage} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 //TODO vzdalenost podle polohy nas a zvirete
 class AnimalCard extends Component {
@@ -8,7 +10,7 @@ class AnimalCard extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            imageUrl: "",
+            imageUrl: null,
         };
     }
 
@@ -27,8 +29,14 @@ class AnimalCard extends Component {
 
         return (
             <div className="animal_card">
-                <p className="animal_card_name">{this.props.animal.name}</p>
-                <img className="animal_card_image" alt={this.props.animal.name} src={this.state.imageUrl} />
+                <div className="animal_card_name">{this.props.animal.name}</div>
+                {this.state.imageUrl ?
+                    <img className="animal_card_image" alt={this.props.animal.name} src={this.state.imageUrl} />
+                    :
+                    <FontAwesomeIcon className="imageIcon" icon={faImage}/>
+                }
+
+
                 <div className="animal_card_info">
                     <p className="animal_card_info_age">věk: {this.props.animal.age}</p>
                     <p className="animal_card_info_dist">vzdálenost: TODO km</p>
