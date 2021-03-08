@@ -130,7 +130,7 @@ class Menu extends Component {
                         max={20}
                     />
                     <div className="swipe_menu_obsah_behavior">{behaviorCheckboxes}</div>
-                    <button className="swipe_menu_button" onClick={this.filter}>Filtrovat</button>
+                    <button className="Button swipe_menu_button" onClick={this.filter}>Filtrovat</button>
                 </div>
             </div>
         )

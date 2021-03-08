@@ -213,10 +213,10 @@ class Login extends Component {
 
                     </DialogContent>
                     <DialogActions>
-                        <button className="dialog_confirm_button" onClick={this.handleDialogClose}>
+                        <button className="Button dialog_confirm_button" onClick={this.handleDialogClose}>
                             Zavrit
                         </button>
-                        <button className="dialog_close_button" disabled={this.state.dialogSendButtonDisabled}
+                        <button className="Button dialog_close_button" disabled={this.state.dialogSendButtonDisabled}
                                 onClick={this.sendPasswordReset}>
                             Odeslat
                         </button>
