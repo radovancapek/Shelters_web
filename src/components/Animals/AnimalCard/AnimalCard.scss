@@ -1,4 +1,5 @@
 .animal_card {
+  position: relative;
   overflow: hidden;
   background-color: var(--white);
   display: flex;
@@ -7,23 +8,28 @@
   -webkit-box-shadow: 0px 0px 15px 4px var(--primary-transparent);
   box-shadow: 0px 0px 15px 4px var(--primary-transparent);
   padding: 10px;
+  cursor: pointer;
+
+  .close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
 
   &_name {
     font-family: "Emblema One";
     font-size: 20px;
     text-align: center;
-    height: 15%;
     overflow: hidden;
     text-overflow: ellipsis;
-    cursor: pointer;
   }
 
-  &_image {
-    max-width: 100%;
-    max-height: 70%;
-    height: auto;
-    width: auto;
-    margin: auto;
+
+  .closeIcon {
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+    color: var(--primary);
   }
 
   .imageIcon {
@@ -32,16 +38,45 @@
     color: var(--orange-transparent);
   }
 
-  &_info {
+  .small_card_content {
     display: flex;
     height: 15%;
     justify-content: space-between;
     align-items: center;
     font-size: 12px;
   }
+
+  .large_card_content {
+    justify-self: flex-end;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    .info {
+      display: flex;
+      justify-content: space-between;
+      * {
+        display: flex;
+        align-items: center;
+      }
+    }
+    .desc {
+      display: flex;
+      align-items: center;
+      .desc_text {
+        margin-left: 20px;
+      }
+    }
+    .buttons {
+      .contact {
+        margin: auto;
+      }
+    }
+  }
+
   &_desc {
     height: 25%;
     font-size: 12px;
+
     * {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -53,4 +88,73 @@
       align-self: flex-start;
     }
   }
+
+  .gallery_wrapper {
+    max-width: 100%;
+    max-height: 70%;
+    height: auto;
+    width: auto;
+    margin: auto;
+
+    .animal_card_image {
+      height: auto;
+      width: 100%;
+    }
+
+    .image-gallery {
+      max-width: 100%;
+      height: 100%;
+      margin: auto;
+
+      .image-gallery-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .image-gallery-slide-wrapper {
+          max-height: 75%;
+          flex-grow: 3;
+
+          .image-gallery-swipe {
+            height: 100%;
+
+            .image-gallery-slides {
+              height: 100%;
+
+              .image-gallery-slide {
+                height: 100%;
+
+                div {
+                  height: 100%;
+
+                  .image-gallery-image {
+                    max-height: 100%;
+                  }
+                }
+
+              }
+            }
+          }
+
+          .image-gallery-bullet.active {
+            background: var(--orange-transparent);
+          }
+        }
+
+        .image-gallery-thumbnails-wrapper {
+          flex-grow: 1;
+        }
+      }
+
+      .image-gallery-icon:hover {
+        color: var(--orange-primary);
+      }
+
+      .image-gallery-thumbnail.active, .image-gallery-thumbnail:hover, .image-gallery-thumbnail:focus {
+        border: 4px solid var(--orange-primary);
+      }
+    }
+  }
+
 }

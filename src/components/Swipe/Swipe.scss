@@ -1,158 +1,175 @@
 .swipe {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: min-content auto 80px;
-    grid-template-rows: 4fr 1fr 1fr;
-    grid-template-areas: "menu swipe ." "menu buttons ." ". . .";
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: min-content auto 80px;
+  grid-template-rows: 4fr 1fr 1fr;
+  grid-template-areas: "menu swipe ." "menu buttons ." ". . .";
 
-    &_menu {
-        grid-area: menu;
-        align-self: center;
-        height: 150px;
-        width: 75px;
-        border-bottom-right-radius: 100px;
-        border-top-right-radius: 100px;
-        background-color: var(--secondary);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        transition: all 0.5s ease;
-        -webkit-transition: all 0.5s ease;
-        -o-transition: all 0.5s ease;
-        -moz-transition: all 0.5s ease;
+  &_menu {
+    grid-area: menu;
+    align-self: center;
+    height: 150px;
+    width: 75px;
+    border-bottom-right-radius: 100px;
+    border-top-right-radius: 100px;
+    background-color: var(--secondary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: all 0.5s ease;
+    -webkit-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
 
-        &_icon {
-            position: relative;
-            width: 30px !important;
-            height: 30px !important;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-
-        &_obsah {
-            opacity: 0;
-            height: 0;
-            transition: opacity 0s;
-            h3 {
-                margin-top: 20px;
-                margin-bottom: 10px;
-            }
-            .MuiTypography-body1 {
-                font-size: 14px !important;
-                margin-left: 5px;
-            }
-
-            .MuiCheckbox-colorSecondary.Mui-checked {
-                color: var(--orange-primary);
-            }
-
-            .MuiCheckbox-root {
-                color: var(--orange-primary);
-                width: 25px;
-                height: 25px;
-            }
-            .MuiFormControlLabel-root {
-                margin-left: 0;
-            }
-            &_animal {
-                .MuiRadio-root {
-                    color: var(--orange-primary);
-                }
-                .MuiRadio-colorSecondary.Mui-checked {
-                    color: var(--orange-primary);
-                }
-            }
-
-            &_size {
-                flex-direction: row !important;
-            }
-
-            .MuiSlider-root {
-                margin: -20px 50px 30px 10px;
-                width: auto;
-                color: var(--orange-primary);
-            }
-            .MuiSlider-markLabel {
-                display: none;
-            }
-            .PrivateValueLabel-thumb-5.PrivateValueLabel-open-6 .PrivateValueLabel-offset-7 {
-                transform: scale(0.8) translateY(25px);
-            }
-            .PrivateValueLabel-thumb-8.PrivateValueLabel-open-9 .PrivateValueLabel-offset-10 {
-                transform: scale(0.8) translateY(55px);
-            }
-            .PrivateValueLabel-circle-8 {
-                border-radius: 50%;
-            }
-            .PrivateSwitchBase-root-1 {
-                padding: 0;
-            }
-            .PrivateValueLabel-circle-11 {
-                transform: rotate(-225deg);
-            }
-            .PrivateValueLabel-label-12 {
-                transform: rotate(225deg);
-            }
-            &_behavior {
-                height: 125px;
-            }
-        }
-        &_button {
-            max-width: 50%;
-            margin-top: 25px;
-        }
+    &_icon {
+      position: relative;
+      width: 30px !important;
+      height: 30px !important;
+      margin-right: 10px;
+      cursor: pointer;
     }
 
-    .open {
-        height: 600px;
-        width: 300px;
-        border-bottom-right-radius: 300px;
-        border-top-right-radius: 300px;
+    &_obsah {
+      opacity: 0;
+      height: 0;
+      transition: opacity 0s;
 
-        .swipe_menu_icon {
-            display: none;
+      h3 {
+        margin-top: 20px;
+        margin-bottom: 10px;
+      }
+
+      .MuiTypography-body1 {
+        font-size: 14px !important;
+        margin-left: 5px;
+      }
+
+      .MuiCheckbox-colorSecondary.Mui-checked {
+        color: var(--orange-primary);
+      }
+
+      .MuiCheckbox-root {
+        color: var(--orange-primary);
+        width: 25px;
+        height: 25px;
+      }
+
+      .MuiFormControlLabel-root {
+        margin-left: 0;
+      }
+
+      &_animal {
+        .MuiRadio-root {
+          color: var(--orange-primary);
         }
 
-        .swipe_menu_obsah {
-            height: auto;
-            opacity: 1;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            padding-left: 15px;
-            padding-right: 25px;
-            overflow: hidden;
-
-            transition: opacity 0.5s ease;
-            -webkit-transition: opacity 0.5s ease;
-            -o-transition: opacity 0.5s ease;
-            -moz-transition: opacity 0.5s ease;
-            -webkit-transition-delay: 0.5s;
-            transition-delay: 0.4s;
+        .MuiRadio-colorSecondary.Mui-checked {
+          color: var(--orange-primary);
         }
+      }
+
+      &_size {
+        flex-direction: row !important;
+      }
+
+      .MuiSlider-root {
+        margin: -20px 50px 30px 10px;
+        width: auto;
+        color: var(--orange-primary);
+      }
+
+      .MuiSlider-markLabel {
+        display: none;
+      }
+
+      .PrivateValueLabel-thumb-5.PrivateValueLabel-open-6 .PrivateValueLabel-offset-7 {
+        transform: scale(0.8) translateY(25px);
+      }
+
+      .PrivateValueLabel-thumb-8.PrivateValueLabel-open-9 .PrivateValueLabel-offset-10 {
+        transform: scale(0.8) translateY(55px);
+      }
+
+      .PrivateValueLabel-circle-8 {
+        border-radius: 50%;
+      }
+
+      .PrivateSwitchBase-root-1 {
+        padding: 0;
+      }
+
+      .PrivateValueLabel-circle-11 {
+        transform: rotate(-225deg);
+      }
+
+      .PrivateValueLabel-label-12 {
+        transform: rotate(225deg);
+      }
+
+      &_behavior {
+        height: 125px;
+      }
     }
 
+    &_button {
+      max-width: 50%;
+      margin-top: 25px;
+    }
+  }
+
+  .open {
+    height: 600px;
+    width: 300px;
+    border-bottom-right-radius: 300px;
+    border-top-right-radius: 300px;
+
+    .swipe_menu_icon {
+      display: none;
+    }
+
+    .swipe_menu_obsah {
+      height: auto;
+      opacity: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding-left: 15px;
+      padding-right: 25px;
+      overflow: hidden;
+
+      transition: opacity 0.5s ease;
+      -webkit-transition: opacity 0.5s ease;
+      -o-transition: opacity 0.5s ease;
+      -moz-transition: opacity 0.5s ease;
+      -webkit-transition-delay: 0.5s;
+      transition-delay: 0.4s;
+    }
+  }
+
+  .swipe_animal_card_wrapper {
+    grid-area: swipe;
+    justify-self: center;
     .animal_card {
-        grid-area: swipe;
-        justify-self: center;
-        width: 400px;
-        height: 500px;
-        position: relative;
+      width: 400px;
+      height: 500px;
+      position: relative;
     }
+  }
 
-    .buttons {
-        grid-area: buttons;
-        justify-self: center;
-        align-self: start;
-        display: flex;
-        justify-content: space-between;
-        padding-top: 20px;
 
-        * {
-            margin: 0 10px;
-            width: 100px;
-        }
+  .buttons {
+    grid-area: buttons;
+    justify-self: center;
+    align-self: start;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+
+    * {
+      margin: 0 10px;
+      width: 100px;
     }
+  }
 }

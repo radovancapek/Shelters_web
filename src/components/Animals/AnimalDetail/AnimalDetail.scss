@@ -1,0 +1,26 @@
+.animalDetail {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .animal_card {
+    margin: 20px;
+    opacity: 1;
+    max-width: 1000px;
+    height: 90vh;
+    cursor: default;
+    justify-content: space-evenly;
+    .gallery_wrapper {
+      margin: unset;
+    }
+  }
+
+}
