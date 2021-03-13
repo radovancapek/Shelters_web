@@ -9,6 +9,7 @@ import GalleryImage from "../AnimalCard/GalleryImage";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {ANIMALS, UPLOADING} from "../../../Const";
 import {v4 as uuidv4} from 'uuid';
+import Switch from "@material-ui/core/Switch";
 
 
 class AddAnimal extends Component {
@@ -19,6 +20,8 @@ class AddAnimal extends Component {
             animalType: Const.DOGS,
             name: "",
             age: "",
+            genderBool: false,
+            gender: Const.MALE,
             image: "",
             filenames: [],
             imagesStoragePaths: [],
@@ -69,6 +72,7 @@ class AddAnimal extends Component {
                 type: this.state.animalType,
                 name: this.state.name,
                 age: parseInt(this.state.age, 10),
+                gender: this.state.gender,
                 desc: this.state.desc,
                 behaviorMap: this.state.behaviorMap,
                 image: this.state.mainImageStoragePath,
@@ -82,7 +86,7 @@ class AddAnimal extends Component {
 
     handleChange = (e) => {
         e.preventDefault();
-        if(e.target.files[0]){
+        if (e.target.files[0]) {
             const url = URL.createObjectURL(e.target.files[0]);
             this.setState({
                 newFile: e.target.files[0],
@@ -90,7 +94,7 @@ class AddAnimal extends Component {
                 urlList: [...this.state.urlList, url],
                 showImagePlaceholder: false
             })
-            if(!this.state.mainImageUrl) {
+            if (!this.state.mainImageUrl) {
                 this.setState({
                     mainImageIndex: 0
                 })
@@ -106,7 +110,7 @@ class AddAnimal extends Component {
         let files = this.state.files;
         for (let i = 0; i < files.length; i++) {
             const imageStoragePath = "/images/" + this.state.name + "-" + uuidv4();
-            if(i === this.state.mainImageIndex) {
+            if (i === this.state.mainImageIndex) {
                 this.setState({mainImageStoragePath: imageStoragePath});
             }
             const uploadTask = storage.ref(imageStoragePath).put(files[i]);
@@ -136,6 +140,11 @@ class AddAnimal extends Component {
                 this.addAnimal();
             })
             .catch(err => console.log(err.code));
+    }
+
+    handleGenderChange = e => {
+        e.target.checked ? this.setState({gender: Const.FEMALE}) : this.setState({gender: Const.MALE});
+        this.setState({genderBool: e.target.checked});
     }
 
     handleCheckboxChange = e => {
@@ -192,13 +201,16 @@ class AddAnimal extends Component {
     }
 
     render() {
+        console.log(this.state.gender);
         let galleryImages = this.state.urlList.map((url, i) => {
             let selected = "";
-            if(i === this.state.mainImageIndex) {
+            if (i === this.state.mainImageIndex) {
                 selected = " selected";
             }
             return (
-                <GalleryImage src={url} selected={selected} onClick={(e) => {this.setMainImage(i, e)}} key={i}/>
+                <GalleryImage src={url} selected={selected} onClick={(e) => {
+                    this.setMainImage(i, e)
+                }} key={i}/>
             );
         });
 
@@ -243,6 +255,19 @@ class AddAnimal extends Component {
                     <div className="addAnimal_form_behavior">
                         {behaviorCheckboxes}
                     </div>
+                    <div className="addAnimal_form_gender">
+                        <h4>Pohlaví: </h4>
+                        <div className="addAnimal_form_gender_input">
+                            <div>Pes</div>
+                            <Switch
+                                checked={this.state.genderBool}
+                                onChange={this.handleGenderChange}
+                                name="genderBool"
+                                inputProps={{'aria-label': 'secondary checkbox'}}
+                            />
+                            <div>Fena</div>
+                        </div>
+                    </div>
                     <div className="addAnimal_form_desc">
                         <textarea name="desc" placeholder="Popis" onChange={this.updateInput}
                                   className="addAnimal_form_desc_textArea"/>
@@ -259,7 +284,7 @@ class AddAnimal extends Component {
                     </div>
                     <div className="addAnimal_form_mainImage">
                         {this.state.urlList[this.state.mainImageIndex] ?
-                            <GalleryImage src={this.state.urlList[this.state.mainImageIndex]} />
+                            <GalleryImage src={this.state.urlList[this.state.mainImageIndex]}/>
                             :
                             <FontAwesomeIcon className="imageIcon" icon={faImage}/>
                         }

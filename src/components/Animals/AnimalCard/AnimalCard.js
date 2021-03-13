@@ -5,7 +5,7 @@ import {faImage, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ImageGallery from "react-image-gallery";
 import onClickOutside from "react-onclickoutside";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 //TODO vzdalenost podle polohy nas a zvirete
 class AnimalCard extends Component {
@@ -16,15 +16,19 @@ class AnimalCard extends Component {
             mounted: false,
             galleryImagesLoaded: false,
             imageUrl: null,
-            imageUrlList: []
+            imageUrlList: [],
+            imageCount: null
         };
     }
 
     componentDidMount() {
         this.setState({mounted: true});
         this.loadImage();
-        if (this.props.gallery)
+        if (this.props.gallery) {
+            //trackPromise(this.loadImages());
             this.loadImages();
+        }
+
     }
 
     handleClickOutside = () => {
@@ -51,8 +55,7 @@ class AnimalCard extends Component {
         const promises = this.props.animal.images.map(imageUrl => {
             const ref = storage.ref();
             const imageRef = ref.child(imageUrl)
-
-            imageRef.getDownloadURL()
+            return imageRef.getDownloadURL()
                 .then((url) => {
                     images.push(url.toString());
                     this.setState({imageUrlList: [...this.state.imageUrlList, url]});
@@ -60,11 +63,11 @@ class AnimalCard extends Component {
                 .catch(function (error) {
                     console.log("Error " + error.message);
                 });
-            return 0;
         });
 
         Promise.allSettled(promises).then(downloadURLs => {
-            this.setState({imageUrlList: images, galleryImagesLoaded: true})
+            console.log("size " + images.length);
+            this.setState({galleryImagesLoaded: true, imageCount: downloadURLs.length})
         })
     }
 
@@ -82,13 +85,22 @@ class AnimalCard extends Component {
 
         const gallery = () => {
             if (this.props.gallery) {
-                if (images > 0 || this.state.galleryImagesLoaded) {
-                    return (
-                        <ImageGallery items={images} showBullets={true} lazyLoad={true}/>
-                    );
+                if (this.state.galleryImagesLoaded) {
+                    if(this.state.imageCount > 0) {
+                        return (
+                            <ImageGallery items={images} showBullets={true} lazyLoad={true}/>
+                        );
+                    } else {
+                        return (
+                            <div className="placeholder">
+                                <FontAwesomeIcon className="imageIcon" icon={faImage}/>
+                                <div className="placeholder_text">Nemá obrázek</div>
+                            </div>
+                        );
+                    }
                 } else {
                     return (
-                        <FontAwesomeIcon className="imageIcon" icon={faImage}/>
+                        <CircularProgress />
                     );
                 }
             } else {
@@ -99,7 +111,10 @@ class AnimalCard extends Component {
                     );
                 } else {
                     return (
-                        <FontAwesomeIcon className="imageIcon" icon={faImage}/>
+                        <div className="placeholder">
+                            <FontAwesomeIcon className="imageIcon" icon={faImage}/>
+                            <div className="placeholder_text">Nemá obrázek</div>
+                        </div>
                     );
                 }
             }
@@ -124,9 +139,9 @@ class AnimalCard extends Component {
                                 <h3>Věk:</h3>
                                 <span>{this.props.animal.age}</span>
                             </div>
-                            <div className="animal_card_sex">
+                            <div className="animal_card_gender">
                                 <h3>Pohlaví:</h3>
-                                <span>pes</span>
+                                <span>{this.props.animal.gender}</span>
                             </div>
                             <div className="animal_card_info_dist">
                                 <h3>Vzdálenost:</h3>

@@ -1,9 +1,11 @@
-export const ANIMALS = "animals"
-export const DOGS = "dogs"
-export const CATS = "cats"
-export const OTHER = "other"
-export const USER = "user"
-export const SHELTER = "shelter"
+export const ANIMALS = "animals";
+export const DOGS = "dogs";
+export const CATS = "cats";
+export const OTHER = "other";
+export const USER = "user";
+export const SHELTER = "shelter";
+export const MALE = "male";
+export const FEMALE = "female";
 
 
 export const SIZE_BIG = "size_big";

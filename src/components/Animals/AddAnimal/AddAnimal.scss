@@ -37,6 +37,30 @@
       grid-row: 4/5;
       grid-column: 2/4;
     }
+    &_gender {
+      align-items: center;
+      display: flex;
+      grid-row: 5/6;
+      grid-column: 2/4;
+
+      &_input {
+        display: flex;
+        align-items: center;
+        margin-left: 30px;
+        .MuiSwitch-colorSecondary {
+          color: var(--orange-primary);
+        }
+        .MuiSwitch-colorSecondary + .MuiSwitch-track{
+          background-color: var(--orange-secondary);
+        }
+        .MuiSwitch-colorSecondary.Mui-checked + .MuiSwitch-track {
+          background-color: var(--orange-secondary);
+        }
+        .MuiSwitch-colorSecondary.Mui-checked {
+          color: var(--orange-primary);
+        }
+      }
+    }
 
     &_behavior {
       grid-row: 2/5;
@@ -58,7 +82,7 @@
     }
 
     &_desc {
-      grid-row: 5/7;
+      grid-row: 6/8;
       grid-column: 2/5;
 
       &_textArea {
@@ -71,7 +95,7 @@
     }
 
     &_map {
-      grid-row: 7/11;
+      grid-row: 8/11;
       grid-column: 2/5;
       background-color: #323F4B;
 
