@@ -10,6 +10,18 @@
   padding: 10px;
   cursor: pointer;
 
+  .placeholder {
+    position: relative;
+    .placeholder_text {
+      position: absolute;
+      left: 50%;
+      top:50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      text-align: center;
+    }
+  }
+
   .close {
     position: absolute;
     top: 5px;
@@ -67,8 +79,9 @@
       }
     }
     .buttons {
+      margin: auto;
       .contact {
-        margin: auto;
+        width: fit-content;
       }
     }
   }
@@ -90,11 +103,17 @@
   }
 
   .gallery_wrapper {
+    display: flex;
+    justify-content: center;
     max-width: 100%;
     max-height: 70%;
     height: auto;
     width: auto;
     margin: auto;
+
+    .MuiCircularProgress-colorPrimary {
+      color: var(--orange-primary);
+    }
 
     .animal_card_image {
       height: auto;
@@ -119,6 +138,7 @@
           .image-gallery-swipe {
             height: 100%;
 
+          }
             .image-gallery-slides {
               height: 100%;
 
@@ -134,7 +154,7 @@
                 }
 
               }
-            }
+
           }
 
           .image-gallery-bullet.active {
@@ -144,6 +164,27 @@
 
         .image-gallery-thumbnails-wrapper {
           flex-grow: 1;
+          max-height: 25%;
+          .image-gallery-thumbnails {
+            height: 100%;
+
+              .image-gallery-thumbnails-container {
+                height: 100%;
+
+                .image-gallery-thumbnail {
+                  height: 100%;
+
+                .image-gallery-thumbnail-inner {
+                  height: 100%;
+
+                  .image-gallery-thumbnail-image {
+                    object-fit: contain;
+                    max-height: 100%;
+                  }
+                }
+              }
+            }
+          }
         }
       }
 
