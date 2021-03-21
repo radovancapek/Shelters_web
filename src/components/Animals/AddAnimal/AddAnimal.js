@@ -10,7 +10,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import {ANIMALS, UPLOADING} from "../../../Const";
 import {v4 as uuidv4} from 'uuid';
 import Switch from "@material-ui/core/Switch";
+//import {searchService} from "../../../Utils/HERE";
 
+const WAIT_INTERVAL = 1000;
 
 class AddAnimal extends Component {
 
@@ -44,11 +46,27 @@ class AddAnimal extends Component {
             otherActive: false,
             catsActive: false,
             dogsActive: true,
-            behaviorMap: {}
+            behaviorMap: {},
+            address: "",
+            searchService: null,
+            searchResults: [],
+            location: null
         };
     }
 
+    componentWillMount() {
+        this.timer = null;
+    }
+
     componentDidMount() {
+        const H = window.H;
+        const platform = new H.service.Platform({
+            'apikey': 'm7zWa3Opopx3m5iH6-3Xc2YAj5462Od--H6Gt9dnWBc'
+        });
+
+        this.setState({searchService: platform.getSearchService()})
+
+
         const tmpBehaviorMap = {};
         Const.BEHAVIOR_MAP.get(this.state.animalType).map((behavior) => {
             tmpBehaviorMap[behavior] = false;
@@ -77,7 +95,8 @@ class AddAnimal extends Component {
                 behaviorMap: this.state.behaviorMap,
                 image: this.state.mainImageStoragePath,
                 images: this.state.imagesStoragePaths,
-                user: auth.currentUser.uid
+                user: auth.currentUser.uid,
+                location: this.state.location
             }
         ).then(() => {
             this.setState({uploadState: 'done'})
@@ -200,6 +219,40 @@ class AddAnimal extends Component {
         });
     }
 
+    handleSearchChange = (e) => {
+        clearTimeout(this.timer);
+
+        this.setState({address: e.target.value});
+
+        if (e.target.value.length >= 2) {
+            this.timer = setTimeout(this.search, WAIT_INTERVAL);
+        }
+    }
+
+    search = () => {
+        this.state.searchService.geocode({
+            q: this.state.address,
+            in: "countryCode:CZE,SVK,DEU,POL,AUT"
+        }, (result) => {
+            //let {position, title} = result.items[0];
+            console.log(result.items);
+            this.setState({searchResults: result.items})
+        }, (error) => {
+            console.log("Error", error);
+        });
+    }
+
+    handleSearchItemClick = (result) => {
+        console.log("title", result.title);
+        console.log("address", result.address);
+        console.log(result);
+        this.setState({
+            address: result.title,
+            location: result,
+            searchResults: []
+        });
+    }
+
     render() {
         console.log(this.state.gender);
         let galleryImages = this.state.urlList.map((url, i) => {
@@ -228,6 +281,14 @@ class AddAnimal extends Component {
                     </div>
                 );
             });
+
+        let searchResults = this.state.searchResults.map((result, i) => {
+            return (
+                <div className="result_item" key={i} onClick={() => {
+                    this.handleSearchItemClick(result)
+                }}>{result.title}</div>
+            );
+        });
 
         return (
             <div className="addAnimal">
@@ -273,14 +334,23 @@ class AddAnimal extends Component {
                                   className="addAnimal_form_desc_textArea"/>
                     </div>
                     <div className="addAnimal_form_map">
-                        <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1500.3485347041005!2d15.088005942110781!3d50.77046800835521!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47093416ce5bd3a1%3A0x860b20000c4b372!2sTUL%20Halls%20of%20Residence!5e0!3m2!1scs!2scz!4v1593419624930!5m2!1scs!2scz"
-                            frameBorder="0"
-                            allowFullScreen=""
-                            aria-hidden="false"
-                            tabIndex="0"
-                            title="koleje"
-                            className="addAnimal_form_map_iframe"/>
+                        <input className="Input Input_text" type="text" value={this.state.address}
+                               onChange={this.handleSearchChange}/>
+                        {
+                            this.state.searchResults.length > 0 ?
+                                <div className="searchResults">{searchResults}</div> :
+                                null
+                        }
+
+                        {/*<button onClick={this.search}>Search</button>*/}
+                        {/*<iframe*/}
+                        {/*    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1500.3485347041005!2d15.088005942110781!3d50.77046800835521!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47093416ce5bd3a1%3A0x860b20000c4b372!2sTUL%20Halls%20of%20Residence!5e0!3m2!1scs!2scz!4v1593419624930!5m2!1scs!2scz"*/}
+                        {/*    frameBorder="0"*/}
+                        {/*    allowFullScreen=""*/}
+                        {/*    aria-hidden="false"*/}
+                        {/*    tabIndex="0"*/}
+                        {/*    title="koleje"*/}
+                        {/*    className="addAnimal_form_map_iframe"/>*/}
                     </div>
                     <div className="addAnimal_form_mainImage">
                         {this.state.urlList[this.state.mainImageIndex] ?

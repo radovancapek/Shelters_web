@@ -4,9 +4,7 @@
   max-width: 120rem;
   margin: auto;
   min-width: 80%;
-  height: 100vh;
-  max-height: 100vh;
-  overflow: auto;
+  min-height: 100vh;
   background: linear-gradient(to right bottom, var(--grad-first), var(--grad-second)) no-repeat;
 
   .Main {

@@ -1,0 +1,30 @@
+.filter {
+  &_obsah {
+    &_animal {
+      .MuiRadio-root {
+        color: var(--orange-primary);
+      }
+
+      .MuiRadio-colorSecondary.Mui-checked {
+        color: var(--orange-primary);
+      }
+    }
+
+    &_age {
+      .MuiSlider-root {
+        color: var(--orange-primary);
+      }
+    }
+
+    .MuiCheckbox-colorSecondary.Mui-checked {
+      color: var(--orange-primary);
+    }
+
+    .MuiCheckbox-root {
+      color: var(--orange-primary);
+      width: 24px;
+      height: 24px;
+    }
+
+  }
+}

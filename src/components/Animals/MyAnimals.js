@@ -42,7 +42,7 @@ class MyAnimals extends Component {
         });
 
         return (
-            <div className="page">
+            <div className="animals">
                 {mounted ? (<div className="wrapper">{animalCards}</div>) : (
                     <div>loading</div>
                 )}
