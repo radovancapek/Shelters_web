@@ -1,16 +1,22 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import AnimalCard from "../Animals/AnimalCard/AnimalCard";
-import { db } from "../Firebase/Firebase"
+import {db, auth} from "../Firebase/Firebase"
 import "./Swipe.scss";
-import Menu from "./Menu";
+import Filter from "../../Utils/Filter";
 import AnimalDetail from "../Animals/AnimalDetail/AnimalDetail";
+import firebase from "firebase";
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 class Swipe extends Component {
     constructor(props) {
         super(props);
         this.state = {
             animals: [],
+            animalDocuments: [],
+            animalDocumentsFull: [],
+            currentUser: auth.currentUser,
             mounted: false,
+            animalsLoaded: false,
             index: 0,
             menuOpen: false,
             selectedAnimal: null
@@ -19,7 +25,9 @@ class Swipe extends Component {
 
     componentDidMount() {
         this.loadData();
-        this.setState({ mounted: true });
+        this.setState({
+            mounted: true
+        });
     }
 
     componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS) {
@@ -30,47 +38,107 @@ class Swipe extends Component {
 
     }
 
-    onCollectionUpdate = (querySnapshot) => {
-        const dogs = [];
-        console.log(this.props.animalType);
-        querySnapshot.forEach((doc) => {
-            //if(doc.data().type === this.props.animalType) {
-            dogs.push(doc.data())
-            //}
+    loadData = () => {
+        let likedAnimals = [];
+        let dislikedAnimals = [];
+        let swipedAnimals = [];
+        const userRef = db.collection("users").doc(this.state.currentUser.uid);
+        userRef.get().then((user) => {
+            if (user.exists) {
+                likedAnimals = user.data().likedAnimals || [];
+                dislikedAnimals = user.data().dislikedAnimals || [];
+                swipedAnimals = likedAnimals.concat(dislikedAnimals);
+                this.queryAnimals(swipedAnimals);
+
+            } else {
+                console.log("Firestore error");
+            }
         });
-        dogs.sort(() => Math.random() - 0.5);
-        this.setState({ animals: dogs });
     }
 
-    loadData() {
-        db.collection("animals")
-            .onSnapshot(this.onCollectionUpdate);
+    queryAnimals = (swipedAnimals) => {
+        let animals = [];
+        let animalDocuments = [];
+        db.collection("animals").get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    if (!swipedAnimals.includes(doc.id)) {
+                        animals.push(doc.data());
+                        animalDocuments.push(doc);
+                    }
+                });
+                // animals.sort(() => Math.random() - 0.5);
+                let animal = animalDocuments.pop();
+                this.setState({
+                    animalsLoaded: true,
+                    animals: animals,
+                    animal: animal,
+                    animalDocuments: animalDocuments,
+                    animalDocumentsFull: animalDocuments
+                });
+            });
     }
 
-    like = () => {
-        this.setState(prevState => ({
-            index: prevState.index + 1,
-        }));
+    swipe = (list) => {
+        let array = [...this.state.animalDocuments];
+        let animal = array.pop();
+        let full = [...this.state.animalDocumentsFull]; // make a separate copy of the array
+        let index = full.indexOf(animal)
+        if (index !== -1) {
+            full.splice(index, 1);
+            this.setState({animalDocumentsFull: array});
+        }
+        const userRef = db.collection("users").doc(this.state.currentUser.uid);
+        userRef.update({
+            [list]: firebase.firestore.FieldValue.arrayUnion(this.state.animal.id)
+        }).then(() => {
+            this.setState({animalDocuments: array, animal: animal});
+        }).catch(e => {
+            console.log("error " + e.message);
+        })
     }
 
     open = () => {
-        this.setState({
-            menuOpen: true
-        });
+        if(this.state.animalsLoaded) {
+            this.setState({ menuOpen: true });
+        }
     }
     close = () => {
-        if(!this.state.selectedAnimal) {
+        if (!this.state.selectedAnimal) {
             this.setState({
                 menuOpen: false
             });
         }
     }
 
-    filter = () => {
-        this.setState(prevState => ({
-            index: prevState.index + 1,
-        }));
-        // TODO filtrovani na zaklade dat co posleme z menu
+    filter = (filterData) => {
+        console.log(filterData.type);
+        let array = [...this.state.animalDocumentsFull];
+        if (this.state.animal) {
+            array.push(this.state.animal);
+        }
+        console.log("length " + array.length);
+
+        array.forEach(animal => {
+            console.log("animal " + animal.data().name);
+        })
+        if (array.length > 0) {
+            array = array.filter(animalDocument => {
+                if (animalDocument !== undefined) {
+                    return (
+                        animalDocument.data().type === filterData.type
+                    );
+                }
+            })
+            let animal = array.pop();
+            if (animal) {
+                this.setState({animal: animal});
+            } else {
+                this.setState({animal: null});
+            }
+            console.log("length2 " + array.length);
+            this.setState({animalDocuments: array});
+        }
     }
 
     openDetail = (animal) => {
@@ -78,30 +146,45 @@ class Swipe extends Component {
     }
 
     closeDetail = () => {
-        console.log("close detail");
         this.setState({selectedAnimal: null});
     }
 
     render() {
         const mounted = this.state.mounted;
-
         return (
             <div className="swipe">
-                <Menu menuOpen={this.state.menuOpen} onClick={this.open} onClickOutside={this.close} animalType={this.props.animalType} filter={this.filter} />
-                {mounted && this.state.animals.length > 0 ? (
-                    this.state.selectedAnimal ?
-                        <AnimalDetail animal={this.state.selectedAnimal} close={this.closeDetail}/>
-                        :
-                        (
-                            <div className="swipe_animal_card_wrapper">
-                                <AnimalCard swipeCard="true" onClickOutside={null} animal={this.state.animals[this.state.index]} onClick={() => this.openDetail(this.state.animals[this.state.index])}/>
-                            </div>
-                        )
-                ) : (null)}
-                <div className="buttons">
-                    <button className="Button" onClick={this.like}>líbí</button>
-                    <button className="Button">nelíbí</button>
-                </div>
+                <Filter menuOpen={this.state.menuOpen} onClick={this.open} onClose={this.close}
+                        animalType={this.props.animalType} filter={this.filter}/>
+
+                {
+                    this.state.animalsLoaded ? (
+                        mounted && this.state.animal ? (
+                            this.state.selectedAnimal ?
+                                <AnimalDetail animal={this.state.selectedAnimal} close={this.closeDetail}/>
+                                :
+                                (<>
+                                        <div className="swipe_animal_card_wrapper">
+                                            <AnimalCard swipeCard="true" onClickOutside={null}
+                                                        key={this.state.animal.id}
+                                                        animal={this.state.animal.data()}
+                                                        onClick={() => this.openDetail(this.state.animal.data())}/>
+                                        </div>
+                                        <div className="buttons">
+                                            <button className="Button" onClick={() => {
+                                                this.swipe("likedAnimals")
+                                            }}>líbí
+                                            </button>
+                                            <button className="Button" onClick={() => {
+                                                this.swipe("dislikedAnimals")
+                                            }}>nelíbí
+                                            </button>
+                                        </div>
+                                    </>
+                                )
+                        ) : <div>Žádná další zvířata.</div>
+                    )   : <CircularProgress/>
+                }
+
             </div>
         )
     }

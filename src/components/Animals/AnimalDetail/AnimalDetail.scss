@@ -10,9 +10,10 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 20px;
 
   .animal_card {
-    margin: 20px;
+    width: 100%;
     opacity: 1;
     max-width: 1000px;
     height: 90vh;

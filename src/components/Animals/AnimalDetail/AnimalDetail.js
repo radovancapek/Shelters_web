@@ -10,6 +10,16 @@ class AnimalDetail extends Component {
         }
     }
 
+    componentDidMount() {
+        document.addEventListener("keydown", this.escFunction, false);
+    }
+
+    escFunction = (event) => {
+        if(event.keyCode === 27) {
+            this.props.close();
+        }
+    }
+
     contact = () => {
 
     }

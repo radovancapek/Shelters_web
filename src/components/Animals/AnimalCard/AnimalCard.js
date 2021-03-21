@@ -9,11 +9,11 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 //TODO vzdalenost podle polohy nas a zvirete
 class AnimalCard extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
             mounted: false,
+            mainImageLoaded: false,
             galleryImagesLoaded: false,
             imageUrl: null,
             imageUrlList: [],
@@ -66,13 +66,20 @@ class AnimalCard extends Component {
         });
 
         Promise.allSettled(promises).then(downloadURLs => {
-            console.log("size " + images.length);
             this.setState({galleryImagesLoaded: true, imageCount: downloadURLs.length})
         })
     }
 
     setImageUrl = (url) => {
         this.setState({imageUrl: url});
+    }
+
+    handleImageLoaded = () => {
+        this.setState({mainImageLoaded: true});
+    }
+
+    handleImageError = () => {
+        this.setState({mainImageLoaded: false});
     }
 
     render() {
@@ -86,7 +93,7 @@ class AnimalCard extends Component {
         const gallery = () => {
             if (this.props.gallery) {
                 if (this.state.galleryImagesLoaded) {
-                    if(this.state.imageCount > 0) {
+                    if (this.state.imageCount > 0) {
                         return (
                             <ImageGallery items={images} showBullets={true} lazyLoad={true}/>
                         );
@@ -100,15 +107,24 @@ class AnimalCard extends Component {
                     }
                 } else {
                     return (
-                        <CircularProgress />
+                        <CircularProgress/>
                     );
                 }
             } else {
-                if (this.state.imageUrl) {
-                    return (
-                        <img className="animal_card_image" alt={this.props.animal.name}
-                             src={this.state.imageUrl}/>
-                    );
+                if (this.props.animal.image) {
+                    if (this.state.imageUrl) {
+                        return (
+                            <img className="animal_card_image" alt={this.props.animal.name}
+                                 src={this.state.imageUrl} onLoad={this.handleImageLoaded}
+                                 onError={this.handleImageError}/>
+                        );
+                    } else {
+                        return (
+                            <div className="placeholder">
+                                <CircularProgress/>
+                            </div>
+                        );
+                    }
                 } else {
                     return (
                         <div className="placeholder">
@@ -124,9 +140,11 @@ class AnimalCard extends Component {
         return (
             <div className="animal_card" onClick={this.props.onClick}>
                 {this.props.largeCard ? (
-                    <div className="close">
-                        <FontAwesomeIcon className="closeIcon" icon={faTimes} onClick={this.props.close}/>
-                    </div>) : null}
+                        <div className="close">
+                            <FontAwesomeIcon className="closeIcon" icon={faTimes} onClick={this.props.close}/>
+                        </div>)
+                    : null
+                }
                 <div className="animal_card_name">{this.props.animal.name}</div>
                 <div className="gallery_wrapper">
                     {gallery()}

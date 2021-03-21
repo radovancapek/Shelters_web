@@ -3,11 +3,11 @@
   height: 100%;
   display: grid;
   grid-template-columns: min-content auto 80px;
-  grid-template-rows: 4fr 1fr 1fr;
-  grid-template-areas: "menu swipe ." "menu buttons ." ". . .";
+  grid-template-rows: minmax(400px, auto) 1fr 1fr;
+  grid-template-areas: "filter swipe ." "filter buttons ." ". . .";
 
-  &_menu {
-    grid-area: menu;
+  .filter {
+    grid-area: filter;
     align-self: center;
     height: 150px;
     width: 75px;
@@ -23,6 +23,10 @@
     -o-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
 
+    &_label {
+      display: none;
+    }
+
     &_icon {
       position: relative;
       width: 30px !important;
@@ -37,8 +41,7 @@
       transition: opacity 0s;
 
       h3 {
-        margin-top: 20px;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
       }
 
       .MuiTypography-body1 {
@@ -46,46 +49,41 @@
         margin-left: 5px;
       }
 
-      .MuiCheckbox-colorSecondary.Mui-checked {
-        color: var(--orange-primary);
-      }
-
-      .MuiCheckbox-root {
-        color: var(--orange-primary);
-        width: 25px;
-        height: 25px;
-      }
-
       .MuiFormControlLabel-root {
         margin-left: 0;
       }
 
-      &_animal {
-        .MuiRadio-root {
-          color: var(--orange-primary);
-        }
+      &_gender {
 
-        .MuiRadio-colorSecondary.Mui-checked {
-          color: var(--orange-primary);
-        }
       }
 
       &_size {
-        flex-direction: row !important;
+        display: flex;
+        flex-direction: column;
+        .size_group {
+          display: flex;
+          flex-direction: row;
+        }
+      }
+      &_age {
+        padding-right: 10%;
+        h3 {
+          margin-bottom: 10px;
+        }
+        .MuiSlider-root {
+          margin: -20px 50px 30px 10px;
+          width: 100%;
+        }
       }
 
-      .MuiSlider-root {
-        margin: -20px 50px 30px 10px;
-        width: auto;
-        color: var(--orange-primary);
-      }
+
 
       .MuiSlider-markLabel {
         display: none;
       }
 
       .PrivateValueLabel-thumb-5.PrivateValueLabel-open-6 .PrivateValueLabel-offset-7 {
-        transform: scale(0.8) translateY(25px);
+        //transform: scale(0.8) translateY(25px);
       }
 
       .PrivateValueLabel-thumb-8.PrivateValueLabel-open-9 .PrivateValueLabel-offset-10 {
@@ -120,16 +118,17 @@
   }
 
   .open {
-    height: 600px;
-    width: 300px;
-    border-bottom-right-radius: 300px;
-    border-top-right-radius: 300px;
+    height: 650px;
+    width: 325px;
+    border-bottom-right-radius: 325px;
+    border-top-right-radius: 325px;
+    margin-top: -30px;
 
-    .swipe_menu_icon {
+    .filter_icon {
       display: none;
     }
 
-    .swipe_menu_obsah {
+    .filter_obsah {
       height: auto;
       opacity: 1;
       display: flex;
@@ -145,6 +144,13 @@
       -moz-transition: opacity 0.5s ease;
       -webkit-transition-delay: 0.5s;
       transition-delay: 0.4s;
+    }
+  }
+
+  .MuiCircularProgress-root {
+    margin: auto;
+    &.MuiCircularProgress-colorPrimary {
+      color: var(--orange-primary);
     }
   }
 
