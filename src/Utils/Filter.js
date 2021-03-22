@@ -11,7 +11,6 @@ import Slider from '@material-ui/core/Slider';
 import * as Const from "../Const"
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Radio from "@material-ui/core/Radio";
-import Switch from "@material-ui/core/Switch";
 import {FEMALE, MALE, SIZE_BIG, SIZE_MEDIUM, SIZE_SMALL} from "../Const";
 
 class Filter extends Component {
@@ -33,27 +32,6 @@ class Filter extends Component {
     }
 
     componentDidMount() {
-        if ("geolocation" in navigator) {
-            console.log("Available");
-            navigator.permissions
-                .query({ name: "geolocation" })
-                .then(function (result) {
-                    if (result.state === "granted") {
-                        console.log(result.state);
-                        //If granted then you can directly call your function here
-                    } else if (result.state === "prompt") {
-                        console.log(result.state);
-                    } else if (result.state === "denied") {
-                        console.log(result.state);
-                        //If denied then you have to show instructions to enable location
-                    }
-                    result.onchange = function () {
-                        console.log(result.state);
-                    };
-                });
-        } else {
-            console.log("Not Available");
-        }
         this.setBehaviorMap(this.state.animalType);
     }
 

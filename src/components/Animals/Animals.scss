@@ -6,10 +6,17 @@
   row-gap: 10px;
 
 
+.actions {
+  grid-row: 1 / 2;
+  grid-column: 2/3;
+  display: flex;
+  .order {
+    position: relative;
+    margin-left: 30px;
+    cursor: pointer;
+  }
   .filter {
     position: relative;
-    grid-row: 1 / 2;
-    grid-column: 2/3;
 
     &_icon {
       display: none;
@@ -24,7 +31,6 @@
       position: absolute;
       z-index: 1000;
       background-color: var(--secondary);
-
     }
     &.open {
       .filter_obsah {
@@ -127,6 +133,9 @@
       }
     }
   }
+}
+
+
 
   .wrapper {
     width: 100%;

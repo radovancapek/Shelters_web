@@ -17,13 +17,15 @@ class AnimalCard extends Component {
             galleryImagesLoaded: false,
             imageUrl: null,
             imageUrlList: [],
-            imageCount: null
+            imageCount: null,
+            location: null
         };
     }
 
     componentDidMount() {
         this.setState({mounted: true});
         this.loadImage();
+        this.getDistance();
         if (this.props.gallery) {
             //trackPromise(this.loadImages());
             this.loadImages();
@@ -80,6 +82,13 @@ class AnimalCard extends Component {
 
     handleImageError = () => {
         this.setState({mainImageLoaded: false});
+    }
+
+    getDistance = () => {
+        //console.log(this.props.location);
+        if(this.props.location && this.props.animal.location) {
+            this.setState({location: this.props.animal.location.position.lat});
+        }
     }
 
     render() {
@@ -163,7 +172,7 @@ class AnimalCard extends Component {
                             </div>
                             <div className="animal_card_info_dist">
                                 <h3>Vzdálenost:</h3>
-                                <span>TODO km</span>
+                                <span>{this.state.location}</span>
                             </div>
                         </div>
                         <div className="desc">
@@ -185,7 +194,7 @@ class AnimalCard extends Component {
                                     </div>
                                     <div className="animal_card_info_dist">
                                         <h3>Vzdálenost:</h3>
-                                        <span>TODO km</span>
+                                        <span>{this.state.location}</span>
                                     </div>
                                 </div>
                             </div>
@@ -195,7 +204,7 @@ class AnimalCard extends Component {
                                     <span>{this.props.animal.age}</span>
                                 </div>
                                 <div className="animal_card_info_dist">
-                                    <span>TODO km</span>
+                                    <span>{this.state.location}</span>
                                 </div>
                             </div>
                         )

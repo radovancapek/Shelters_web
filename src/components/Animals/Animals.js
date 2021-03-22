@@ -5,7 +5,7 @@ import {db} from "../Firebase/Firebase"
 import AnimalDetail from "./AnimalDetail/AnimalDetail";
 import ScrollUpButton from "react-scroll-up-button";
 import Filter from "../../Utils/Filter";
-import {SIZE_MEDIUM, SIZE_SMALL} from "../../Const";
+import {geolocated} from "react-geolocated";
 
 class Animals extends Component {
 
@@ -17,12 +17,60 @@ class Animals extends Component {
             animalDocumentsFull: [],
             mounted: false,
             selectedAnimal: null,
-            filterOpened: false
+            filterOpened: false,
+            userLocation: null
         }
     }
 
-    componentDidMount() {
+    getPosition = () => {
+        console.log("4");
+        navigator.geolocation.getCurrentPosition((result) => {
+            console.log("5");
+            console.log("result", result);
+            this.setState({userLocation: result});
+        }, (error) => {
+            console.log("6");
+            console.log("User location error", error);
+        }, {timeout: 5000});
+    }
 
+    componentDidMount() {
+        // if(!this.props.isGeolocationAvailable) {
+        //     console.log("Location unavailable.");
+        // } else if(!this.props.isGeolocationEnabled) {
+        //     console.log("Location not enabled.");
+        // } else {
+        //     console.log("coords", this.props.coords);
+        // }
+
+
+        if (navigator.permissions && navigator.permissions.query) {
+            console.log("1");
+            navigator.permissions
+                .query({name: "geolocation"})
+                .then((result) => {
+                    console.log("2");
+                    if (result.state === "granted") {
+                        this.getPosition();
+                    } else if (result.state === "prompt") {
+                        window.confirm("Povolením sdílení polohy umožníte aplikaci určit vzdálenost od zobrazených zvířat.");
+                        this.getPosition();
+                    } else if (result.state === "denied") {
+                        console.log(result.state);
+                        //If denied then you have to show instructions to enable location
+                    }
+                    result.onchange = function () {
+                        console.log(result.state);
+                    };
+                }).catch(reason => {
+                console.log("reason", reason);
+            });
+        } else if (navigator.geolocation) {
+            console.log("3");
+            this.getPosition();
+        } else {
+            console.log("Location unavailable.")
+        }
         this.loadData();
         this.setState({mounted: true});
     }
@@ -32,7 +80,6 @@ class Animals extends Component {
             e.preventDefault();
             this.closeDetail();
         }
-
     }
 
     componentWillUnmount() {
@@ -78,9 +125,9 @@ class Animals extends Component {
         const filterBehavior = filterData.behaviorMap;
         console.log(filterData);
         const filteredAnimals = this.state.animalsFull.filter(animal => {
-            for(let key in filterBehavior) {
-                if(filterBehavior[key]) {
-                    if(!animal.behaviorMap[key]) {
+            for (let key in filterBehavior) {
+                if (filterBehavior[key]) {
+                    if (!animal.behaviorMap[key]) {
                         return false;
                     }
                 }
@@ -100,19 +147,28 @@ class Animals extends Component {
     }
 
     render() {
+        console.log("location ", this.state.userLocation);
         const mounted = this.state.mounted;
         let animalCards;
         if (mounted) {
             animalCards = this.state.animals.map((animal, i) => {
                 return (
-                    <AnimalCard animal={animal} key={i} className="card" onClick={() => this.openDetail(animal)}/>
+                    <AnimalCard animal={animal} key={i} className="card" location={this.state.userLocation}
+                                onClick={() => this.openDetail(animal)}/>
                 );
             });
         }
         return (
             <div className="animals">
-                <Filter menuOpen={this.state.filterOpened} openFilter={this.openFilter} onClose={this.closeFilter}
-                        filter={this.filter}/>
+                <div className="actions"><Filter menuOpen={this.state.filterOpened} openFilter={this.openFilter}
+                                                 onClose={this.closeFilter}
+                                                 filter={this.filter}/>
+                    <div className="order">
+                        <div className="order_label">Seřadit</div>
+                        <div className="order_content"></div>
+                    </div>
+                </div>
+
                 {mounted ? (
                     <div className="wrapper">
                         {
@@ -131,4 +187,10 @@ class Animals extends Component {
     }
 }
 
-export default Animals;
+export default geolocated({
+    positionOptions: {
+        enableHighAccuracy: false,
+    },
+    userDecisionTimeout: 5000,
+    isGeolocationEnabled: false
+})(Animals);

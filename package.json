@@ -60,6 +60,7 @@
     "react-dev-utils": "^10.2.1",
     "react-dom": "^16.13.1",
     "react-firebase-file-uploader": "^2.4.4",
+    "react-geolocated": "^3.1.0",
     "react-here-map": "^4.0.0-0",
     "react-image-gallery": "^1.0.9",
     "react-modal": "^3.11.2",
