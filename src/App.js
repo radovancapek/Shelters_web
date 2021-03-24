@@ -42,6 +42,8 @@ class App extends Component {
                         <Route path="/animals" component={Animals}/>
                         <PrivateRoute path="/add"
                                       component={AddAnimal}/>
+                        <PrivateRoute path="/edit"
+                                      component={AddAnimal}/>
                         <PrivateRoute path="/myanimals"
                                       component={MyAnimals}/>
                         <Route path="/login" component={Login}/>

@@ -1,11 +1,13 @@
 import React, {Component} from "react";
+import { Redirect } from "react-router-dom";
 import "./AnimalCard.scss";
-import {storage} from "../../Firebase/Firebase"
+import {auth, storage} from "../../Firebase/Firebase"
 import {faImage, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ImageGallery from "react-image-gallery";
 import onClickOutside from "react-onclickoutside";
 import CircularProgress from '@material-ui/core/CircularProgress';
+
 
 //TODO vzdalenost podle polohy nas a zvirete
 class AnimalCard extends Component {
@@ -18,7 +20,9 @@ class AnimalCard extends Component {
             imageUrl: null,
             imageUrlList: [],
             imageCount: null,
-            location: null
+            location: null,
+            editAnimal: false,
+            isUsersAnimal: false
         };
     }
 
@@ -26,9 +30,12 @@ class AnimalCard extends Component {
         this.setState({mounted: true});
         this.loadImage();
         this.getDistance();
-        if (this.props.gallery) {
-            //trackPromise(this.loadImages());
+        if (this.props.gallery && this.props.animal.images) {
             this.loadImages();
+        }
+
+        if(auth.currentUser.uid === this.props.animal.user) {
+            this.setState({isUsersAnimal: true});
         }
 
     }
@@ -53,7 +60,6 @@ class AnimalCard extends Component {
 
     loadImages = () => {
         let images = [];
-
         const promises = this.props.animal.images.map(imageUrl => {
             const ref = storage.ref();
             const imageRef = ref.child(imageUrl)
@@ -91,7 +97,26 @@ class AnimalCard extends Component {
         }
     }
 
+    contact = () => {
+
+    }
+
+    editAnimal = () => {
+        this.setState({editAnimal: true});
+    }
+
     render() {
+        if(this.state.editAnimal) {
+            return (
+                <Redirect
+                    to={{
+                        pathname: "/edit",
+                        state: { animal: this.props.animal, animalId: this.props.animalId }
+                    }}
+                />
+            );
+        }
+
         let images = [];
 
         this.state.imageUrlList.map((url, i) => {
@@ -180,7 +205,8 @@ class AnimalCard extends Component {
                             <div className="desc_text">{this.props.animal.desc}</div>
                         </div>
                         <div className="buttons">
-                            <button className="Button contact" onClick={this.contact}>Kontaktovat</button>
+                            {!this.state.isUsersAnimal && <button className="Button contact" onClick={this.contact}>Kontaktovat</button>}
+                            {this.state.isUsersAnimal && <button className="Button edit" onClick={this.editAnimal}>Editovat</button>}
                         </div>
                     </div>
                 ) : (

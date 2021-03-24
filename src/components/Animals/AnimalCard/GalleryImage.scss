@@ -15,8 +15,10 @@
     align-items: center;
   }
 
-  &.selected {
-    border: 2px solid var(--orange-primary);
+  &.hover {
+    :hover {
+      border: 2px solid var(--orange-primary);
+    }
   }
 }
 

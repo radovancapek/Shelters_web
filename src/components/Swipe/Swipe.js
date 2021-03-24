@@ -19,7 +19,7 @@ class Swipe extends Component {
             animalsLoaded: false,
             index: 0,
             menuOpen: false,
-            selectedAnimal: null
+            selectedAnimalDocument: null
         }
     }
 
@@ -104,7 +104,7 @@ class Swipe extends Component {
         }
     }
     close = () => {
-        if (!this.state.selectedAnimal) {
+        if (!this.state.selectedAnimalDocument) {
             this.setState({
                 menuOpen: false
             });
@@ -142,11 +142,11 @@ class Swipe extends Component {
     }
 
     openDetail = (animal) => {
-        this.setState({selectedAnimal: animal});
+        this.setState({selectedAnimalDocument: animal});
     }
 
     closeDetail = () => {
-        this.setState({selectedAnimal: null});
+        this.setState({selectedAnimalDocument: null});
     }
 
     render() {
@@ -155,19 +155,18 @@ class Swipe extends Component {
             <div className="swipe">
                 <Filter menuOpen={this.state.menuOpen} onClick={this.open} onClose={this.close}
                         animalType={this.props.animalType} filter={this.filter}/>
-
                 {
                     this.state.animalsLoaded ? (
                         mounted && this.state.animal ? (
-                            this.state.selectedAnimal ?
-                                <AnimalDetail animal={this.state.selectedAnimal} close={this.closeDetail}/>
+                            this.state.selectedAnimalDocument ?
+                                <AnimalDetail animal={this.state.selectedAnimalDocument.data()} animalId={this.state.selectedAnimalDocument.id} close={this.closeDetail}/>
                                 :
                                 (<>
                                         <div className="swipe_animal_card_wrapper">
                                             <AnimalCard swipeCard="true" onClickOutside={null}
                                                         key={this.state.animal.id}
                                                         animal={this.state.animal.data()}
-                                                        onClick={() => this.openDetail(this.state.animal.data())}/>
+                                                        onClick={() => this.openDetail(this.state.animal)}/>
                                         </div>
                                         <div className="buttons">
                                             <button className="Button" onClick={() => {

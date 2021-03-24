@@ -10,6 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import {ANIMALS, UPLOADING} from "../../../Const";
 import {v4 as uuidv4} from 'uuid';
 import Switch from "@material-ui/core/Switch";
+import {Redirect} from "react-router-dom";
 //import {searchService} from "../../../Utils/HERE";
 
 const WAIT_INTERVAL = 1000;
@@ -19,14 +20,22 @@ class AddAnimal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            animalType: Const.DOGS,
-            name: "",
-            age: "",
+            animal: {
+                type: Const.DOGS,
+                name: "",
+                age: "",
+                gender: Const.MALE,
+                desc: "",
+                behaviorMap: {},
+                images: [],
+                image: null,
+                user: auth.currentUser.uid,
+                location: {}
+            },
+            imagesStoragePaths: [],
             genderBool: false,
-            gender: Const.MALE,
             image: "",
             filenames: [],
-            imagesStoragePaths: [],
             downloadURLs: [],
             isUploading: false,
             uploadProgress: 0,
@@ -35,7 +44,6 @@ class AddAnimal extends Component {
             url: "",
             mainImageUrl: null,
             mainImageIndex: 0,
-            mainImageStoragePath: null,
             selectedImageIndex: 0,
             urlList: [],
             newFiles: [],
@@ -46,11 +54,12 @@ class AddAnimal extends Component {
             otherActive: false,
             catsActive: false,
             dogsActive: true,
-            behaviorMap: {},
             address: "",
             searchService: null,
             searchResults: [],
-            location: null
+            imageUrlList: [],
+            galleryImagesLoaded: false,
+            imageCount: 0
         };
     }
 
@@ -59,48 +68,103 @@ class AddAnimal extends Component {
     }
 
     componentDidMount() {
+        const animal = this.props.location.state.animal;
+        if(this.props.location.state && animal) {
+            console.log("id", this.props.location.state.animalId);
+            this.setState({
+                animal: animal,
+                animalId: this.props.location.state.animalId,
+                imagesStoragePaths: animal.images || []
+            }, () => {
+                console.log("new imagesStoragePaths", this.state.imagesStoragePaths);
+            });
+            if(animal.location) {
+                this.setState({address: animal.location.title})
+            }
+            if(animal.images && animal.images.length > 0) {
+                this.loadImages();
+            }
+        } else {
+            const tmpBehaviorMap = {};
+            Const.BEHAVIOR_MAP.get(this.state.animal.type).map((behavior) => {
+                tmpBehaviorMap[behavior] = false;
+                return null;
+            });
+            this.setState(prevState => ({
+                animal: {
+                    ...prevState.animal, behaviorMap: tmpBehaviorMap
+                }
+            }));
+        }
         const H = window.H;
         const platform = new H.service.Platform({
             'apikey': 'm7zWa3Opopx3m5iH6-3Xc2YAj5462Od--H6Gt9dnWBc'
         });
-
         this.setState({searchService: platform.getSearchService()})
+    }
 
-
-        const tmpBehaviorMap = {};
-        Const.BEHAVIOR_MAP.get(this.state.animalType).map((behavior) => {
-            tmpBehaviorMap[behavior] = false;
-            return null;
+    loadImages = () => {
+        let images = [];
+        const promises = this.props.location.state.animal.images.map(imageUrl => {
+            const ref = storage.ref();
+            const imageRef = ref.child(imageUrl)
+            return imageRef.getDownloadURL()
+                .then((url) => {
+                    images.push(url.toString());
+                    this.setState({urlList: [...this.state.urlList, url]});
+                })
+                .catch(function (error) {
+                    console.log("Error " + error.message);
+                });
         });
-        this.setState({
-            behaviorMap: tmpBehaviorMap
+
+        Promise.allSettled(promises).then(downloadURLs => {
+            this.setState({galleryImagesLoaded: true, imageCount: downloadURLs.length})
         });
     }
 
     updateInput = e => {
-        this.setState({
-            [e.target.name]: e.target.value
-        });
+        console.log("target", e.target.name);
+        const name = e.target.name;
+        const value = e.target.value;
+        this.setState(prevState => ({
+            animal: {
+                ...prevState.animal, [name]: value
+            }
+        }));
     }
 
-
     addAnimal = () => {
-        db.collection(ANIMALS).add(
-            {
-                type: this.state.animalType,
-                name: this.state.name,
-                age: parseInt(this.state.age, 10),
-                gender: this.state.gender,
-                desc: this.state.desc,
-                behaviorMap: this.state.behaviorMap,
-                image: this.state.mainImageStoragePath,
-                images: this.state.imagesStoragePaths,
-                user: auth.currentUser.uid,
-                location: this.state.location
+        console.log("imageStoragepaths",this.state.imagesStoragePaths);
+        const images = this.state.imagesStoragePaths;
+        console.log("images", images);
+        this.setState(prevState => ({
+            animal: {
+                ...prevState.animal, images: images
             }
-        ).then(() => {
-            this.setState({uploadState: 'done'})
-        })
+        }), () => {
+            console.log("animal images",this.state.animal.images);
+            if(this.state.animalId) {
+                console.log(this.state.animal);
+                db.collection(ANIMALS).doc(this.state.animalId)
+                    .set(this.state.animal, {merge: true})
+                    .then(() => {
+                        this.setState({uploadState: 'done'});
+                    })
+                    .catch((error) => {
+                        console.log("addAnimal error", error);
+                    })
+            } else {
+                db.collection(ANIMALS)
+                    .add(this.state.animal)
+                    .then(() => {
+                        this.setState({uploadState: 'done'});
+                    })
+                    .catch((error) => {
+                        console.log("addAnimal error", error);
+                    })
+            }
+        });
     };
 
     handleChange = (e) => {
@@ -123,14 +187,17 @@ class AddAnimal extends Component {
 
     handleUpload = (e) => {
         e.preventDefault();
-        console.log("uid " + auth.currentUser.uid);
         this.setState({uploadState: UPLOADING});
         const promises = [];
         let files = this.state.files;
         for (let i = 0; i < files.length; i++) {
-            const imageStoragePath = "/images/" + this.state.name + "-" + uuidv4();
-            if (i === this.state.mainImageIndex) {
-                this.setState({mainImageStoragePath: imageStoragePath});
+            const imageStoragePath = "/images/" + this.state.animal.name + "-" + uuidv4();
+            if (i === 0) {
+                this.setState(prevState => ({
+                    animal: {
+                        ...prevState.animal, image: imageStoragePath
+                    }
+                }));
             }
             const uploadTask = storage.ref(imageStoragePath).put(files[i]);
             promises.push(uploadTask);
@@ -148,8 +215,7 @@ class AddAnimal extends Component {
                     this.setState({
                         downloadURLs: [...this.state.downloadURLs, downloadURL],
                         imagesStoragePaths: [...this.state.imagesStoragePaths, imageStoragePath]
-                    })
-                    // the web storage url for our file
+                    });
                 });
 
         }
@@ -161,18 +227,30 @@ class AddAnimal extends Component {
             .catch(err => console.log(err.code));
     }
 
+
+
     handleGenderChange = e => {
-        e.target.checked ? this.setState({gender: Const.FEMALE}) : this.setState({gender: Const.MALE});
+        e.target.checked ? this.setState(prevState => ({
+            animal: {
+                ...prevState.animal, gender: Const.FEMALE
+            }
+        })) : this.setState(prevState => ({
+            animal: {
+                ...prevState.animal, gender: Const.MALE
+            }
+        }));
         this.setState({genderBool: e.target.checked});
     }
 
     handleCheckboxChange = e => {
         const key = e.target.name;
         const value = e.target.checked;
-        const tmpBehaviorMap = this.state.behaviorMap;
+        const tmpBehaviorMap = this.state.animal.behaviorMap;
         tmpBehaviorMap[key] = value;
         this.setState(prevState => ({
-            behaviorMap: tmpBehaviorMap
+            animal: {
+                ...prevState.animal, behaviorMap: tmpBehaviorMap
+            }
         }));
     }
 
@@ -182,10 +260,11 @@ class AddAnimal extends Component {
             tmpBehaviorMap[behavior] = false;
             return null;
         });
-        this.setState({
-            behaviorMap: tmpBehaviorMap,
-            animalType: type
-        })
+
+        this.setState(prevState => ({
+            animal: (Object.assign(prevState.animal, {behaviorMap: tmpBehaviorMap}))
+        }));
+
         switch (type) {
             case Const.DOGS:
                 this.setState(prevState => ({
@@ -213,9 +292,18 @@ class AddAnimal extends Component {
         }
     }
 
-    setMainImage = (i, e) => {
+    setMainImage = (index, e) => {
+        this.setState(prevState => {
+            let urlList = [...prevState.urlList];
+            let temp = urlList[index];
+            urlList[index] = urlList[0];
+            urlList[0] = temp;
+            return { urlList };
+        })
+
+
         this.setState({
-            mainImageIndex: i
+            mainImageIndex: index
         });
     }
 
@@ -246,29 +334,40 @@ class AddAnimal extends Component {
         console.log("title", result.title);
         console.log("address", result.address);
         console.log(result);
-        this.setState({
+        this.setState(prevState => ({
             address: result.title,
-            location: result,
+            animal: {
+                ...prevState.animal, location: result
+            },
             searchResults: []
-        });
+        }));
     }
 
     render() {
-        console.log(this.state.gender);
+        if(this.state.uploadState === "done") {
+            return (
+                <Redirect
+                    to={{
+                        pathname: "/myanimals"
+                    }}
+                />
+            );
+        }
+        console.log(this.state.animal.gender);
         let galleryImages = this.state.urlList.map((url, i) => {
             let selected = "";
-            if (i === this.state.mainImageIndex) {
-                selected = " selected";
+            if (i !== 0) {
+
+                return (
+                    <GalleryImage hover={true} src={url} onClick={(e) => {
+                        this.setMainImage(i, e)
+                    }} key={i}/>
+                );
             }
-            return (
-                <GalleryImage src={url} selected={selected} onClick={(e) => {
-                    this.setMainImage(i, e)
-                }} key={i}/>
-            );
         });
 
         let behaviorCheckboxes =
-            Object.entries(this.state.behaviorMap).map(([key, value], i) => {
+            Object.entries(this.state.animal.behaviorMap).map(([key, value], i) => {
                 return (
                     <div className={"addAnimal_form_input_behavior_" + i} key={i}>
                         <label>{key}</label>
@@ -310,9 +409,9 @@ class AddAnimal extends Component {
                     </div>
                     <input className="Input Input_text addAnimal_form_name" type="text" name="name"
                            placeholder="Jmeno"
-                           onChange={this.updateInput} value={this.state.name}/>
+                           onChange={this.updateInput} value={this.state.animal.name}/>
                     <input className="Input Input_text addAnimal_form_age" type="text" name="age" placeholder="Vek"
-                           onChange={this.updateInput} value={this.state.age}/>
+                           onChange={this.updateInput} value={this.state.animal.age}/>
                     <div className="addAnimal_form_behavior">
                         {behaviorCheckboxes}
                     </div>
@@ -331,7 +430,7 @@ class AddAnimal extends Component {
                     </div>
                     <div className="addAnimal_form_desc">
                         <textarea name="desc" placeholder="Popis" onChange={this.updateInput}
-                                  className="addAnimal_form_desc_textArea"/>
+                                  className="addAnimal_form_desc_textArea" value={this.state.animal.desc}/>
                     </div>
                     <div className="addAnimal_form_map">
                         <input className="Input Input_text" type="text" value={this.state.address}
@@ -353,8 +452,8 @@ class AddAnimal extends Component {
                         {/*    className="addAnimal_form_map_iframe"/>*/}
                     </div>
                     <div className="addAnimal_form_mainImage">
-                        {this.state.urlList[this.state.mainImageIndex] ?
-                            <GalleryImage src={this.state.urlList[this.state.mainImageIndex]}/>
+                        {this.state.urlList[0] ?
+                            <GalleryImage main="mainImage" src={this.state.urlList[0]}/>
                             :
                             <FontAwesomeIcon className="imageIcon" icon={faImage}/>
                         }
