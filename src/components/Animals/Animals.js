@@ -14,9 +14,10 @@ class Animals extends Component {
         this.state = {
             animals: [],
             animalsFull: [],
+            animalDocuments: [],
             animalDocumentsFull: [],
             mounted: false,
-            selectedAnimal: null,
+            selectedAnimalDocument: null,
             filterOpened: false,
             userLocation: null
         }
@@ -35,15 +36,6 @@ class Animals extends Component {
     }
 
     componentDidMount() {
-        // if(!this.props.isGeolocationAvailable) {
-        //     console.log("Location unavailable.");
-        // } else if(!this.props.isGeolocationEnabled) {
-        //     console.log("Location not enabled.");
-        // } else {
-        //     console.log("coords", this.props.coords);
-        // }
-
-
         if (navigator.permissions && navigator.permissions.query) {
             console.log("1");
             navigator.permissions
@@ -99,6 +91,7 @@ class Animals extends Component {
                     animalsLoaded: true,
                     animals: animals,
                     animalsFull: animals,
+                    animalDocuments: animalDocuments,
                     animalDocumentsFull: animalDocuments
                 });
             });
@@ -113,18 +106,20 @@ class Animals extends Component {
     }
 
     openDetail = (animal) => {
-        this.setState({selectedAnimal: animal});
+        this.setState({selectedAnimalDocument: animal});
     }
 
     closeDetail = () => {
-        this.setState({selectedAnimal: null});
+        this.setState({selectedAnimalDocument: null});
     }
 
     filter = (filterData) => {
         this.closeFilter();
         const filterBehavior = filterData.behaviorMap;
         console.log(filterData);
-        const filteredAnimals = this.state.animalsFull.filter(animal => {
+
+        const filteredAnimalDocuments = this.state.animalDocumentsFull.filter(animalDocument => {
+            const animal = animalDocument.data();
             for (let key in filterBehavior) {
                 if (filterBehavior[key]) {
                     if (!animal.behaviorMap[key]) {
@@ -139,7 +134,26 @@ class Animals extends Component {
                 (filterData.gender.includes(animal.gender) || (filterData.gender.length === 0))
             );
         })
-        this.setState({animals: filteredAnimals});
+        this.setState({animalDocuments: filteredAnimalDocuments});
+
+
+
+        // const filteredAnimals = this.state.animalsFull.filter(animal => {
+        //     for (let key in filterBehavior) {
+        //         if (filterBehavior[key]) {
+        //             if (!animal.behaviorMap[key]) {
+        //                 return false;
+        //             }
+        //         }
+        //     }
+        //     return (
+        //         (animal.type === filterData.animalType) &&
+        //         (filterData.size.includes(animal.size) || (filterData.size.length === 0)) &&
+        //         ((animal.age >= filterData.age[0]) && (animal.age <= filterData.age[1])) &&
+        //         (filterData.gender.includes(animal.gender) || (filterData.gender.length === 0))
+        //     );
+        // })
+        // this.setState({animals: filteredAnimals});
     }
 
     filterBehavior = () => {
@@ -151,10 +165,10 @@ class Animals extends Component {
         const mounted = this.state.mounted;
         let animalCards;
         if (mounted) {
-            animalCards = this.state.animals.map((animal, i) => {
+            animalCards = this.state.animalDocuments.map((animalDocument, i) => {
                 return (
-                    <AnimalCard animal={animal} key={i} className="card" location={this.state.userLocation}
-                                onClick={() => this.openDetail(animal)}/>
+                    <AnimalCard animal={animalDocument.data()} animalId={animalDocument.id} key={i} className="card" location={this.state.userLocation}
+                                onClick={() => this.openDetail(animalDocument)}/>
                 );
             });
         }
@@ -172,8 +186,8 @@ class Animals extends Component {
                 {mounted ? (
                     <div className="wrapper">
                         {
-                            this.state.selectedAnimal ?
-                                <AnimalDetail animal={this.state.selectedAnimal} close={this.closeDetail}/> :
+                            this.state.selectedAnimalDocument ?
+                                <AnimalDetail animal={this.state.selectedAnimalDocument.data()} animalId={this.state.selectedAnimalDocument.id} close={this.closeDetail}/> :
                                 animalCards
                         }
                     </div>

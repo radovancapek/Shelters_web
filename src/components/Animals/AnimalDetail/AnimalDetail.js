@@ -15,19 +15,22 @@ class AnimalDetail extends Component {
     }
 
     escFunction = (event) => {
-        if(event.keyCode === 27) {
+        if (event.keyCode === 27) {
             this.props.close();
         }
-    }
-
-    contact = () => {
-
     }
 
     render() {
         return (
             <div className="animalDetail">
-                <AnimalCard largeCard="true" gallery="true" onClickOutside={this.props.close} close={this.props.close} animal={this.props.animal}/>
+                <AnimalCard
+                    largeCard="true"
+                    gallery="true"
+                    onClickOutside={this.props.close}
+                    close={this.props.close}
+                    animal={this.props.animal}
+                    animalId={this.props.animalId}
+                />
             </div>
         )
     }
