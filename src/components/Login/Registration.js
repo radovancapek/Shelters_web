@@ -12,18 +12,32 @@ class Registration extends Component {
         this.state = {
             name: "",
             surname: "",
+            shelterName: "",
+            shelterIc: "",
             email: "",
             password: "",
             password2: "",
             errorMessage: null,
+            errorMessages: [],
             userActive: true,
             sheltersActive: false,
             registrationState: "",
-            logInRedirect: false
+            logInRedirect: false,
+            wrongIc: false
         }
     }
 
     changeType = (type) => {
+        this.setState({
+            wrongIc: "",
+            shelterNameError: "",
+            emailError: "",
+            passwordError: "",
+            passwordMismatch: "",
+            firebaseEmailFormatError: "",
+            firebaseEmailExistsError: "",
+            firebasePasswordError: ""
+        })
         switch (type) {
             case Const.USER:
                 this.setState(prevState => ({
@@ -42,44 +56,93 @@ class Registration extends Component {
         }
     }
 
-    register = () => {
+    validateIC = () => {
+        let ic = this.state.shelterIc;
+        let sum = 0;
+        const lastDigit = ic.charAt(7)
+        if (ic.length !== 8 || isNaN(parseInt(ic))) {
+            return false;
+        }
+        for (let i = 0; i < 7; i++) {
+            let digit = parseInt(ic.charAt(i))
+            sum += digit * (8 - i);
+        }
+        return lastDigit === (11 - (sum % 11)) % 10;
+    }
+
+    validate = () => {
+        let valid = true;
         let email = this.state.email;
         let password = this.state.password;
         let password2 = this.state.password2;
-        if ((email.length === 0) || (password.length === 0) || (password2.length === 0)) {
-            this.setState({errorMessage: "E-mail a heslo nesmí být prázdné"});
-            return;
-        }
-        if(password !== password2) {
-            this.setState({errorMessage: "Hesla se neshodují."});
-            return;
-        }
-        this.setState({registrationState: Const.UPLOADING});
-        auth.createUserWithEmailAndPassword(this.state.email, this.state.password)
-            .then((userCredential) => {
-                console.log("user signed up");
-                this.addUserToFirestore(userCredential.user.uid);
+        let shelterName = this.state.shelterName;
+        if (this.state.sheltersActive) {
+            if(shelterName.length === 0)
+            {
+                this.setState({shelterNameError: "error"});
+                valid = false;
+            }
+            if (!this.validateIC()) {
+                valid = false;
                 this.setState({
-                    registrationState: ""
+                    wrongIc: "error"
                 });
-            })
-            .catch((error) => {
-                this.setState({registrationState: ""});
-                switch (error.code) {
-                    case "auth/invalid-email":
-                        this.setState({errorMessage: "Zadaná adresa není ve správném formátu."});
-                        break;
-                    case "auth/email-already-in-use":
-                        this.setState({errorMessage: "Uživatel s touto e-mailovou adresou již existuje."});
-                        break;
-                    case "auth/weak-password":
-                        this.setState({errorMessage: "Heslo musí mít alespoň 6 znaků."});
-                        break;
-                    default:
-                        this.setState({errorMessage: "Chyba"});
-                        break;
-                }
+            }
+        }
+
+        if(email.length === 0) {
+            valid = false;
+            this.setState({emailError: "error"});
+        }
+        if(password.length === 0) {
+            valid = false;
+            this.setState({passwordError: "error"});
+        }
+
+        if (password !== password2) {
+            valid = false;
+            this.setState({
+                passwordMismatch: "error"
             });
+        }
+        return valid;
+    }
+
+    register = () => {
+        if (this.validate()) {
+            this.setState({registrationState: Const.UPLOADING});
+            auth.createUserWithEmailAndPassword(this.state.email, this.state.password)
+                .then((userCredential) => {
+                    console.log("user signed up");
+                    this.addUserToFirestore(userCredential.user.uid);
+                    this.setState({
+                        registrationState: ""
+                    });
+                })
+                .catch((error) => {
+                    this.setState({registrationState: ""});
+                    switch (error.code) {
+                        case "auth/invalid-email":
+                            this.setState({
+                                firebaseEmailFormatError: "error"
+                            });
+                            break;
+                        case "auth/email-already-in-use":
+                            this.setState({
+                                firebaseEmailExistsError: "error"
+                            });
+                            break;
+                        case "auth/weak-password":
+                            this.setState({
+                                firebasePasswordError: "error"
+                            });
+                            break;
+                        default:
+                            this.setState({firebaseError: "Chyba"});
+                            break;
+                    }
+                });
+        }
     }
 
     addUserToFirestore = (id) => {
@@ -104,17 +167,45 @@ class Registration extends Component {
     };
 
     updateInput = e => {
+        let name = e.target.name;
+        let val = e.target.value;
+        console.log(name);
+        if(val.length > 0) {
+            switch (name) {
+                case "email":
+                    this.setState({emailError: ""});
+                    break;
+                case "password":
+                    this.setState({passwordError: ""});
+                    break;
+                case "shelterName":
+                    this.setState({shelterNameError: ""});
+                    break;
+                case "shelterIc":
+                    this.setState({wrongIc: ""});
+                    break;
+            }
+        }
         this.setState({
             [e.target.name]: e.target.value
         });
     }
 
     render() {
+        console.log(this.state.errorMessages);
         if (this.state.logInRedirect) {
             return (
                 <Redirect to="/"/>
             )
         }
+
+        let errorMessages = this.state.errorMessages.map((message, i) => {
+
+            return (
+                <div className="error_message" key={i}>{message}</div>
+            );
+        });
+
         return (
             <div className="login">
                 <form className="form" onSubmit={this.addAnimal}>
@@ -129,29 +220,48 @@ class Registration extends Component {
                              onClick={() => this.changeType(Const.SHELTER)}>Útulek
                         </div>
                     </div>
-                    <input className="Input Input_text" type="text" name="name"
-                           placeholder="Jmeno"
-                           onChange={this.updateInput} value={this.state.name}/>
-                    <input className="Input Input_text" type="text" name="surname"
-                           placeholder="Příjmení"
-                           onChange={this.updateInput} value={this.state.surname}/>
-                    <input className="Input Input_text" type="email" name="email"
+                    {this.state.userActive && (
+                        <>
+                            <input className={"Input Input_text " + this.state} type="text" name="name"
+                                   placeholder="Jmeno"
+                                   onChange={this.updateInput} value={this.state.name}/>
+                            <input className="Input Input_text" type="text" name="surname"
+                                   placeholder="Příjmení"
+                                   onChange={this.updateInput} value={this.state.surname}/>
+                        </>
+                    )}
+                    {this.state.sheltersActive && (
+                        <>
+                            <input className={"Input Input_text " + this.state.shelterNameError} type="text" name="shelterName"
+                                   placeholder="Název"
+                                   onChange={this.updateInput} value={this.state.shelterName}/>
+                            {this.state.shelterNameError && <div className="error_message">{Const.EMPTY_FIELD}</div>}
+                            <input className={"Input Input_text " + this.state.wrongIc} type="text" name="shelterIc"
+                                   placeholder="IČ"
+                                   onChange={this.updateInput} value={this.state.shelterIc}/>
+                            {this.state.wrongIc && <div className="error_message">{Const.WRONG_IC}</div>}
+                        </>
+                    )}
+                    <input className={"Input Input_text " + this.state.emailError + this.state.firebaseEmailFormatError + this.state.firebaseEmailExistsError} type="email" name="email"
                            placeholder="E-mail"
                            onChange={this.updateInput} value={this.state.mail}/>
-                    <input className="Input Input_text" type="password" name="password"
+                    {this.state.emailError && <div className="error_message">{Const.EMPTY_FIELD}</div>}
+                    {this.state.firebaseEmailFormatError && <div className="error_message">{Const.FIREBASE_EMAIL_FORMAT_ERROR}</div>}
+                    {this.state.firebaseEmailExistsError && <div className="error_message">{Const.FIREBASE_EMAIL_EXISTS}</div>}
+                    <input className={"Input Input_text " + this.state.passwordError + this.state.firebasePasswordError} type="password" name="password"
                            placeholder="Heslo"
                            onChange={this.updateInput} value={this.state.password}/>
-                    <input className="Input Input_text" type="password" name="password2"
+                    {this.state.passwordError && <div className="error_message">{Const.EMPTY_FIELD}</div>}
+                    {this.state.firebasePasswordError && <div className="error_message">{Const.FIREBASE_WEAK_PASSWORD}</div>}
+                    <input className={"Input Input_text " + this.state.passwordMismatch} type="password" name="password2"
                            placeholder="Heslo podruhé"
                            onChange={this.updateInput} value={this.state.password2}/>
-                    {this.state.errorMessage ?
-                        <div className="error_message">{this.state.errorMessage}</div>
-                        : null
-                    }
+                    {this.state.passwordMismatch && <div className="error_message">{Const.PASSWORD_MISMATCH}</div>}
                     <div className="Button submit" onClick={this.register}>
                         {this.state.registrationState === Const.UPLOADING ?
                             <CircularProgress progress={this.state.percentUploaded}/>
                             : "Registrovat"}</div>
+                    {this.state.firebaseError && <div className="error_message">{this.state.firebaseError}</div>}
                 </form>
             </div>
         )

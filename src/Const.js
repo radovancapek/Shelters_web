@@ -20,6 +20,13 @@ export const FRIENDLY = "friendly";
 export const ACTIVE = "active";
 export const WATCHDOG = "watchdog";
 
+export const WRONG_IC = "Neplatné IČ.";
+export const EMPTY_FIELD = "Toto pole nesmí být prázdné.";
+export const PASSWORD_MISMATCH = "Hesla se neshodují.";
+export const FIREBASE_EMAIL_FORMAT_ERROR = "Zadaná adresa není ve správném formátu.";
+export const FIREBASE_EMAIL_EXISTS = "Uživatel s touto e-mailovou adresou již existuje.";
+export const FIREBASE_WEAK_PASSWORD = "Heslo musí mít alespoň 6 znaků.";
+
 export const DOG_BEHAVIOR = [
     LIKE_ANIMALS,
     LIKE_KIDS,
