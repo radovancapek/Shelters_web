@@ -60,6 +60,31 @@
   }
 }
 
+.autocomplete {
+  position: relative;
+  .searchResults {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    right: 0;
+    height: auto;
+    max-height: 150px;
+    overflow: scroll;
+    background-color: var(--secondary);
+
+    .result_item {
+      margin-top: 5px;
+      padding: 5px 20px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: var(--orange-transparent);
+      }
+    }
+  }
+}
+
+
 .dialog {
   .dialog_success_message {
     margin-top: 15px;

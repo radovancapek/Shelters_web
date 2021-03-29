@@ -108,22 +108,6 @@
 
       }
 
-      .searchResults {
-        position: absolute;
-        background-color: #f5f7fa;
-        top: 41px;
-        left: 0;
-        right: 0;
-        height: auto;
-        max-height: 150px;
-        overflow: scroll;
-
-        .result_item {
-          padding: 5px 20px;
-          cursor: pointer;
-        }
-      }
-
       &_iframe {
         width: 100%;
         height: 100%;

@@ -55,5 +55,7 @@ export const BEHAVIOR_MAP = new Map ([
 ])
 
 export const UPLOADING = "uploading";
+export const SAVE = "Uložit";
+export const WAIT_INTERVAL = 500;
 
 

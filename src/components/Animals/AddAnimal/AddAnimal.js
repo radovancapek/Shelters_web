@@ -7,13 +7,11 @@ import {faImage} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import GalleryImage from "../AnimalCard/GalleryImage";
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {ANIMALS, UPLOADING} from "../../../Const";
+import {ANIMALS, UPLOADING, WAIT_INTERVAL} from "../../../Const";
 import {v4 as uuidv4} from 'uuid';
 import Switch from "@material-ui/core/Switch";
 import {Redirect} from "react-router-dom";
-//import {searchService} from "../../../Utils/HERE";
-
-const WAIT_INTERVAL = 1000;
+import {searchService} from "../../../Utils/HERE";
 
 class AddAnimal extends Component {
 
@@ -55,7 +53,6 @@ class AddAnimal extends Component {
             catsActive: false,
             dogsActive: true,
             address: "",
-            searchService: null,
             searchResults: [],
             imageUrlList: [],
             galleryImagesLoaded: false,
@@ -68,8 +65,8 @@ class AddAnimal extends Component {
     }
 
     componentDidMount() {
-        const animal = this.props.location.state.animal;
-        if(this.props.location.state && animal) {
+        if(this.props.location.state) {
+            const animal = this.props.location.state.animal
             console.log("id", this.props.location.state.animalId);
             this.setState({
                 animal: animal,
@@ -96,11 +93,6 @@ class AddAnimal extends Component {
                 }
             }));
         }
-        const H = window.H;
-        const platform = new H.service.Platform({
-            'apikey': 'm7zWa3Opopx3m5iH6-3Xc2YAj5462Od--H6Gt9dnWBc'
-        });
-        this.setState({searchService: platform.getSearchService()})
     }
 
     loadImages = () => {
@@ -318,7 +310,7 @@ class AddAnimal extends Component {
     }
 
     search = () => {
-        this.state.searchService.geocode({
+        searchService.geocode({
             q: this.state.address,
             in: "countryCode:CZE,SVK,DEU,POL,AUT"
         }, (result) => {
@@ -355,15 +347,14 @@ class AddAnimal extends Component {
         }
         console.log(this.state.animal.gender);
         let galleryImages = this.state.urlList.map((url, i) => {
-            let selected = "";
             if (i !== 0) {
-
                 return (
                     <GalleryImage hover={true} src={url} onClick={(e) => {
                         this.setMainImage(i, e)
                     }} key={i}/>
                 );
             }
+            return null;
         });
 
         let behaviorCheckboxes =

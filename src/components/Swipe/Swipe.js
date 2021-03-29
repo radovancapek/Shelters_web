@@ -129,6 +129,7 @@ class Swipe extends Component {
                         animalDocument.data().type === filterData.type
                     );
                 }
+                return null;
             })
             let animal = array.pop();
             if (animal) {
@@ -181,7 +182,7 @@ class Swipe extends Component {
                                     </>
                                 )
                         ) : <div>Žádná další zvířata.</div>
-                    )   : <CircularProgress/>
+                    )   : <CircularProgress />
                 }
 
             </div>

@@ -1,0 +1,127 @@
+.profile {
+  display: grid;
+  height: 100%;
+  width: 100%;
+  padding: 0 100px;
+  grid-template-columns: 1fr 2fr 2fr;
+  grid-template-rows: repeat(2, auto);
+  row-gap: 20px;
+  column-gap: 20px;
+
+  .profile-photo {
+    grid-column: 1/2;
+    grid-row: 1/2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    .buttons {
+      display: flex;
+
+      .Button {
+        margin-right: 10px;
+      }
+    }
+
+    .photo {
+      width: 80%;
+      height: auto;
+    }
+  }
+
+  .info {
+    grid-column: 2/3;
+    grid-row: 1/2;
+
+    .Input_text {
+      padding-left: 5px;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+
+      .label {
+        font-weight: bold;
+      }
+
+      &.address {
+        .value {
+          display: flex;
+          flex-direction: column;
+
+          .streetAndHouse {
+            display: flex;
+            flex-direction: row;
+            .street {
+              margin-right: 5px;
+            }
+          }
+        }
+      }
+
+      &.open-hours {
+        .days {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+
+          .day {
+            display: flex;
+            justify-content: space-between;
+
+            .day-name {
+              display: flex;
+              margin-right: 20px;
+              align-items: center;
+            }
+
+            .value {
+              display: flex;
+              flex-direction: row;
+              min-width: 106px;
+              .timeInput {
+                * {
+                  font-size: 16px;
+                }
+
+              }
+            }
+          }
+        }
+
+      }
+    }
+  }
+
+  .review {
+    grid-column: 3/4;
+    grid-row: 1/-1;
+
+    h3 {
+      text-align: center;
+    }
+  }
+
+  .map {
+    grid-column: 1/3;
+    grid-row: 2/4;
+    height: 250px;
+    width: 100%;
+    //background: greenyellow;
+  }
+
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

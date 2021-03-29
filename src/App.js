@@ -1,8 +1,8 @@
 import React, {Component} from "react";
 import Layout from "./components/Layout/Layout";
 import {Route, Switch, Redirect} from "react-router-dom";
-import ProfilePage from "./components/Profile/ProfilePage";
 import Home from "./components/home/Home";
+import Profile from "./components/Profile/Profile";
 import style from "./index.css"
 import Animals from "./components/Animals/Animals"
 import Swipe from "./components/Swipe/Swipe"
@@ -38,7 +38,7 @@ class App extends Component {
                         <PrivateRoute path="/choice"
                                       component={Swipe}/>
                         <PrivateRoute path="/profile"
-                                      component={ProfilePage}/>
+                                      component={Profile}/>
                         <Route path="/animals" component={Animals}/>
                         <PrivateRoute path="/add"
                                       component={AddAnimal}/>
