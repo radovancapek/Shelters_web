@@ -1,13 +1,15 @@
 import React, {Component} from "react";
 import "./Profile.scss";
-import {db, auth} from "../Firebase/Firebase";
+import {db, auth, storage} from "../Firebase/Firebase";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {defaultLayers, searchService} from "../../Utils/HERE";
-import {WAIT_INTERVAL} from "../../Const";
+import {UPLOADING, WAIT_INTERVAL} from "../../Const";
 import TextField from '@material-ui/core/TextField';
 import * as Const from "../../Const";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUserCircle} from "@fortawesome/free-solid-svg-icons";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 class Profile extends Component {
     constructor(props) {
@@ -23,6 +25,12 @@ class Profile extends Component {
             searchResults: [],
             address: "",
             uploadState: "",
+            file: null,
+            photoUrl: null,
+            hasPhoto: true,
+            imageStoragePath: null,
+            percentUploaded: 0,
+            showOpenHoursClass: "",
             openingHours: {
                 mondayFrom: "00:00",
                 mondayTo: "00:00",
@@ -57,16 +65,20 @@ class Profile extends Component {
                         user: doc.data(),
                         address: doc.data().location.title,
                         openingHours: doc.data().openingHours,
+                        imageStoragePath: doc.data().image || null,
                         dataLoaded: true
                     });
                 } else {
                     this.setState({
                         user: doc.data(),
                         address: doc.data().location.title,
+                        imageStoragePath: doc.data().image || null,
                         dataLoaded: true
                     });
                 }
-
+                console.log("image", doc.data().image);
+                if (doc.data().image) this.loadPhoto(doc.data().image);
+                else this.setState({hasPhoto: false});
                 this.state.map ? this.moveMap() : this.loadMap();
             } else {
                 this.setState({
@@ -77,6 +89,32 @@ class Profile extends Component {
             console.log("Firestore error", error);
         });
     }
+
+    loadPhoto = (image) => {
+        console.log("loadPhoto");
+        const ref = storage.ref();
+        const imageRef = ref.child(image);
+        return imageRef.getDownloadURL()
+            .then((url) => {
+                this.setState({photoUrl: url});
+            })
+            .catch(function (error) {
+                console.log("Error " + error.message);
+            });
+    }
+
+    handlePhotoChange = (e) => {
+        e.preventDefault();
+        if (e.target.files[0]) {
+            const url = URL.createObjectURL(e.target.files[0]);
+            this.setState({
+                newFile: e.target.files[0],
+                file: e.target.files[0],
+                photoUrl: url
+            })
+        }
+    }
+
 
     loadMap = () => {
         const lat = this.state.user.location.position.lat;
@@ -131,13 +169,40 @@ class Profile extends Component {
 
     back = (e) => {
         e.preventDefault();
-        this.setState({editMode: false});
+        this.setState({editMode: false, photoUrl: null});
         this.loadData();
     }
 
-    save = (e) => {
-        console.log("address", this.state.user.location.title);
+    handleUpload = (e) => {
         e.preventDefault();
+        this.setState({uploadState: UPLOADING});
+        const imageStoragePath = "/userImages/" + this.state.id;
+        if (this.state.file) {
+            const uploadTask = storage.ref(imageStoragePath).put(this.state.file);
+            uploadTask.on("state_changed",
+                snapshot => {
+                    const percentUploaded = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    this.setState({percentUploaded});
+                },
+                error => {
+                    console.log(error.code);
+                    this.setState({uploadState: 'error'});
+                },
+                () => {
+                    this.setState({
+                        imageStoragePath: imageStoragePath
+                    }, () => {
+                        this.save();
+                    });
+                }
+            );
+        } else {
+            this.save();
+        }
+
+    }
+
+    save = () => {
         this.setState({uploadState: Const.UPLOADING})
         if (this.state.user.type === Const.SHELTER) {
             db.collection("users").doc(this.state.id).update(
@@ -145,7 +210,9 @@ class Profile extends Component {
                     name: this.state.user.name,
                     location: this.state.user.location,
                     phone: this.state.user.phone || "",
-                    openingHours: this.state.openingHours
+                    image: this.state.imageStoragePath,
+                    openingHours: this.state.openingHours,
+                    showOpenHours: this.state.user.showOpenHours
                 }
             ).then(() => {
                 this.setState({
@@ -210,10 +277,25 @@ class Profile extends Component {
         }));
     }
 
+    handle0penHoursCheckbox = (e) => {
+        const checked = e.target.checked;
+        this.setState(prevState => ({
+            user: {
+                ...prevState.user, showOpenHours: checked
+            }
+        }));
+    }
+
     render() {
         const edit = this.state.editMode;
         if (this.state.dataLoaded && this.state.user) {
             const user = this.state.user;
+            let showOpenHoursClass = "";
+            if(user.showOpenHours) {
+                showOpenHoursClass = " show";
+            } else if(edit && !user.showOpenHours) {
+                showOpenHoursClass = " hide";
+            }
             let searchResults = this.state.searchResults.map((result, i) => {
                 return (
                     <div className="result_item" key={i} onClick={() => {
@@ -221,8 +303,20 @@ class Profile extends Component {
                     }}>{result.title}</div>
                 );
             });
-            let photo = user.image ? <img src={user.image} className="photo image"/> :
-                <FontAwesomeIcon icon={faUserCircle} className="photo placeholder"/>;
+
+            const photo = () => {
+                if (this.state.hasPhoto) {
+                    if (this.state.photoUrl) {
+                        return <img src={this.state.photoUrl} alt="userImage" className="photo image"/>;
+                    } else {
+                        return <CircularProgress/>;
+                    }
+                } else {
+                    return <FontAwesomeIcon icon={faUserCircle} className="photo placeholder"/>;
+                }
+            }
+
+
             return (
                 <div className="profile">
                     <div className="profile-photo">
@@ -230,7 +324,7 @@ class Profile extends Component {
                             {(this.state.id === auth.currentUser.uid) && !edit &&
                             <button className="Button" onClick={this.switchEditMode}>Upravit info</button>}
                             {edit &&
-                            <button className="Button" onClick={this.save}>
+                            <button className="Button" onClick={this.handleUpload}>
                                 {(this.state.uploadState === Const.UPLOADING) ? (
                                     <CircularProgress progress={this.state.percentUploaded}/>
                                 ) : (
@@ -239,7 +333,14 @@ class Profile extends Component {
                             </button>}
                             {edit && <button className="Button" onClick={this.back}>Zpět</button>}
                         </div>
-                        {photo}
+                        {photo()}
+                        {edit && (
+                            <div className="addPhoto">
+                                <input id="files" type="file" onChange={this.handlePhotoChange}
+                                       className="addPhoto_input"/>
+                                <label htmlFor="files" className="addPhoto_label">Nahrát obrázek</label>
+                            </div>
+                        )}
                     </div>
                     <div className="info">
                         <div className="item name">
@@ -284,7 +385,15 @@ class Profile extends Component {
                             <div className="label">E-mail:</div>
                             <div className="value">{user.email}</div>
                         </div>
-                        <div className="item open-hours">
+                        {edit && (
+                            <FormControlLabel
+                                control={<Checkbox checked={this.state.user.showOpenHours} onChange={this.handle0penHoursCheckbox}
+                                                   name="showOpenHours"
+                                                   className="open-hours-checkbox"/>}
+                                label="Zobrazit otevírací dobu"
+                            />
+                        )}
+                        <div className={"item open-hours" + showOpenHoursClass}>
                             {!edit && <div className="label">Oteviraci doba:</div>}
                             {user.openingHours && (
                                 <div className="days">

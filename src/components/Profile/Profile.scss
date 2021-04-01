@@ -18,15 +18,34 @@
 
     .buttons {
       display: flex;
-
+      width: 100%;
+      margin-bottom: 5px;
       .Button {
         margin-right: 10px;
+        width: 100%;
       }
     }
 
     .photo {
       width: 80%;
       height: auto;
+    }
+
+    .addPhoto {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      &_input {
+        width: 100%;
+        display: none;
+      }
+      &_label {
+        width: 100%;
+        background-color: var(--orange-primary);
+        padding: 5px;
+        text-align: center;
+        cursor: pointer;
+      }
     }
   }
 
@@ -37,6 +56,25 @@
     .Input_text {
       padding-left: 5px;
     }
+
+    .MuiFormControlLabel-root {
+      margin-left: 0;
+      * {
+        font-family: inherit;
+      }
+      .MuiCheckbox-colorSecondary.Mui-checked {
+        color: var(--orange-primary);
+      }
+
+      .MuiCheckbox-root {
+        color: var(--orange-primary);
+        width: 24px;
+        height: 24px;
+        padding-left: 0;
+      }
+    }
+
+
 
     .item {
       display: flex;
@@ -63,6 +101,15 @@
       }
 
       &.open-hours {
+        display: none;
+        &.show {
+          display: block;
+          opacity: 1;
+        }
+        &.hide {
+          display: block;
+          opacity: 0.5;
+        }
         .days {
           display: flex;
           flex-direction: column;

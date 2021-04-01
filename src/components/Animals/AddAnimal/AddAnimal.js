@@ -166,7 +166,7 @@ class AddAnimal extends Component {
             this.setState({
                 newFile: e.target.files[0],
                 files: [...this.state.files, e.target.files[0]],
-                urlList: [...this.state.urlList, url],
+                                        urlList: [...this.state.urlList, url],
                 showImagePlaceholder: false
             })
             if (!this.state.mainImageUrl) {
