@@ -1,0 +1,21 @@
+{
+  "toolbar": {
+    "home": "Home",
+    "browse": "Procházet",
+    "choice": "Líbí/Nelíbí",
+    "profile": "Profil",
+    "logout": "Odhlásit",
+    "login": "Přihlášení",
+    "registration": "Registrace"
+  },
+  "animals": {
+    "dog": "Pes",
+    "cat": "Kočka",
+    "other": "Ostatní",
+    "dogs": "Psi",
+    "cats": "Kočky",
+    "gender": "Gender"
+  },
+  "dog": "Dog"
+}
+

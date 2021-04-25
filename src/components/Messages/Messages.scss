@@ -1,8 +1,8 @@
 .messages {
   width: 100%;
-  min-height: 200px;
-  padding-left: 20%;
-  padding-right: 20%;
+  min-height: 500px;
+  padding-left: 5%;
+  padding-right: 5%;
   justify-content: center;
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -10,7 +10,7 @@
   grid-gap: 1px;
   grid-template-areas: "friends chat";
 
-  .conversation {
+  .chatWrapper {
     grid-area: chat;
     background-color: var(--secondary);
     overflow: auto;
@@ -18,44 +18,13 @@
     min-width: 300px;
   }
 
-  .contacts {
+  .conversationsWrapper {
     grid-area: friends;
     overflow: hidden;
     background-color: var(--secondary);
     padding: 20px 0;
     min-width: 200px;
 
-    .friendsList {
-      padding: 0px !important;
-      overflow: auto;
-
-      .first-child {
-        border-top: 0px;
-      }
-
-      .friend {
-        cursor: pointer;
-        padding: 5px 20px;
-      }
-
-      .selected {
-        background-color: var(--orange-transparent);
-      }
-      .notification {
-        height: 16px;
-        width: auto;
-        min-width: 10px;
-        padding-left: 3px;
-        padding-right: 3px;
-        background-color: orangered;
-        color: white;
-        border-radius: 100px;
-        text-align: center;
-        font-size: x-small;
-        font-weight: 600;
-        font-family: Courier;
-      }
-    }
   }
 }
 

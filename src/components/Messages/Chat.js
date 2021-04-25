@@ -1,7 +1,9 @@
 import React from "react";
-import TextField from '@material-ui/core/TextField';
 import "./Chat.scss"
 import Button from "@material-ui/core/Button";
+import {timestamp, db, fieldPath} from "../Firebase/Firebase";
+import {CONVERSATIONS} from "../../Const";
+import {withTranslation} from "react-i18next";
 
 class Chat extends React.Component {
     divRef = React.createRef();
@@ -9,14 +11,17 @@ class Chat extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            friend: props.friend,
+            conversation: props.conversation,
             messages: [],
             name: props.name,
-            newMessage: ""
+            newMessage: "",
+            messagesLoaded: false,
+            clickedMessage: null
         }
     }
 
     componentDidMount() {
+        this.fetchMessages();
     }
 
     getMessages = (messages) => {
@@ -24,10 +29,30 @@ class Chat extends React.Component {
     }
 
     fetchMessages = () => {
+
+        this.unsubscribe = db.collection(CONVERSATIONS).doc(this.props.id).collection("messages").orderBy("sent", "desc")
+            .onSnapshot(querySnapshot => {
+                let messages = [];
+                querySnapshot.docChanges().forEach(change => {
+                    if (change.type === "added") {
+                        messages.push(change.doc.data());
+                    }
+                    if (change.type === "modified") {
+                    }
+                    if (change.type === "removed") {
+                    }
+
+                });
+                if (messages)
+                    this.setState({
+                        messages: [...messages, ...this.state.messages],
+                        messagesLoaded: true
+                    });
+            })
     }
 
     newMessage = (message) => {
-        if(message.from === this.props.friend || message.from === this.props.loggedUser.id) {
+        if (message.from === this.props.conversation || message.from === this.props.loggedUser.id) {
         }
     }
 
@@ -37,12 +62,13 @@ class Chat extends React.Component {
             this.setState({name: this.props.name})
             this.setState({messages: []});
         }
-        if (this.props.friend !== this.state.friend) {
+        if (this.props.conversation !== this.state.conversation) {
 
         }
     }
 
     componentWillUnmount() {
+        if(this.unsubscribe) this.unsubscribe();
     }
 
     handleSendClick = () => {
@@ -56,6 +82,20 @@ class Chat extends React.Component {
 
     sendMessage() {
         if (this.state.newMessage.length > 0) {
+            db.collection(CONVERSATIONS).doc(this.props.id).collection("messages")
+                .add({
+                    from: this.props.loggedId,
+                    to: this.props.id,
+                    message: this.state.newMessage,
+                    sent: timestamp.now()
+                })
+                .then(doc => {
+                    console.log("Message sent", doc);
+                }).catch(error => {
+                console.log("Error", error);
+            })
+
+
             this.setState({newMessage: ""});
         }
     }
@@ -67,47 +107,61 @@ class Chat extends React.Component {
         }
     }
 
+    isToday = (date) => {
+        const today = new Date();
+        return date.getDate() === today.getDate() &&
+            date.getMonth() === today.getMonth() &&
+            date.getFullYear() === today.getFullYear();
+    };
+
+    handleMessageClick = (i) => {
+        if(i === this.state.clickedMessage)
+            this.setState({clickedMessage: null});
+        else
+            this.setState({clickedMessage: i});
+    }
+
     render() {
+        const {t} = this.props;
         return (
             <div className="chat">
                 <div className="name">
                     <h2>{this.state.name}</h2>
                 </div>
-                <div className="chat_window" ref={this.divRef}>
-                    {this.state.messages.reverse().map(message => {
-                        const {id, text, from, seen} = message;
-                        let seenAt = null;
-                        let messageCN = '';
-                        if (from === 1) {
-                            messageCN = "right";
-                        } else {
-                            messageCN = "left";
-                        }
-                        if(seen) {
-                            seenAt = (
-                                <div className="seenAt">Seen at</div>
-                            )
-                        }
-                        return (
+                {this.state.messagesLoaded && (
+                    <div className="chat_window" ref={this.divRef}>
+                        {this.state.messages.map((messageObj, i) => {
+                            const {message, from, to, sent} = messageObj;
+                            let dateTime = sent.toDate();
+                            let time;
+                            if(this.isToday(dateTime)) {
+                                time = dateTime.toLocaleTimeString("cs-CZ");
+                            } else {
+                                time = dateTime.toLocaleDateString("cs-CZ");
+                            }
+                            let messageCN = '';
+                            if (from === this.props.loggedId) {
+                                messageCN = "right";
+                            } else {
+                                messageCN = "left";
+                            }
+                            return (
+                                <>
+                                    <div className={"messageWrapper " + messageCN} key={i} onClick={() => {this.handleMessageClick(i)}}>
+                                        <div className="messageText">{message}</div>
+                                        {i === this.state.clickedMessage && <div className="messageTime">{time}</div>}
+                                    </div>
 
-                            <div className={"messageWrapper " + messageCN} key={id}>
-                                <div className="messageText">{text}</div>
-                                {seenAt}
-                            </div>
-                        );
-                    })}
-                </div>
+                                </>
+                            );
+                        })}
+                    </div>
+                )}
+
                 <div className="newMessageWrap">
-                    <TextField
-                        className="newMessage"
-                        id="standard-multiline-static"
-                        multiline
-                        rowsMax={4}
-                        variant="outlined"
-                        value={this.state.newMessage}
-                        placeholder="New message"
-                        onKeyDown={this.handleKeyDown}
-                        onChange={this.handleNewMessageChange}
+                    <input className="Input Input_text" type="text" name="newMessage"
+                           onChange={this.handleNewMessageChange} value={this.state.newMessage}
+                           onKeyDown={this.handleKeyDown}
                     />
                     <Button
                         variant="contained"
@@ -115,7 +169,7 @@ class Chat extends React.Component {
                         size="small"
                         onClick={this.handleSendClick}
                     >
-                        Send
+                        {t('send')}
                     </Button>
                 </div>
             </div>
@@ -123,4 +177,4 @@ class Chat extends React.Component {
     }
 }
 
-export default Chat;
+export default withTranslation()(Chat);

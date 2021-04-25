@@ -27,8 +27,12 @@ class MyAnimals extends Component {
         this.setState({ animals: animals });
     }
 
+    componentWillUnmount() {
+        if(this.unsubscribe) this.unsubscribe();
+    }
+
     loadData() {
-        db.collection("animals").where("user", "==", auth.currentUser.uid)
+        this.unsubscribe = db.collection("animals").where("user", "==", auth.currentUser.uid)
             .onSnapshot(this.onCollectionUpdate);
     }
 

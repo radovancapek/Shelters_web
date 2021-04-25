@@ -229,6 +229,8 @@ class Registration extends Component {
 
         if (e.target.value.length >= 2) {
             this.timer = setTimeout(this.search, WAIT_INTERVAL);
+        } else {
+            this.setState({searchResults: []});
         }
     }
 
@@ -274,77 +276,103 @@ class Registration extends Component {
 
         return (
             <div className="login">
-                <div className="buttons">
-                    <div
-                        className={"Button Button_small Button_secondary " + this.state.userActive}
-                        id="buttonDogs"
-                        onClick={() => this.changeType(Const.USER)}>Uživatel
-                    </div>
-                    <div className={"Button Button_small Button_secondary " + this.state.sheltersActive}
-                         id="buttonCats"
-                         onClick={() => this.changeType(Const.SHELTER)}>Útulek
-                    </div>
-                </div>
-                {this.state.userActive && (
-                    <>
-                        <input className={"Input Input_text " + this.state} type="text" name="name"
-                               placeholder="Jmeno"
-                               onChange={this.updateInput} value={this.state.name}/>
-                        <input className="Input Input_text" type="text" name="surname"
-                               placeholder="Příjmení"
-                               onChange={this.updateInput} value={this.state.surname}/>
-                    </>
-                )}
-                {this.state.sheltersActive && (
-                    <>
-                        <input className={"Input Input_text " + this.state.shelterNameError} type="text"
-                               name="shelterName"
-                               placeholder="Název"
-                               onChange={this.updateInput} value={this.state.shelterName}/>
-                        {this.state.shelterNameError && <div className="error_message">{Const.EMPTY_FIELD}</div>}
-                        <input className={"Input Input_text " + this.state.wrongIc} type="text" name="shelterIc"
-                               placeholder="IČ"
-                               onChange={this.updateInput} value={this.state.shelterIc}/>
-                        {this.state.wrongIc && <div className="error_message">{Const.WRONG_IC}</div>}
-                        <div className="autocomplete">
-                            <input className="Input Input_text" type="text" value={this.state.address}
-                                   placeholder="Adresa"
-                                   onChange={this.handleSearchChange}/>
-                            {
-                                this.state.searchResults.length > 0 ?
-                                    <div className="searchResults">{searchResults}</div> :
-                                    null
-                            }
+                <form className="form">
+                    <div className="buttons">
+                        <div
+                            className={"Button Button_small Button_secondary " + this.state.userActive}
+                            id="buttonDogs"
+                            onClick={() => this.changeType(Const.USER)}>Uživatel
                         </div>
+                        <div className={"Button Button_small Button_secondary " + this.state.sheltersActive}
+                             id="buttonCats"
+                             onClick={() => this.changeType(Const.SHELTER)}>Útulek
+                        </div>
+                    </div>
+                    {this.state.userActive && (
+                        <>
+                            <div className="Input_wrapper">
+                                <span className="Input_label">Jmeno</span>
+                                <input className={"Input Input_text " + this.state} type="text" name="name"
+                                       onChange={this.updateInput} value={this.state.name}/>
+                            </div>
+                            <div className="Input_wrapper">
+                                <span className="Input_label">Příjmení</span>
+                                <input className="Input Input_text" type="text" name="surname"
+                                       onChange={this.updateInput} value={this.state.surname}/>
+                            </div>
+                        </>
+                    )}
+                    {this.state.sheltersActive && (
+                        <>
+                            <div className="Input_wrapper">
+                                <span className="Input_label">Název</span>
+                                <input className={"Input Input_text " + this.state.shelterNameError} type="text"
+                                       name="shelterName"
+                                       onChange={this.updateInput} value={this.state.shelterName}/>
+                                {this.state.shelterNameError &&
+                                <div className="error_message">{Const.EMPTY_FIELD}</div>}
+                            </div>
+                            <div className="Input_wrapper">
+                                <span className="Input_label">IČ</span>
+                                <input className={"Input Input_text " + this.state.wrongIc} type="text"
+                                       name="shelterIc"
+                                       onChange={this.updateInput} value={this.state.shelterIc}/>
+                            </div>
+                            {/*<div className="no_ic" onClick={this.forgotPasswordClick}>*/}
+                            {/*    Nemáte IČ?*/}
+                            {/*</div>*/}
+                            {this.state.wrongIc && <div className="error_message">{Const.WRONG_IC}</div>}
+                            <div className="autocomplete">
+                                <div className="Input_wrapper">
+                                    <span className="Input_label">Adresa</span>
 
-                    </>
-                )}
-                <input
-                    className={"Input Input_text " + this.state.emailError + this.state.firebaseEmailFormatError + this.state.firebaseEmailExistsError}
-                    type="email" name="email"
-                    placeholder="E-mail"
-                    onChange={this.updateInput} value={this.state.mail}/>
-                {this.state.emailError && <div className="error_message">{Const.EMPTY_FIELD}</div>}
-                {this.state.firebaseEmailFormatError &&
-                <div className="error_message">{Const.FIREBASE_EMAIL_FORMAT_ERROR}</div>}
-                {this.state.firebaseEmailExistsError &&
-                <div className="error_message">{Const.FIREBASE_EMAIL_EXISTS}</div>}
-                <input className={"Input Input_text " + this.state.passwordError + this.state.firebasePasswordError}
-                       type="password" name="password"
-                       placeholder="Heslo"
-                       onChange={this.updateInput} value={this.state.password}/>
-                {this.state.passwordError && <div className="error_message">{Const.EMPTY_FIELD}</div>}
-                {this.state.firebasePasswordError &&
-                <div className="error_message">{Const.FIREBASE_WEAK_PASSWORD}</div>}
-                <input className={"Input Input_text " + this.state.passwordMismatch} type="password" name="password2"
-                       placeholder="Heslo podruhé"
-                       onChange={this.updateInput} value={this.state.password2}/>
-                {this.state.passwordMismatch && <div className="error_message">{Const.PASSWORD_MISMATCH}</div>}
-                <div className="Button submit" onClick={this.register}>
-                    {this.state.registrationState === Const.UPLOADING ?
-                        <CircularProgress progress={this.state.percentUploaded}/>
-                        : "Registrovat"}</div>
-                {this.state.firebaseError && <div className="error_message">{this.state.firebaseError}</div>}
+                                    <input className="Input Input_text" type="text" value={this.state.address}
+                                           onChange={this.handleSearchChange}/>
+
+                                </div>
+                                {
+                                    this.state.searchResults.length > 0 ?
+                                        <div className="searchResults">{searchResults}</div> :
+                                        null
+                                }
+                            </div>
+                        </>
+                    )}
+                    <div className="Input_wrapper">
+                        <span className="Input_label">E-mail</span>
+                        <input
+                            className={"Input Input_text " + this.state.emailError + this.state.firebaseEmailFormatError + this.state.firebaseEmailExistsError}
+                            type="email" name="email"
+                            onChange={this.updateInput} value={this.state.mail}/>
+                    </div>
+                    {this.state.emailError && <div className="error_message">{Const.EMPTY_FIELD}</div>}
+                    {this.state.firebaseEmailFormatError &&
+                    <div className="error_message">{Const.FIREBASE_EMAIL_FORMAT_ERROR}</div>}
+                    {this.state.firebaseEmailExistsError &&
+                    <div className="error_message">{Const.FIREBASE_EMAIL_EXISTS}</div>}
+                    <div className="Input_wrapper">
+                        <span className="Input_label">Heslo</span>
+                        <input
+                            className={"Input Input_text " + this.state.passwordError + this.state.firebasePasswordError}
+                            type="password" name="password"
+                            onChange={this.updateInput} value={this.state.password}/>
+                    </div>
+                    {this.state.passwordError && <div className="error_message">{Const.EMPTY_FIELD}</div>}
+                    {this.state.firebasePasswordError &&
+                    <div className="error_message">{Const.FIREBASE_WEAK_PASSWORD}</div>}
+                    <div className="Input_wrapper">
+                        <span className="Input_label">Heslo podruhé</span>
+                        <input className={"Input Input_text " + this.state.passwordMismatch} type="password"
+                               name="password2"
+                               onChange={this.updateInput} value={this.state.password2}/>
+                    </div>
+                    {this.state.passwordMismatch && <div className="error_message">{Const.PASSWORD_MISMATCH}</div>}
+                    <div className="Button submit" onClick={this.register}>
+                        {this.state.registrationState === Const.UPLOADING ?
+                            <CircularProgress progress={this.state.percentUploaded}/>
+                            : "Registrovat"}</div>
+                    {this.state.firebaseError && <div className="error_message">{this.state.firebaseError}</div>}
+                </form>
             </div>
         )
     }

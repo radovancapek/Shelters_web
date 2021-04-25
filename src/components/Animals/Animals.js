@@ -5,7 +5,7 @@ import {db} from "../Firebase/Firebase"
 import AnimalDetail from "./AnimalDetail/AnimalDetail";
 import ScrollUpButton from "react-scroll-up-button";
 import Filter from "../../Utils/Filter";
-import {geolocated} from "react-geolocated";
+import {withTranslation} from "react-i18next";
 
 class Animals extends Component {
 
@@ -36,33 +36,6 @@ class Animals extends Component {
     }
 
     componentDidMount() {
-        if (navigator.permissions && navigator.permissions.query) {
-            console.log("1");
-            navigator.permissions
-                .query({name: "geolocation"})
-                .then((result) => {
-                    console.log("2");
-                    if (result.state === "granted") {
-                        this.getPosition();
-                    } else if (result.state === "prompt") {
-                        window.confirm("Povolením sdílení polohy umožníte aplikaci určit vzdálenost od zobrazených zvířat.");
-                        this.getPosition();
-                    } else if (result.state === "denied") {
-                        console.log(result.state);
-                        //If denied then you have to show instructions to enable location
-                    }
-                    result.onchange = function () {
-                        console.log(result.state);
-                    };
-                }).catch(reason => {
-                console.log("reason", reason);
-            });
-        } else if (navigator.geolocation) {
-            console.log("3");
-            this.getPosition();
-        } else {
-            console.log("Location unavailable.")
-        }
         this.loadData();
         this.setState({mounted: true});
     }
@@ -76,12 +49,13 @@ class Animals extends Component {
 
     componentWillUnmount() {
         this.setState({mounted: false});
+        if(this.unsubscribe) this.unsubscribe();
     }
 
     loadData() {
         let animals = [];
         let animalDocuments = [];
-        db.collection("animals").get()
+        this.subscribe = db.collection("animals").get()
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
                     animals.push(doc.data());
@@ -127,47 +101,30 @@ class Animals extends Component {
                     }
                 }
             }
+            let breedFilter = true;
+            if (animal.breed) {
+                breedFilter = (animal.breed.includes(filterData.breed)) || (filterData.breed.length === 0);
+            } else breedFilter = filterData.breed.length === 0;
             return (
                 (animal.type === filterData.animalType) &&
                 (filterData.size.includes(animal.size) || (filterData.size.length === 0)) &&
                 ((animal.age >= filterData.age[0]) && (animal.age <= filterData.age[1])) &&
-                (filterData.gender.includes(animal.gender) || (filterData.gender.length === 0))
+                (filterData.gender.includes(animal.gender) || (filterData.gender.length === 0) &&
+                    breedFilter)
             );
         })
         this.setState({animalDocuments: filteredAnimalDocuments});
-
-
-
-        // const filteredAnimals = this.state.animalsFull.filter(animal => {
-        //     for (let key in filterBehavior) {
-        //         if (filterBehavior[key]) {
-        //             if (!animal.behaviorMap[key]) {
-        //                 return false;
-        //             }
-        //         }
-        //     }
-        //     return (
-        //         (animal.type === filterData.animalType) &&
-        //         (filterData.size.includes(animal.size) || (filterData.size.length === 0)) &&
-        //         ((animal.age >= filterData.age[0]) && (animal.age <= filterData.age[1])) &&
-        //         (filterData.gender.includes(animal.gender) || (filterData.gender.length === 0))
-        //     );
-        // })
-        // this.setState({animals: filteredAnimals});
-    }
-
-    filterBehavior = () => {
-
     }
 
     render() {
-        console.log("location ", this.state.userLocation);
+        const {t} = this.props;
         const mounted = this.state.mounted;
         let animalCards;
         if (mounted) {
             animalCards = this.state.animalDocuments.map((animalDocument, i) => {
                 return (
-                    <AnimalCard animal={animalDocument.data()} animalId={animalDocument.id} key={i} className="card" location={this.state.userLocation}
+                    <AnimalCard animal={animalDocument.data()} animalId={animalDocument.id} key={i} className="card"
+                                location={this.state.userLocation}
                                 onClick={() => this.openDetail(animalDocument)}/>
                 );
             });
@@ -178,7 +135,7 @@ class Animals extends Component {
                                                  onClose={this.closeFilter}
                                                  filter={this.filter}/>
                     <div className="order">
-                        <div className="order_label">Seřadit</div>
+                        <div className="order_label">{t('order')}</div>
                         <div className="order_content"></div>
                     </div>
                 </div>
@@ -187,7 +144,9 @@ class Animals extends Component {
                     <div className="wrapper">
                         {
                             this.state.selectedAnimalDocument ?
-                                <AnimalDetail animal={this.state.selectedAnimalDocument.data()} animalId={this.state.selectedAnimalDocument.id} close={this.closeDetail}/> :
+                                <AnimalDetail animal={this.state.selectedAnimalDocument.data()}
+                                              animalId={this.state.selectedAnimalDocument.id}
+                                              close={this.closeDetail}/> :
                                 animalCards
                         }
                     </div>
@@ -201,10 +160,6 @@ class Animals extends Component {
     }
 }
 
-export default geolocated({
-    positionOptions: {
-        enableHighAccuracy: false,
-    },
-    userDecisionTimeout: 5000,
-    isGeolocationEnabled: false
-})(Animals);
+
+export default withTranslation()(Animals)
+

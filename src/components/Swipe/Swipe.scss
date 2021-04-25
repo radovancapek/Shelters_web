@@ -76,7 +76,13 @@
         }
       }
 
-
+      &_breed {
+        .Input_text {
+          border: 1px solid var(--orange-primary);
+          border-radius: 5px;
+          outline: none;
+        }
+      }
 
       .MuiSlider-markLabel {
         display: none;
@@ -144,6 +150,7 @@
       -moz-transition: opacity 0.5s ease;
       -webkit-transition-delay: 0.5s;
       transition-delay: 0.4s;
+
     }
   }
 

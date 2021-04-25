@@ -82,7 +82,7 @@ class Swipe extends Component {
     swipe = (list) => {
         let array = [...this.state.animalDocuments];
         let animal = array.pop();
-        let full = [...this.state.animalDocumentsFull]; // make a separate copy of the array
+        let full = [...this.state.animalDocumentsFull];
         let index = full.indexOf(animal)
         if (index !== -1) {
             full.splice(index, 1);
@@ -112,16 +112,10 @@ class Swipe extends Component {
     }
 
     filter = (filterData) => {
-        console.log(filterData.type);
         let array = [...this.state.animalDocumentsFull];
         if (this.state.animal) {
             array.push(this.state.animal);
         }
-        console.log("length " + array.length);
-
-        array.forEach(animal => {
-            console.log("animal " + animal.data().name);
-        })
         if (array.length > 0) {
             array = array.filter(animalDocument => {
                 if (animalDocument !== undefined) {
@@ -137,7 +131,6 @@ class Swipe extends Component {
             } else {
                 this.setState({animal: null});
             }
-            console.log("length2 " + array.length);
             this.setState({animalDocuments: array});
         }
     }

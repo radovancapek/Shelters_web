@@ -3,7 +3,8 @@ import "./Toolbar.scss";
 import {Link, withRouter} from "react-router-dom";
 import PrivateToolbar from "./PrivateToolbar";
 import PublicToolbar from "./PublicToolbar";
-import { auth } from "../Firebase/Firebase"
+import {auth} from "../Firebase/Firebase"
+import {withTranslation} from 'react-i18next';
 
 class Toolbar extends Component {
     constructor(props) {
@@ -16,9 +17,9 @@ class Toolbar extends Component {
     componentDidMount() {
         auth.onAuthStateChanged((user) => {
             if (user) {
-                this.setState({toolbar: <PrivateToolbar logout={this.logout} />});
+                this.setState({toolbar: <PrivateToolbar logout={this.logout}/>});
             } else {
-                this.setState({toolbar: <PublicToolbar />});
+                this.setState({toolbar: <PublicToolbar/>});
             }
         });
     }
@@ -33,12 +34,12 @@ class Toolbar extends Component {
 
 
     render() {
-
+        const {t} = this.props;
         let toolbar;
-        if(auth.currentUser) {
-            toolbar = <PrivateToolbar />
+        if (auth.currentUser) {
+            toolbar = <PrivateToolbar/>
         } else {
-            toolbar = <PublicToolbar />
+            toolbar = <PublicToolbar/>
         }
 
 
@@ -46,7 +47,7 @@ class Toolbar extends Component {
             <div className="toolbar">
                 <div className="toolbar_logo">
                     {!this.props.home ?
-                        <Link to="/home" className="toolbar_items_item_home">HOME</Link>
+                        <Link to="/home" className="toolbar_items_item_home">{t('toolbar.home')}</Link>
                         : null}
                 </div>
                 {this.state.toolbar || toolbar}
@@ -55,4 +56,6 @@ class Toolbar extends Component {
     }
 }
 
-export default withRouter(Toolbar);
+export default withRouter(
+    withTranslation()(Toolbar)
+)

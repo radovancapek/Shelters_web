@@ -18,3 +18,6 @@ export const firebaseApp = firebase.initializeApp(config);
 export const db = firebase.firestore();
 export const storage = firebase.storage();
 export const auth = firebase.auth();
+export const timestamp = firebase.firestore.Timestamp;
+export const fieldPath = firebase.firestore.FieldPath;
+export const fieldValue = firebase.firestore.FieldValue;

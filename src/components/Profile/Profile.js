@@ -10,6 +10,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUserCircle} from "@fortawesome/free-solid-svg-icons";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import {withTranslation} from "react-i18next";
 
 class Profile extends Component {
     constructor(props) {
@@ -199,7 +200,6 @@ class Profile extends Component {
         } else {
             this.save();
         }
-
     }
 
     save = () => {
@@ -222,7 +222,7 @@ class Profile extends Component {
                 });
             }).catch((error) => {
                 console.log(error.message);
-                this.setState({errorMessage: "Chyba"})
+                this.setState({errorMessage: "Chyba"});
             })
         } else {
 
@@ -287,13 +287,15 @@ class Profile extends Component {
     }
 
     render() {
+        const {t} = this.props;
         const edit = this.state.editMode;
+        console.log(this.state.dataLoaded + " " + this.state.user);
         if (this.state.dataLoaded && this.state.user) {
             const user = this.state.user;
             let showOpenHoursClass = "";
-            if(user.showOpenHours) {
+            if (user.showOpenHours) {
                 showOpenHoursClass = " show";
-            } else if(edit && !user.showOpenHours) {
+            } else if (edit && !user.showOpenHours) {
                 showOpenHoursClass = " hide";
             }
             let searchResults = this.state.searchResults.map((result, i) => {
@@ -316,43 +318,46 @@ class Profile extends Component {
                 }
             }
 
-
             return (
                 <div className="profile">
                     <div className="profile-photo">
                         <div className="buttons">
                             {(this.state.id === auth.currentUser.uid) && !edit &&
-                            <button className="Button" onClick={this.switchEditMode}>Upravit info</button>}
+                            <button className="Button" onClick={this.switchEditMode}>{t('editInfo')}</button>}
                             {edit &&
                             <button className="Button" onClick={this.handleUpload}>
                                 {(this.state.uploadState === Const.UPLOADING) ? (
                                     <CircularProgress progress={this.state.percentUploaded}/>
                                 ) : (
-                                    Const.SAVE
+                                    t('save')
                                 )}
                             </button>}
-                            {edit && <button className="Button" onClick={this.back}>Zpět</button>}
+                            {edit && <button className="Button" onClick={this.back}>{t('back')}</button>}
                         </div>
                         {photo()}
                         {edit && (
                             <div className="addPhoto">
                                 <input id="files" type="file" onChange={this.handlePhotoChange}
                                        className="addPhoto_input"/>
-                                <label htmlFor="files" className="addPhoto_label">Nahrát obrázek</label>
+                                <label htmlFor="files" className="addPhoto_label">{t('uploadImage')}</label>
                             </div>
                         )}
                     </div>
                     <div className="info">
                         <div className="item name">
-                            {edit ? <input className="Input Input_text" name="name" value={user.name}
-                                           onChange={this.handleTextInputChange}/> : <h2>{user.name}</h2>}
+                            {edit ? (
+                                <>
+                                    <div className="label">{t('name') + ":"}</div>
+                                    <input className="Input Input_text" name="name" value={user.name}
+                                           onChange={this.handleTextInputChange}/>
+                                </>
+                            ) : <h2>{user.name}</h2>}
                         </div>
                         <div className="item address">
-                            <div className="label">Adresa:</div>
+                            <div className="label">{t('address') + ":"}</div>
                             {edit ? (
                                 <div className="autocomplete">
                                     <input className="Input Input_text" type="text" value={this.state.address}
-                                           placeholder="Adresa"
                                            onChange={this.handleSearchChange}/>
                                     {
                                         this.state.searchResults.length > 0 ?
@@ -362,21 +367,22 @@ class Profile extends Component {
                                 </div>
                             ) : (
                                 <div className="value">
-                                    <div className="streetAndHouse">
-                                        {this.state.user.location.address.street &&
-                                        <div className="street">{this.state.user.location.address.street}</div>}
-                                        {this.state.user.location.address.houseNumber && <div
-                                            className="houseNumber">{this.state.user.location.address.houseNumber}</div>}
-                                    </div>
-                                    <div
-                                        className="city">{this.state.user.location.address.postalCode + " " + this.state.user.location.address.city}</div>
+                                    <div className="addressTitle">{this.state.user.location.title}</div>
+                                    {/*<div className="streetAndHouse">*/}
+                                    {/*    {this.state.user.location.address.street &&*/}
+                                    {/*    <div className="street">{this.state.user.location.address.street}</div>}*/}
+                                    {/*    {this.state.user.location.address.houseNumber && <div*/}
+                                    {/*        className="houseNumber">{this.state.user.location.address.houseNumber}</div>}*/}
+                                    {/*</div>*/}
+                                    {/*<div*/}
+                                    {/*    className="city">{this.state.user.location.address.postalCode + " " + this.state.user.location.address.city}</div>*/}
                                 </div>
                             )}
 
 
                         </div>
                         <div className="item phone">
-                            <div className="label">Telefon:</div>
+                            <div className="label">{t('phone') + ":"}</div>
                             {edit ? <input className="Input Input_text" name="phone" value={user.phone || ""}
                                            onChange={this.handleTextInputChange}/> :
                                 <div className="value">{user.phone}</div>}
@@ -387,18 +393,19 @@ class Profile extends Component {
                         </div>
                         {edit && (
                             <FormControlLabel
-                                control={<Checkbox checked={this.state.user.showOpenHours} onChange={this.handle0penHoursCheckbox}
+                                control={<Checkbox checked={this.state.user.showOpenHours}
+                                                   onChange={this.handle0penHoursCheckbox}
                                                    name="showOpenHours"
                                                    className="open-hours-checkbox"/>}
-                                label="Zobrazit otevírací dobu"
+                                label={t('showOpeningHours')}
                             />
                         )}
                         <div className={"item open-hours" + showOpenHoursClass}>
-                            {!edit && <div className="label">Oteviraci doba:</div>}
+                            {!edit && <div className="label">{t('openingHours') + ":"}</div>}
                             {user.openingHours && (
                                 <div className="days">
                                     <div className="day">
-                                        <div className="day-name">Pondělí</div>
+                                        <div className="day-name">{t('days.monday') + ":"}</div>
                                         {edit ? (
                                             <div className="value">
                                                 <TextField
@@ -420,7 +427,7 @@ class Profile extends Component {
                                         )}
                                     </div>
                                     <div className="day">
-                                        <div className="day-name">Úterý</div>
+                                        <div className="day-name">{t('days.tuesday') + ":"}</div>
                                         {edit ? (
                                             <div className="value">
                                                 <TextField
@@ -442,7 +449,7 @@ class Profile extends Component {
                                         )}
                                     </div>
                                     <div className="day">
-                                        <div className="day-name">Středa</div>
+                                        <div className="day-name">{t('days.wednesday') + ":"}</div>
                                         {edit ? (
                                             <div className="value">
                                                 <TextField
@@ -464,7 +471,7 @@ class Profile extends Component {
                                         )}
                                     </div>
                                     <div className="day">
-                                        <div className="day-name">Čtvrtek</div>
+                                        <div className="day-name">{t('days.thursday') + ":"}</div>
                                         {edit ? (
                                             <div className="value">
                                                 <TextField
@@ -486,7 +493,7 @@ class Profile extends Component {
                                         )}
                                     </div>
                                     <div className="day">
-                                        <div className="day-name">Pátek</div>
+                                        <div className="day-name">{t('days.friday') + ":"}</div>
                                         {edit ? (
                                             <div className="value">
                                                 <TextField
@@ -508,7 +515,7 @@ class Profile extends Component {
                                         )}
                                     </div>
                                     <div className="day">
-                                        <div className="day-name">Sobota</div>
+                                        <div className="day-name">{t('days.saturday') + ":"}</div>
                                         {edit ? (
                                             <div className="value">
                                                 <TextField
@@ -530,7 +537,7 @@ class Profile extends Component {
                                         )}
                                     </div>
                                     <div className="day">
-                                        <div className="day-name">Neděle</div>
+                                        <div className="day-name">{t('days.sunday') + ":"}</div>
                                         {edit ? (
                                             <div className="value">
                                                 <TextField
@@ -556,7 +563,7 @@ class Profile extends Component {
                         </div>
                     </div>
                     <div className="review">
-                        <h3>Recenze</h3>
+                        <h3>{t('reviews')}</h3>
                         <div className="reviews"></div>
                     </div>
                     <div className="map" id="mapContainer"/>
@@ -565,7 +572,7 @@ class Profile extends Component {
         } else if (this.state.dataLoaded) {
             return (
                 <div className="overlay">
-                    <div className="absolute_center">Uzivatel nebyl nalezen.</div>
+                    <div className="absolute_center">{t('userNotFound')}</div>
                 </div>
             )
         } else {
@@ -580,4 +587,4 @@ class Profile extends Component {
 
 }
 
-export default Profile;
+export default withTranslation()(Profile)

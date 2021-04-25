@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Redirect } from "react-router-dom";
+import {Redirect} from "react-router-dom";
 import "./AnimalCard.scss";
 import {auth, storage} from "../../Firebase/Firebase"
 import {faImage, faTimes} from "@fortawesome/free-solid-svg-icons";
@@ -7,6 +7,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ImageGallery from "react-image-gallery";
 import onClickOutside from "react-onclickoutside";
 import CircularProgress from '@material-ui/core/CircularProgress';
+import {withTranslation} from 'react-i18next';
 
 
 //TODO vzdalenost podle polohy nas a zvirete
@@ -22,7 +23,8 @@ class AnimalCard extends Component {
             imageCount: null,
             location: null,
             editAnimal: false,
-            isUsersAnimal: false
+            isUsersAnimal: false,
+            contactAnimal: false
         };
     }
 
@@ -34,7 +36,7 @@ class AnimalCard extends Component {
             this.loadImages();
         }
 
-        if(auth.currentUser.uid === this.props.animal.user) {
+        if (auth.currentUser.uid === this.props.animal.user) {
             this.setState({isUsersAnimal: true});
         }
 
@@ -92,13 +94,14 @@ class AnimalCard extends Component {
 
     getDistance = () => {
         //console.log(this.props.location);
-        if(this.props.location && this.props.animal.location) {
+        if (this.props.location && this.props.animal.location) {
             this.setState({location: this.props.animal.location.position.lat});
         }
     }
 
     contact = () => {
 
+        this.setState({contactAnimal: true});
     }
 
     editAnimal = () => {
@@ -106,12 +109,24 @@ class AnimalCard extends Component {
     }
 
     render() {
-        if(this.state.editAnimal) {
+        const {t} = this.props;
+        if (this.state.editAnimal) {
             return (
                 <Redirect
                     to={{
                         pathname: "/edit",
-                        state: { animal: this.props.animal, animalId: this.props.animalId }
+                        state: {animal: this.props.animal, animalId: this.props.animalId}
+                    }}
+                />
+            );
+        }
+
+        if (this.state.contactAnimal) {
+            return (
+                <Redirect
+                    to={{
+                        pathname: "/messages",
+                        state: {animal: this.props.animal, animalId: this.props.animalId}
                     }}
                 />
             );
@@ -168,8 +183,23 @@ class AnimalCard extends Component {
                     );
                 }
             }
-
         }
+        let age = "";
+        if (this.props.animal.age === 1) {
+            age = this.props.animal.age.toString() + " rok";
+        } else if (this.props.animal.age > 1 && this.props.animal.age < 5) {
+            age = this.props.animal.age.toString() + " roky";
+        } else {
+            age = this.props.animal.age.toString() + " let";
+        }
+
+        const behavior = Object.entries(this.props.animal.behaviorMap).map(([key, value], i) => {
+            if (value) {
+                return (
+                    <div className={"behavior_content_item"} key={i}>{t('animals.behavior.' + key)}</div>
+                );
+            }
+        });
 
         return (
             <div className="animal_card" onClick={this.props.onClick}>
@@ -189,24 +219,43 @@ class AnimalCard extends Component {
                         <div className="info">
                             <div className="animal_card_info_age">
                                 <h3>Věk:</h3>
-                                <span>{this.props.animal.age}</span>
+                                <span>{age}</span>
                             </div>
                             <div className="animal_card_gender">
-                                <h3>Pohlaví:</h3>
-                                <span>{this.props.animal.gender}</span>
+                                <h3>{t('animals.gender') + ":"}</h3>
+                                <span>{t("animals." + this.props.animal.type + "." + this.props.animal.gender)}</span>
+                            </div>
+                            <div className="animal_card_breed">
+                                <h3>{t('animals.breed') + ":"}</h3>
+                                {this.props.animal.breed ? (
+                                    <span>{this.props.animal.breed}</span>
+                                ) : (
+                                    <span>Neuvedeno</span>
+                                )}
                             </div>
                             <div className="animal_card_info_dist">
-                                <h3>Vzdálenost:</h3>
+                                <h3>{t('location') + ":"}</h3>
+                                {this.props.animal.location ? (
+                                    <span>{this.props.animal.location.address.city}</span>
+                                ) : (
+                                    <span>Neznámá</span>
+                                )}
                                 <span>{this.state.location}</span>
                             </div>
                         </div>
+                        <div className="behavior">
+                            <h3>{t('animals.behavior.behavior') + ":"}</h3>
+                            <div className="behavior_content">{behavior}</div>
+                        </div>
                         <div className="desc">
-                            <h3>Popis:</h3>
+                            <h3>{t('animals.desc') + ":"}</h3>
                             <div className="desc_text">{this.props.animal.desc}</div>
                         </div>
                         <div className="buttons">
-                            {!this.state.isUsersAnimal && <button className="Button contact" onClick={this.contact}>Kontaktovat</button>}
-                            {this.state.isUsersAnimal && <button className="Button edit" onClick={this.editAnimal}>Editovat</button>}
+                            {!this.state.isUsersAnimal &&
+                            <button className="Button contact" onClick={this.contact}>{t('contact')}</button>}
+                            {this.state.isUsersAnimal &&
+                            <button className="Button edit" onClick={this.editAnimal}>{t('edit')}</button>}
                         </div>
                     </div>
                 ) : (
@@ -215,11 +264,11 @@ class AnimalCard extends Component {
                             <div className="large_card_content">
                                 <div className="info">
                                     <div className="animal_card_info_age">
-                                        <h3>Věk:</h3>
-                                        <span>{this.props.animal.age}</span>
+                                        <h3>{t('animals.age') + ":"}</h3>
+                                        <span>{age}</span>
                                     </div>
                                     <div className="animal_card_info_dist">
-                                        <h3>Vzdálenost:</h3>
+                                        <h3>{t('location') + ":"}</h3>
                                         <span>{this.state.location}</span>
                                     </div>
                                 </div>
@@ -227,10 +276,10 @@ class AnimalCard extends Component {
                         ) : (
                             <div className="small_card_content">
                                 <div className="animal_card_info_age">
-                                    <span>{this.props.animal.age}</span>
+                                    <span>{age}</span>
                                 </div>
                                 <div className="animal_card_info_dist">
-                                    <span>{this.state.location}</span>
+                                    {this.props.animal.location && <span>{this.props.animal.location.address.city}</span>}
                                 </div>
                             </div>
                         )
@@ -241,4 +290,4 @@ class AnimalCard extends Component {
 
 }
 
-export default onClickOutside(AnimalCard);
+export default withTranslation()(onClickOutside(AnimalCard))

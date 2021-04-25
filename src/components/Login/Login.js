@@ -36,25 +36,6 @@ class Login extends Component {
     componentDidMount() {
     }
 
-    changeType = (type) => {
-        switch (type) {
-            case Const.USER:
-                this.setState(prevState => ({
-                    userActive: true,
-                    sheltersActive: false,
-                }));
-                break;
-            case Const.SHELTER:
-                this.setState({
-                    userActive: false,
-                    sheltersActive: true,
-                });
-                break;
-            default:
-                break;
-        }
-    }
-
     login = () => {
         let email = this.state.email;
         let password = this.state.password;
@@ -160,24 +141,17 @@ class Login extends Component {
 
         return (
             <div className="login">
-                <form className="form" onSubmit={this.addAnimal}>
-                    <div className="buttons">
-                        <div
-                            className={"Button Button_small Button_secondary " + this.state.userActive}
-                            id="buttonDogs"
-                            onClick={() => this.changeType(Const.USER)}>Uživatel
-                        </div>
-                        <div className={"Button Button_small Button_secondary " + this.state.sheltersActive}
-                             id="buttonCats"
-                             onClick={() => this.changeType(Const.SHELTER)}>Útulek
-                        </div>
+                <form className="form">
+                    <div className="Input_wrapper">
+                        <span className="Input_label">Email</span>
+                        <input className="Input Input_text" type="text" name="email"
+                               onChange={this.updateInput} value={this.state.email}/>
                     </div>
-                    <input className="Input Input_text" type="text" name="email"
-                           placeholder="Email"
-                           onChange={this.updateInput} value={this.state.email}/>
-                    <input className="Input Input_text" type="password" name="password"
-                           placeholder="Heslo"
-                           onChange={this.updateInput} value={this.state.password}/>
+                    <div className="Input_wrapper">
+                        <span className="Input_label">Heslo</span>
+                        <input className="Input Input_text" type="password" name="password"
+                               onChange={this.updateInput} value={this.state.password}/>
+                    </div>
                     {this.state.loginErrorMessage ?
                         <div className="error_message">{this.state.loginErrorMessage}</div>
                         : null
@@ -198,10 +172,12 @@ class Login extends Component {
                             Zadejte e-mailovou adresu, kterou jste použili při registraci a na kterou Vám přijde odkaz
                             pro resetování hesla.
                         </DialogContentText>
-                        <input className="Input dialog_input" type="text" name="resetPasswordEmail"
-                               placeholder="Email"
-                               disabled={this.state.dialogInputDisabled}
-                               onChange={this.updateInput} value={this.state.resetPasswordEmail}/>
+                        <div className="Input_wrapper">
+                            <span className="Input_label">Email</span>
+                            <input className="Input dialog_input" type="text" name="resetPasswordEmail"
+                                   disabled={this.state.dialogInputDisabled}
+                                   onChange={this.updateInput} value={this.state.resetPasswordEmail}/>
+                        </div>
                         {this.state.dialogErrorMessage ?
                             <div className="error_message">{this.state.dialogErrorMessage}</div>
                             : null

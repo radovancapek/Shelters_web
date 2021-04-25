@@ -1,0 +1,84 @@
+{
+  "toolbar": {
+    "home": "Domů",
+    "browse": "Procházet",
+    "choice": "Líbí/Nelíbí",
+    "profile": "Profil",
+    "logout": "Odhlásit",
+    "login": "Přihlášení",
+    "registration": "Registrace",
+    "messages": "Zprávy",
+    "myAnimals": "Moje zvířata",
+    "addAnimal": "Přidat zvíře"
+  },
+  "animals": {
+    "dogs": {
+      "dogs": "Psi",
+      "male": "Pes",
+      "female": "Fena"
+    },
+    "cats": {
+      "cats": "Kočky",
+      "male": "Kocour",
+      "female": "Kočka"
+    },
+    "other": {
+      "other": "Ostatní",
+      "male": "Samec",
+      "female": "Samice"
+    },
+    "gender": "Pohlaví",
+    "breed": "Rasa",
+    "desc": "Popis",
+    "age": "Věk",
+    "size": "Velikost",
+    "size_small": "Malý",
+    "size_medium": "Střední",
+    "size_big": "Velký",
+    "behavior": {
+      "behavior": "Chování",
+      "like_animals": "Má rádo zvířata",
+      "like_kids": "Má rádo děti",
+      "friendly": "Kamarádský",
+      "active": "Aktivní",
+      "watchdog": "Hlídač"
+    }
+  },
+  "name": "Jméno",
+  "address": "Adresa",
+  "confirm": "Potvrdit",
+  "edit": "Editovat",
+  "contact": "Kontaktovat",
+  "location": "Poloha",
+  "uploadImage": "Nahrát obrázek",
+  "filter": "Filtrovat",
+  "order": "Seřadit",
+  "wantedType": "Mám zájem o",
+  "editInfo": "Upravit info",
+  "save": "Uložit",
+  "back": "Zpět",
+  "phone": "Telefon",
+  "showOpeningHours": "Zobrazit otevírací dobu",
+  "openingHours": "Otevírací doba",
+  "days": {
+    "monday": "Pondělí",
+    "tuesday": "Úterý",
+    "wednesday": "Středa",
+    "thursday": "Čtvrtek",
+    "friday": "Pátek",
+    "saturday": "Sobota",
+    "sunday": "Neděle"
+  },
+  "dayNumbers": {
+    "1": "Pondělí",
+    "2": "Úterý",
+    "3": "Středa",
+    "4": "Čtvrtek",
+    "5": "Pátek",
+    "6": "Sobota",
+    "7": "Neděle"
+  },
+  "reviews": "Recenze",
+  "userNotFound": "Uživatel nebyl nalezen",
+  "send": "Odeslat"
+}

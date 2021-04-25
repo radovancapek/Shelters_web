@@ -67,12 +67,40 @@
     .info {
       display: flex;
       justify-content: space-between;
+      padding: 0 20px;
       * {
         display: flex;
         align-items: center;
       }
+
+      h3 {
+        margin-right: 5px;
+      }
+
+      .animal_card_info_age {
+
+      }
+    }
+    .behavior {
+      display: flex;
+      margin-top: 10px;
+      padding: 0 20px;
+
+      h3 {
+      }
+
+      &_content {
+        display: flex;
+
+        &_item {
+          margin-left: 10px;
+        }
+      }
     }
     .desc {
+      padding: 0 20px;
+      margin-top: 20px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       .desc_text {

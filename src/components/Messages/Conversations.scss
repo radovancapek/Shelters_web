@@ -1,0 +1,23 @@
+.conversations {
+  padding: 0px !important;
+  overflow: auto;
+
+  .first-child {
+    border-top: 0px;
+  }
+
+  .conversation {
+    cursor: pointer;
+    padding: 5px 20px;
+
+
+    &:hover, &.active {
+      background-color: var(--orange-transparent);
+    }
+  }
+
+  .selected {
+    background-color: var(--orange-transparent);
+  }
+
+}
