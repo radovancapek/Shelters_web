@@ -7,7 +7,7 @@ export const SHELTER = "shelter";
 export const MALE = "male";
 export const FEMALE = "female";
 export const CONVERSATIONS = "conversations";
-
+export const DISABLED = "disabled";
 
 export const SIZE_BIG = "size_big";
 export const SIZE_MEDIUM = "size_medium";
@@ -20,12 +20,6 @@ export const LIKE_KIDS = "like_kids";
 export const FRIENDLY = "friendly";
 export const ACTIVE = "active";
 export const WATCHDOG = "watchdog";
-
-// export const LIKE_ANIMALS = "Má rádo zvířata";
-// export const LIKE_KIDS = "Má rádo děti";
-// export const FRIENDLY = "Kamarádský";
-// export const ACTIVE = "Aktivní";
-// export const WATCHDOG = "Hlídač";
 
 export const WRONG_IC = "Neplatné IČ.";
 export const EMPTY_FIELD = "Toto pole nesmí být prázdné.";

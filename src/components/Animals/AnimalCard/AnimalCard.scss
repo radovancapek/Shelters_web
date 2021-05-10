@@ -3,9 +3,9 @@
   overflow: hidden;
   background-color: var(--white);
   display: flex;
+  justify-content: space-between;
   height: 35vh;
   flex-direction: column;
-  justify-content: space-between;
   -webkit-box-shadow: 0px 0px 15px 4px var(--primary-transparent);
   box-shadow: 0px 0px 15px 4px var(--primary-transparent);
   padding: 10px;
@@ -83,7 +83,7 @@
     }
     .behavior {
       display: flex;
-      margin-top: 10px;
+      margin-top: 20px;
       padding: 0 20px;
 
       h3 {
@@ -91,6 +91,9 @@
 
       &_content {
         display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        width: 100%;
 
         &_item {
           margin-left: 10px;
@@ -108,10 +111,16 @@
       }
     }
     .buttons {
+      justify-self: flex-end;
       margin: auto;
-      .contact {
-        width: fit-content;
+      display: flex;
+      .Button {
+        margin-left: 5px;
+        &.contact {
+          width: fit-content;
+        }
       }
+
     }
   }
 
@@ -139,6 +148,10 @@
     height: auto;
     width: auto;
     margin: auto;
+
+    &.large {
+      height: 50vh;
+    }
 
     .MuiCircularProgress-colorPrimary {
       color: var(--orange-primary);

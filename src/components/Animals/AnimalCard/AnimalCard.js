@@ -8,6 +8,7 @@ import ImageGallery from "react-image-gallery";
 import onClickOutside from "react-onclickoutside";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {withTranslation} from 'react-i18next';
+import Tooltip from '@material-ui/core/Tooltip';
 
 
 //TODO vzdalenost podle polohy nas a zvirete
@@ -16,6 +17,7 @@ class AnimalCard extends Component {
         super(props);
         this.state = {
             mounted: false,
+            loggedIn: false,
             mainImageLoaded: false,
             galleryImagesLoaded: false,
             imageUrl: null,
@@ -24,7 +26,8 @@ class AnimalCard extends Component {
             location: null,
             editAnimal: false,
             isUsersAnimal: false,
-            contactAnimal: false
+            contactAnimal: false,
+            shelterRedirect: false
         };
     }
 
@@ -36,10 +39,9 @@ class AnimalCard extends Component {
             this.loadImages();
         }
 
-        if (auth.currentUser.uid === this.props.animal.user) {
+        if ((this.props.loggedId === this.props.animal.user) || (auth.currentUser && (auth.currentUser.uid === this.props.animal.user))) {
             this.setState({isUsersAnimal: true});
         }
-
     }
 
     handleClickOutside = () => {
@@ -100,7 +102,6 @@ class AnimalCard extends Component {
     }
 
     contact = () => {
-
         this.setState({contactAnimal: true});
     }
 
@@ -108,8 +109,13 @@ class AnimalCard extends Component {
         this.setState({editAnimal: true});
     }
 
+    shelterProfile = () => {
+        this.setState({shelterRedirect: true});
+    }
+
     render() {
         const {t} = this.props;
+        const loggedIn = this.props.loggedId != null;
         if (this.state.editAnimal) {
             return (
                 <Redirect
@@ -127,6 +133,17 @@ class AnimalCard extends Component {
                     to={{
                         pathname: "/messages",
                         state: {animal: this.props.animal, animalId: this.props.animalId}
+                    }}
+                />
+            );
+        }
+
+        if (this.state.shelterRedirect) {
+            return (
+                <Redirect
+                    to={{
+                        pathname: "/profile",
+                        state: {id: this.props.animal.user}
                     }}
                 />
             );
@@ -199,6 +216,7 @@ class AnimalCard extends Component {
                     <div className={"behavior_content_item"} key={i}>{t('animals.behavior.' + key)}</div>
                 );
             }
+            return null;
         });
 
         return (
@@ -210,9 +228,16 @@ class AnimalCard extends Component {
                     : null
                 }
                 <div className="animal_card_name">{this.props.animal.name}</div>
-                <div className="gallery_wrapper">
-                    {gallery()}
-                </div>
+
+                {this.props.largeCard ? (
+                    <div className="gallery_wrapper large">
+                        {gallery()}
+                    </div>
+                ) : (
+                    <div className="gallery_wrapper">
+                        {gallery()}
+                    </div>
+                )}
 
                 {this.props.largeCard ? (
                     <div className="large_card_content">
@@ -252,8 +277,17 @@ class AnimalCard extends Component {
                             <div className="desc_text">{this.props.animal.desc}</div>
                         </div>
                         <div className="buttons">
-                            {!this.state.isUsersAnimal &&
-                            <button className="Button contact" onClick={this.contact}>{t('contact')}</button>}
+                            {!this.state.isUsersAnimal && (<>
+                                <Tooltip title="Musíte se přihlásit" placement="top" arrow enterDelay={0}
+                                         enterNextDelay={0} leaveDelay={200}>
+                                    <span>
+                                        <button className="Button contact" disabled={!loggedIn}
+                                                onClick={this.contact}>{t('contact')}</button>
+                                    </span>
+                                </Tooltip>
+                                <button className="Button contact" disabled={!loggedIn}
+                                        onClick={this.shelterProfile}>{t('shelterProfile')}</button>
+                            </>)}
                             {this.state.isUsersAnimal &&
                             <button className="Button edit" onClick={this.editAnimal}>{t('edit')}</button>}
                         </div>
@@ -269,7 +303,8 @@ class AnimalCard extends Component {
                                     </div>
                                     <div className="animal_card_info_dist">
                                         <h3>{t('location') + ":"}</h3>
-                                        <span>{this.state.location}</span>
+                                        {this.props.animal.location &&
+                                        <span>{this.props.animal.location.address.city}</span>}
                                     </div>
                                 </div>
                             </div>

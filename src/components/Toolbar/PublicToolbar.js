@@ -1,8 +1,7 @@
 import React, {Component} from "react";
 import "./Toolbar.scss";
-import { NavLink, withRouter } from "react-router-dom";
+import {NavLink, withRouter} from "react-router-dom";
 import {withTranslation} from "react-i18next";
-import {render} from "react-dom";
 
 class PublicToolbar extends Component{
 
@@ -22,7 +21,7 @@ class PublicToolbar extends Component{
                 </li>
                 <li className="toolbar_items_item">
                     <NavLink to="/login" className="toolbar_items_item_link">
-                        <p className="toolbar_items_item_text">{t('toolbar.login')} se</p>
+                        <p className="toolbar_items_item_text">{t('toolbar.login')}</p>
                     </NavLink>
                 </li>
             </ul>

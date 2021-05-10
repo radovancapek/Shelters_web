@@ -9,10 +9,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Slider from '@material-ui/core/Slider';
 import * as Const from "../Const"
-import RadioGroup from "@material-ui/core/RadioGroup";
-import Radio from "@material-ui/core/Radio";
-import {FEMALE, MALE, SIZE_BIG, SIZE_MEDIUM, SIZE_SMALL} from "../Const";
-import { breeds } from "../assets/files/breeds.json";
+import {CATS, DOGS, FEMALE, MALE, OTHER, SIZE_BIG, SIZE_MEDIUM, SIZE_SMALL} from "../Const"
+import {breeds} from "../assets/files/breeds.json";
 import {withTranslation} from "react-i18next";
 
 class Filter extends Component {
@@ -23,8 +21,12 @@ class Filter extends Component {
             small: false,
             medium: false,
             big: false,
+            dogs: false,
+            cats: false,
+            other: false,
             size: Const.SIZE_UNKNOWN,
             age: [0, 20],
+            weight: [0, 80],
             behaviorMap: {},
             gender: Const.MALE,
             genderFemale: false,
@@ -75,8 +77,18 @@ class Filter extends Component {
     }
 
     handleAnimalTypeChange = e => {
+        const name = e.target.name;
+        const checked = e.target.checked;
         this.setState({animalType: e.target.value})
-        this.setBehaviorMap(e.target.value);
+
+        this.setState({
+            [name]: checked
+        }, () => {
+            if (this.state.dogs) this.setBehaviorMap(DOGS);
+            else if (this.state.cats) this.setBehaviorMap(CATS);
+            else if (this.state.other) this.setBehaviorMap(OTHER);
+            else this.setBehaviorMap(DOGS);
+        });
     }
 
     handleGenderChange = (event) => {
@@ -88,6 +100,10 @@ class Filter extends Component {
     handleAgeChange = (event, newValue) => {
         console.log(newValue);
         this.setState({age: newValue});
+    }
+
+    handleWeightChange = (event, newValue) => {
+        this.setState({weight: newValue});
     }
 
     handleBreedChange = (e) => {
@@ -123,14 +139,18 @@ class Filter extends Component {
     filter = () => {
         let result = {};
         result.size = [];
+        result.type = [];
         result.gender = [];
         if (this.state.small) result.size.push(SIZE_SMALL);
         if (this.state.medium) result.size.push(SIZE_MEDIUM);
         if (this.state.big) result.size.push(SIZE_BIG);
+        if (this.state.dogs) result.size.push(DOGS);
+        if (this.state.cats) result.size.push(CATS);
+        if (this.state.other) result.size.push(OTHER);
         if (this.state.male) result.gender.push(MALE);
         if (this.state.female) result.gender.push(FEMALE);
-        result.animalType = this.state.animalType;
         result.age = this.state.age;
+        result.animalWeight = this.state.weight;
         result.behaviorMap = this.state.behaviorMap;
         result.breed = this.state.breed;
         this.props.filter(result);
@@ -140,10 +160,7 @@ class Filter extends Component {
 
     render() {
         const {t} = this.props;
-        const {small, medium, big} = this.state;
-
-        const ITEM_HEIGHT = 48;
-        const ITEM_PADDING_TOP = 8;
+        const {small, medium, big, dogs, cats, other} = this.state;
 
         let behaviorCheckboxes =
             Object.entries(this.state.behaviorMap).map(([key, value], i) => {
@@ -175,21 +192,31 @@ class Filter extends Component {
                 <div className="filter_label" onClick={this.props.openFilter}>{t('filter')}</div>
                 <FontAwesomeIcon icon={faBars} className="filter_icon"/>
                 <div className="filter_obsah">
-                    <FormControl component="fieldset" className="filter_obsah_animal">
+                    <FormControl component="fieldset" className="filter_obsah_type">
                         <h3>{t('wantedType') + ":"}</h3>
-                        <RadioGroup aria-label="animalType" name="animalTypeRadioGroup" value={this.state.animalType}
-                                    onChange={this.handleAnimalTypeChange}>
-                            <FormControlLabel value="dogs" control={<Radio/>} label={t('animals.dogs.dogs')}/>
-                            <FormControlLabel value="cats" control={<Radio/>} label={t('animals.cats.cats')}/>
-                            <FormControlLabel value="other" control={<Radio/>} label={t('animals.other.other')}/>
-                        </RadioGroup>
+                        <FormGroup className="size_group">
+                            <FormControlLabel
+                                control={<Checkbox checked={dogs} onChange={this.handleAnimalTypeChange} name="dogs"
+                                                   className="filter_obsah_checkbox"/>}
+                                label={t('animals.dogs.dogs')}
+                            />
+                            <FormControlLabel
+                                control={<Checkbox checked={cats} onChange={this.handleAnimalTypeChange} name="cats"/>}
+                                label={t('animals.cats.cats')}
+                            />
+                            <FormControlLabel
+                                control={<Checkbox checked={other} onChange={this.handleAnimalTypeChange}
+                                                   name="other"/>}
+                                label={t('animals.other.other')}
+                            />
+                        </FormGroup>
                     </FormControl>
-
 
                     <div className="autocomplete filter_obsah_breed" onBlur={this.handleBreedInputClick}>
                         <h3 className="Input_label">{t('animals.breed') + ":"}</h3>
                         <div className="Input_wrapper_breed">
-                            <input className="Input Input_text addAnimal_form_breed" autoComplete="off" type="text" name="breed"
+                            <input className="Input Input_text addAnimal_form_breed" autoComplete="off" type="text"
+                                   name="breed"
                                    onChange={this.updateBreed} onFocus={this.updateBreed} value={this.state.breed}/>
                             {
                                 this.state.showBreeds ?
@@ -227,18 +254,29 @@ class Filter extends Component {
                             max={20}
                         />
                     </div>
+                    <div className="filter_obsah_weight">
+                        <h3>{t('animals.weight') + " (kg):"}</h3>
+                        <Slider
+                            defaultValue={[0, 80]}
+                            onChange={this.handleWeightChange}
+                            aria-labelledby="track-inverted-range-slider"
+                            valueLabelDisplay="on"
+                            min={0}
+                            max={80}
+                        />
+                    </div>
                     <FormControl component="fieldset" className="filter_obsah_gender">
                         <h3>{t('animals.gender') + ":"}</h3>
                         <FormGroup className="gender_group">
                             <FormControlLabel
                                 control={<Checkbox checked={this.state.male} onChange={this.handleGenderChange}
                                                    name={MALE} className="filter_obsah_checkbox"/>}
-                                label={t("animals." + this.state.animalType + ".male")}
+                                label={t("animals.other.male")}
                             />
                             <FormControlLabel
                                 control={<Checkbox checked={this.state.female} onChange={this.handleGenderChange}
                                                    name={FEMALE}/>}
-                                label={t("animals." + this.state.animalType + ".female")}
+                                label={t("animals.other.female")}
                             />
                         </FormGroup>
                     </FormControl>
@@ -250,6 +288,5 @@ class Filter extends Component {
     }
 }
 
-export default
-    withTranslation()(onClickOutside(Filter)
+export default withTranslation()(onClickOutside(Filter)
 )

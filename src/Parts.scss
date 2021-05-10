@@ -95,6 +95,7 @@
     height: 40px;
   }
 }
+
 .Input_wrapper {
   position: relative;
   border: none;
@@ -131,6 +132,10 @@
     right: 0;
     max-height: 100px;
     overflow: scroll;
+  }
+
+  &.error {
+    border: 1px solid red;
   }
 }
 

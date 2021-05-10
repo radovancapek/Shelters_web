@@ -1,9 +1,9 @@
 .swipe {
   width: 100%;
-  height: 100%;
+  height: auto;
   display: grid;
   grid-template-columns: min-content auto 80px;
-  grid-template-rows: minmax(400px, auto) 1fr 1fr;
+  grid-template-rows: minmax(400px, auto) 1fr;
   grid-template-areas: "filter swipe ." "filter buttons ." ". . .";
 
   .filter {
@@ -54,7 +54,14 @@
       }
 
       &_gender {
+        display: flex;
+        flex-direction: row;
 
+        .gender_group {
+          display: flex;
+          flex-direction: row;
+          margin-left: 30px;
+        }
       }
 
       &_size {
@@ -65,14 +72,26 @@
           flex-direction: row;
         }
       }
-      &_age {
+      &_age, &_weight {
         padding-right: 10%;
-        h3 {
-          margin-bottom: 10px;
-        }
+
         .MuiSlider-root {
-          margin: -20px 50px 30px 10px;
-          width: 100%;
+          margin-left: 10px;
+          .MuiSlider-valueLabel {
+            left: auto;
+          }
+          .MuiSlider-thumb {
+            .MuiSlider-valueLabel {
+              transform: scale(0.8) translateY(25px);
+              [class*="PrivateValueLabel-circle"] {
+                border-radius: 50%;
+                transform: rotate(0);
+                [class*="PrivateValueLabel-label"] {
+                  transform: rotate(0);
+                }
+              }
+            }
+          }
         }
       }
 
@@ -86,30 +105,6 @@
 
       .MuiSlider-markLabel {
         display: none;
-      }
-
-      .PrivateValueLabel-thumb-5.PrivateValueLabel-open-6 .PrivateValueLabel-offset-7 {
-        //transform: scale(0.8) translateY(25px);
-      }
-
-      .PrivateValueLabel-thumb-8.PrivateValueLabel-open-9 .PrivateValueLabel-offset-10 {
-        transform: scale(0.8) translateY(55px);
-      }
-
-      .PrivateValueLabel-circle-8 {
-        border-radius: 50%;
-      }
-
-      .PrivateSwitchBase-root-1 {
-        padding: 0;
-      }
-
-      .PrivateValueLabel-circle-11 {
-        transform: rotate(-225deg);
-      }
-
-      .PrivateValueLabel-label-12 {
-        transform: rotate(225deg);
       }
 
       &_behavior {
@@ -181,7 +176,6 @@
 
     * {
       margin: 0 10px;
-      width: 100px;
     }
   }
 }

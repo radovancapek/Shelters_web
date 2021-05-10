@@ -1,9 +1,0 @@
-.Block {
-  column-count: 2;
-}
-
-@media only screen and (max-width: 800px) {
-  .Block {
-    column-count: 1;
-  }
-}

@@ -10,10 +10,22 @@
   grid-row: 1 / 2;
   grid-column: 2/3;
   display: flex;
-  .order {
+  justify-content: space-between;
+  .find {
     position: relative;
-    margin-left: 30px;
+    justify-self: flex-end;
     cursor: pointer;
+
+    .Input_wrapper {
+      display: flex;
+      align-items: center;
+      height: unset;
+
+      .closeIcon {
+        margin-right: 5px;
+        color: var(--orange-secondary);
+      }
+    }
   }
   .filter {
     &_icon {
@@ -34,7 +46,7 @@
       .filter_obsah {
         padding: 10px;
         display: grid;
-        grid-template-rows: repeat(5, 50px);
+        grid-template-rows: repeat(6, 50px);
         grid-template-columns: repeat(6, 1fr);
         column-gap: 10px;
 
@@ -63,7 +75,7 @@
           }
         }
 
-        &_animal, &_size, &_gender{
+        &_type, &_size, &_gender{
           grid-column: 1 / 5;
           display: flex;
           flex-direction: row;
@@ -86,7 +98,7 @@
           }
         }
 
-        &_animal {
+        &_type {
           grid-row: 1 / 2;
         }
 
@@ -94,13 +106,28 @@
           grid-row: 2 / 3;
         }
 
-        &_gender {
+        &_age {
           grid-row: 4 / 5;
-          grid-column: 1 / 4;
         }
 
-        &_age {
+        &_weight {
           grid-row: 3 / 4;
+        }
+
+        &_gender {
+          grid-row: 5 / 6;
+          grid-column: 1 / 4;
+
+          .MuiFormGroup-root {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: unset;
+
+          }
+
+        }
+
+        &_age, &_weight {
           grid-column: 1 / 4;
           display: flex;
           align-items: center;
@@ -110,19 +137,16 @@
             .MuiSlider-valueLabel {
               left: auto;
             }
-            .PrivateValueLabel-offset-10 {
-              transform: scale(0.8) translateY(35px);
-              top: -18px;
-              .PrivateValueLabel-circle-11 {
-                transform: rotate(-225deg);
-                width: 20px;
-                height: 20px;
-              }
-              .PrivateValueLabel-label-12 {
-                transform: rotate(225deg);
+            .MuiSlider-thumb {
+              .MuiSlider-valueLabel {
+                transform: scale(0.8) translateY(20px) rotate(180deg);
+                [class*="PrivateValueLabel-circle"] {
+                  [class*="PrivateValueLabel-label"] {
+                    transform: rotate(225deg);
+                  }
+                }
               }
             }
-
           }
         }
 
@@ -144,7 +168,7 @@
         }
 
         .filter_button {
-          grid-row: 5 / 6;
+          grid-row: 6 / 7;
           grid-column: 3 / 4;
           height: 40px;
         }

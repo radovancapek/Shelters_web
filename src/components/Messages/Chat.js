@@ -1,7 +1,7 @@
 import React from "react";
 import "./Chat.scss"
 import Button from "@material-ui/core/Button";
-import {timestamp, db, fieldPath} from "../Firebase/Firebase";
+import {db, timestamp} from "../Firebase/Firebase";
 import {CONVERSATIONS} from "../../Const";
 import {withTranslation} from "react-i18next";
 
@@ -92,7 +92,7 @@ class Chat extends React.Component {
                 .then(doc => {
                     console.log("Message sent", doc);
                 }).catch(error => {
-                console.log("Error", error);
+                            console.log("Error", error);
             })
 
 
@@ -125,13 +125,10 @@ class Chat extends React.Component {
         const {t} = this.props;
         return (
             <div className="chat">
-                <div className="name">
-                    <h2>{this.state.name}</h2>
-                </div>
                 {this.state.messagesLoaded && (
                     <div className="chat_window" ref={this.divRef}>
                         {this.state.messages.map((messageObj, i) => {
-                            const {message, from, to, sent} = messageObj;
+                            const {message, from, sent} = messageObj;
                             let dateTime = sent.toDate();
                             let time;
                             if(this.isToday(dateTime)) {

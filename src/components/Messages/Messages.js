@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import "./Messages.scss";
 import Chat from "./Chat";
-import {db, auth, fieldPath, fieldValue} from "../Firebase/Firebase";
+import {auth, db, fieldValue} from "../Firebase/Firebase";
 import Conversations from "./Conversations";
 import {CONVERSATIONS} from "../../Const";
 
@@ -130,7 +130,7 @@ class Messages extends Component {
     }
 
     render() {
-        const {mounted, error, activeConId, conversations} = this.state;
+        const {error, activeConId, conversations} = this.state;
         return (
             <div className="messages">
                 <div className="conversationsWrapper">

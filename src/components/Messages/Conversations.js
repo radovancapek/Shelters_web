@@ -1,6 +1,6 @@
 import React from "react";
 import "./Conversations.scss";
-import {auth, db, fieldPath} from "../Firebase/Firebase";
+import {db, fieldPath} from "../Firebase/Firebase";
 import {CONVERSATIONS} from "../../Const";
 
 

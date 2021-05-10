@@ -9,6 +9,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import {withTranslation} from "react-i18next";
 
 class Login extends Component {
 
@@ -55,8 +56,6 @@ class Login extends Component {
                     from = {pathname: '/'}
                 }
                 this.props.history.push(from);
-
-                console.log("history push to " + from);
             })
             .catch((error) => {
                 this.setState({loginState: ""});
@@ -133,12 +132,7 @@ class Login extends Component {
     }
 
     render() {
-        // if (auth.currentUser) {
-        //     return (
-        //         <Redirect to={"/"}/>
-        //     )
-        // }
-
+        const {t} = this.props;
         return (
             <div className="login">
                 <form className="form">
@@ -148,7 +142,7 @@ class Login extends Component {
                                onChange={this.updateInput} value={this.state.email}/>
                     </div>
                     <div className="Input_wrapper">
-                        <span className="Input_label">Heslo</span>
+                        <span className="Input_label">{t('password')}</span>
                         <input className="Input Input_text" type="password" name="password"
                                onChange={this.updateInput} value={this.state.password}/>
                     </div>
@@ -159,18 +153,17 @@ class Login extends Component {
                     <div className="Button submit" onClick={this.login}>
                         {this.state.loginState === Const.UPLOADING ?
                             <CircularProgress progress={this.state.percentUploaded}/>
-                            : "Přihlásit"}</div>
+                            : t('login')}</div>
                     <div className="forgot_password" onClick={this.forgotPasswordClick}>
-                        Zapomneli jste heslo?
+                        {t('forgotPassword')}
                     </div>
                 </form>
                 <Dialog className="dialog" open={this.state.openForgotPasswordDialog} onClose={this.handleDialogClose}
                         aria-labelledby="form-dialog-title">
-                    <DialogTitle id="form-dialog-title">Zapomenuté heslo</DialogTitle>
+                    <DialogTitle id="form-dialog-title">{t('forgottenPassword')}</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Zadejte e-mailovou adresu, kterou jste použili při registraci a na kterou Vám přijde odkaz
-                            pro resetování hesla.
+                            {t('enterEmailForPassworReset')}
                         </DialogContentText>
                         <div className="Input_wrapper">
                             <span className="Input_label">Email</span>
@@ -190,11 +183,11 @@ class Login extends Component {
                     </DialogContent>
                     <DialogActions>
                         <button className="Button dialog_confirm_button" onClick={this.handleDialogClose}>
-                            Zavrit
+                            {t('close')}
                         </button>
                         <button className="Button dialog_close_button" disabled={this.state.dialogSendButtonDisabled}
                                 onClick={this.sendPasswordReset}>
-                            Odeslat
+                            {t('sent')}
                         </button>
                     </DialogActions>
                 </Dialog>
@@ -203,4 +196,6 @@ class Login extends Component {
     }
 }
 
-export default withRouter(Login);
+export default withRouter(
+    withTranslation()(Login)
+)

@@ -6,6 +6,7 @@ import Filter from "../../Utils/Filter";
 import AnimalDetail from "../Animals/AnimalDetail/AnimalDetail";
 import firebase from "firebase";
 import CircularProgress from '@material-ui/core/CircularProgress';
+import {withTranslation} from "react-i18next";
 
 class Swipe extends Component {
     constructor(props) {
@@ -99,8 +100,8 @@ class Swipe extends Component {
     }
 
     open = () => {
-        if(this.state.animalsLoaded) {
-            this.setState({ menuOpen: true });
+        if (this.state.animalsLoaded) {
+            this.setState({menuOpen: true});
         }
     }
     close = () => {
@@ -112,6 +113,7 @@ class Swipe extends Component {
     }
 
     filter = (filterData) => {
+        this.close();
         let array = [...this.state.animalDocumentsFull];
         if (this.state.animal) {
             array.push(this.state.animal);
@@ -119,8 +121,26 @@ class Swipe extends Component {
         if (array.length > 0) {
             array = array.filter(animalDocument => {
                 if (animalDocument !== undefined) {
+                    const animal = animalDocument.data();
+                    const filterBehavior = filterData.behaviorMap;
+                    for (let key in filterBehavior) {
+                        if (filterBehavior[key]) {
+                            if (!animal.behaviorMap[key]) {
+                                return false;
+                            }
+                        }
+                    }
+                    let breedFilter;
+                    if (animal.breed) {
+                        breedFilter = (animal.breed.includes(filterData.breed)) || (filterData.breed.length === 0);
+                    } else breedFilter = filterData.breed.length === 0;
                     return (
-                        animalDocument.data().type === filterData.type
+                        (filterData.type.includes(animal.type) || (filterData.type.length === 0)) &&
+                        (filterData.size.includes(animal.size) || (filterData.size.length === 0)) &&
+                        (((animal.age >= filterData.age[0]) && (animal.age <= filterData.age[1])) || ((filterData.age[0] === 0) && (filterData.age[1] === 20))) &&
+                        (((animal.weight >= filterData.animalWeight[0]) && (animal.weight <= filterData.animalWeight[1])) || ((filterData.animalWeight[0] === 0) && (filterData.weight[1] === 80))) &&
+                        ((filterData.gender.includes(animal.gender) || (filterData.gender.length === 0)) &&
+                            breedFilter)
                     );
                 }
                 return null;
@@ -144,6 +164,7 @@ class Swipe extends Component {
     }
 
     render() {
+        const {t} = this.props;
         const mounted = this.state.mounted;
         return (
             <div className="swipe">
@@ -153,7 +174,8 @@ class Swipe extends Component {
                     this.state.animalsLoaded ? (
                         mounted && this.state.animal ? (
                             this.state.selectedAnimalDocument ?
-                                <AnimalDetail animal={this.state.selectedAnimalDocument.data()} animalId={this.state.selectedAnimalDocument.id} close={this.closeDetail}/>
+                                <AnimalDetail animal={this.state.selectedAnimalDocument.data()}
+                                              animalId={this.state.selectedAnimalDocument.id} close={this.closeDetail}/>
                                 :
                                 (<>
                                         <div className="swipe_animal_card_wrapper">
@@ -165,22 +187,21 @@ class Swipe extends Component {
                                         <div className="buttons">
                                             <button className="Button" onClick={() => {
                                                 this.swipe("likedAnimals")
-                                            }}>líbí
+                                            }}>{t('like')}
                                             </button>
                                             <button className="Button" onClick={() => {
                                                 this.swipe("dislikedAnimals")
-                                            }}>nelíbí
+                                            }}>{t('dislike')}
                                             </button>
                                         </div>
                                     </>
                                 )
                         ) : <div>Žádná další zvířata.</div>
-                    )   : <CircularProgress />
+                    ) : <CircularProgress/>
                 }
-
             </div>
         )
     }
 }
 
-export default Swipe;
+export default withTranslation()(Swipe)

@@ -1,11 +1,11 @@
 import React, {Component} from "react";
 import "./Profile.scss";
-import {db, auth, storage} from "../Firebase/Firebase";
+import {auth, db, storage} from "../Firebase/Firebase";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {defaultLayers, searchService} from "../../Utils/HERE";
-import {UPLOADING, WAIT_INTERVAL} from "../../Const";
-import TextField from '@material-ui/core/TextField';
 import * as Const from "../../Const";
+import {SHELTER, UPLOADING, WAIT_INTERVAL} from "../../Const";
+import TextField from '@material-ui/core/TextField';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUserCircle} from "@fortawesome/free-solid-svg-icons";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -56,28 +56,21 @@ class Profile extends Component {
     }
 
     loadData = () => {
-        const id = this.props.id || auth.currentUser.uid;
+        let id = auth.currentUser.uid;
+        if (this.props.location && this.props.location.state) {
+            id = this.props.location.state.id;
+        }
         this.setState({id: id});
         const userRef = db.collection("users").doc(id);
         userRef.get().then((doc) => {
             if (doc.exists) {
-                if (doc.data().openingHours) {
-                    this.setState({
-                        user: doc.data(),
-                        address: doc.data().location.title,
-                        openingHours: doc.data().openingHours,
-                        imageStoragePath: doc.data().image || null,
-                        dataLoaded: true
-                    });
-                } else {
-                    this.setState({
-                        user: doc.data(),
-                        address: doc.data().location.title,
-                        imageStoragePath: doc.data().image || null,
-                        dataLoaded: true
-                    });
-                }
-                console.log("image", doc.data().image);
+                this.setState({
+                    user: doc.data(),
+                    imageStoragePath: doc.data().image || null,
+                    dataLoaded: true
+                });
+                if (doc.data().openingHours) this.setState({openingHours: doc.data().openingHours});
+                if (doc.data().location) this.setState({address: doc.data().location.title});
                 if (doc.data().image) this.loadPhoto(doc.data().image);
                 else this.setState({hasPhoto: false});
                 this.state.map ? this.moveMap() : this.loadMap();
@@ -88,11 +81,13 @@ class Profile extends Component {
             }
         }).catch((error) => {
             console.log("Firestore error", error);
+            this.setState({
+                dataLoaded: true
+            })
         });
     }
 
     loadPhoto = (image) => {
-        console.log("loadPhoto");
         const ref = storage.ref();
         const imageRef = ref.child(image);
         return imageRef.getDownloadURL()
@@ -144,7 +139,6 @@ class Profile extends Component {
     }
 
     moveMap = () => {
-        console.log("moveMap");
         const lat = this.state.user.location.position.lat;
         const lng = this.state.user.location.position.lng;
         const marker = new window.H.map.Marker({lat: lat, lng: lng});
@@ -292,6 +286,7 @@ class Profile extends Component {
         console.log(this.state.dataLoaded + " " + this.state.user);
         if (this.state.dataLoaded && this.state.user) {
             const user = this.state.user;
+            const type = this.state.user.type;
             let showOpenHoursClass = "";
             if (user.showOpenHours) {
                 showOpenHoursClass = " show";
@@ -353,34 +348,28 @@ class Profile extends Component {
                                 </>
                             ) : <h2>{user.name}</h2>}
                         </div>
-                        <div className="item address">
-                            <div className="label">{t('address') + ":"}</div>
-                            {edit ? (
-                                <div className="autocomplete">
-                                    <input className="Input Input_text" type="text" value={this.state.address}
-                                           onChange={this.handleSearchChange}/>
-                                    {
-                                        this.state.searchResults.length > 0 ?
-                                            <div className="searchResults">{searchResults}</div> :
-                                            null
-                                    }
-                                </div>
-                            ) : (
-                                <div className="value">
-                                    <div className="addressTitle">{this.state.user.location.title}</div>
-                                    {/*<div className="streetAndHouse">*/}
-                                    {/*    {this.state.user.location.address.street &&*/}
-                                    {/*    <div className="street">{this.state.user.location.address.street}</div>}*/}
-                                    {/*    {this.state.user.location.address.houseNumber && <div*/}
-                                    {/*        className="houseNumber">{this.state.user.location.address.houseNumber}</div>}*/}
-                                    {/*</div>*/}
-                                    {/*<div*/}
-                                    {/*    className="city">{this.state.user.location.address.postalCode + " " + this.state.user.location.address.city}</div>*/}
-                                </div>
-                            )}
-
-
-                        </div>
+                        {type === SHELTER && (
+                            <div className="item address">
+                                <div className="label">{t('address') + ":"}</div>
+                                {edit ? (
+                                    <div className="autocomplete">
+                                        <input className="Input Input_text" type="text" value={this.state.address}
+                                               onChange={this.handleSearchChange}/>
+                                        {
+                                            this.state.searchResults.length > 0 ?
+                                                <div className="searchResults">{searchResults}</div> :
+                                                null
+                                        }
+                                    </div>
+                                ) : (
+                                    <div className="value">
+                                        {this.state.user.location ?
+                                            <div className="addressTitle">{this.state.user.location.title}</div> :
+                                            <div className="addressTitle"/>}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <div className="item phone">
                             <div className="label">{t('phone') + ":"}</div>
                             {edit ? <input className="Input Input_text" name="phone" value={user.phone || ""}
@@ -391,7 +380,7 @@ class Profile extends Component {
                             <div className="label">E-mail:</div>
                             <div className="value">{user.email}</div>
                         </div>
-                        {edit && (
+                        {edit && type === SHELTER && (
                             <FormControlLabel
                                 control={<Checkbox checked={this.state.user.showOpenHours}
                                                    onChange={this.handle0penHoursCheckbox}
@@ -400,185 +389,203 @@ class Profile extends Component {
                                 label={t('showOpeningHours')}
                             />
                         )}
-                        <div className={"item open-hours" + showOpenHoursClass}>
-                            {!edit && <div className="label">{t('openingHours') + ":"}</div>}
-                            {user.openingHours && (
-                                <div className="days">
-                                    <div className="day">
-                                        <div className="day-name">{t('days.monday') + ":"}</div>
-                                        {edit ? (
-                                            <div className="value">
-                                                <TextField
-                                                    name="mondayFrom"
-                                                    type="time"
-                                                    value={this.state.openingHours.mondayFrom}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                                <TextField
-                                                    name="mondayTo"
-                                                    type="time"
-                                                    value={this.state.openingHours.mondayTo}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div
-                                                className="value">{this.state.openingHours.mondayFrom + " - " + this.state.openingHours.mondayTo}</div>
-                                        )}
+                        {type === SHELTER && (
+                            <div className={"item open-hours" + showOpenHoursClass}>
+                                {!edit && <div className="label">{t('openingHours') + ":"}</div>}
+                                {user.openingHours && (
+                                    <div className="days">
+                                        <div className="day">
+                                            <div className="day-name">{t('days.monday') + ":"}</div>
+                                            {edit ? (
+                                                <div className="value">
+                                                    <TextField
+                                                        name="mondayFrom"
+                                                        type="time"
+                                                        value={this.state.openingHours.mondayFrom}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                    <TextField
+                                                        name="mondayTo"
+                                                        type="time"
+                                                        value={this.state.openingHours.mondayTo}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    className="value">{this.state.openingHours.mondayFrom + " - " + this.state.openingHours.mondayTo}</div>
+                                            )}
+                                        </div>
+                                        <div className="day">
+                                            <div className="day-name">{t('days.tuesday') + ":"}</div>
+                                            {edit ? (
+                                                <div className="value">
+                                                    <TextField
+                                                        name="tuesdayFrom"
+                                                        type="time"
+                                                        value={this.state.openingHours.tuesdayFrom}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                    <TextField
+                                                        name="tuesdayTo"
+                                                        type="time"
+                                                        value={this.state.openingHours.tuesdayTo}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    className="value">{this.state.openingHours.tuesdayFrom + " - " + this.state.openingHours.tuesdayTo}</div>
+                                            )}
+                                        </div>
+                                        <div className="day">
+                                            <div className="day-name">{t('days.wednesday') + ":"}</div>
+                                            {edit ? (
+                                                <div className="value">
+                                                    <TextField
+                                                        name="wednesdayFrom"
+                                                        type="time"
+                                                        value={this.state.openingHours.wednesdayFrom}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                    <TextField
+                                                        name="wednesdayTo"
+                                                        type="time"
+                                                        value={this.state.openingHours.wednesdayTo}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    className="value">{this.state.openingHours.wednesdayFrom + " - " + this.state.openingHours.wednesdayTo}</div>
+                                            )}
+                                        </div>
+                                        <div className="day">
+                                            <div className="day-name">{t('days.thursday') + ":"}</div>
+                                            {edit ? (
+                                                <div className="value">
+                                                    <TextField
+                                                        name="thursdayFrom"
+                                                        type="time"
+                                                        value={this.state.openingHours.thursdayFrom}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                    <TextField
+                                                        name="thursdayTo"
+                                                        type="time"
+                                                        value={this.state.openingHours.thursdayTo}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    className="value">{this.state.openingHours.thursdayFrom + " - " + this.state.openingHours.thursdayTo}</div>
+                                            )}
+                                        </div>
+                                        <div className="day">
+                                            <div className="day-name">{t('days.friday') + ":"}</div>
+                                            {edit ? (
+                                                <div className="value">
+                                                    <TextField
+                                                        name="fridayFrom"
+                                                        type="time"
+                                                        value={this.state.openingHours.fridayFrom}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                    <TextField
+                                                        name="fridayTo"
+                                                        type="time"
+                                                        value={this.state.openingHours.fridayTo}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    className="value">{this.state.openingHours.fridayFrom + " - " + this.state.openingHours.fridayTo}</div>
+                                            )}
+                                        </div>
+                                        <div className="day">
+                                            <div className="day-name">{t('days.saturday') + ":"}</div>
+                                            {edit ? (
+                                                <div className="value">
+                                                    <TextField
+                                                        name="saturdayFrom"
+                                                        type="time"
+                                                        value={this.state.openingHours.saturdayFrom}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                    <TextField
+                                                        name="saturdayTo"
+                                                        type="time"
+                                                        value={this.state.openingHours.saturdayTo}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    className="value">{this.state.openingHours.saturdayFrom + " - " + this.state.openingHours.saturdayTo}</div>
+                                            )}
+                                        </div>
+                                        <div className="day">
+                                            <div className="day-name">{t('days.sunday') + ":"}</div>
+                                            {edit ? (
+                                                <div className="value">
+                                                    <TextField
+                                                        name="sundayFrom"
+                                                        type="time"
+                                                        value={this.state.openingHours.sundayFrom}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                    <TextField
+                                                        name="sundayTo"
+                                                        type="time"
+                                                        value={this.state.openingHours.sundayTo}
+                                                        onChange={this.handleTimeChange}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    className="value">{this.state.openingHours.sundayFrom + " - " + this.state.openingHours.sundayTo}</div>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className="day">
-                                        <div className="day-name">{t('days.tuesday') + ":"}</div>
-                                        {edit ? (
-                                            <div className="value">
-                                                <TextField
-                                                    name="tuesdayFrom"
-                                                    type="time"
-                                                    value={this.state.openingHours.tuesdayFrom}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                                <TextField
-                                                    name="tuesdayTo"
-                                                    type="time"
-                                                    value={this.state.openingHours.tuesdayTo}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div
-                                                className="value">{this.state.openingHours.tuesdayFrom + " - " + this.state.openingHours.tuesdayTo}</div>
-                                        )}
-                                    </div>
-                                    <div className="day">
-                                        <div className="day-name">{t('days.wednesday') + ":"}</div>
-                                        {edit ? (
-                                            <div className="value">
-                                                <TextField
-                                                    name="wednesdayFrom"
-                                                    type="time"
-                                                    value={this.state.openingHours.wednesdayFrom}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                                <TextField
-                                                    name="wednesdayTo"
-                                                    type="time"
-                                                    value={this.state.openingHours.wednesdayTo}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div
-                                                className="value">{this.state.openingHours.wednesdayFrom + " - " + this.state.openingHours.wednesdayTo}</div>
-                                        )}
-                                    </div>
-                                    <div className="day">
-                                        <div className="day-name">{t('days.thursday') + ":"}</div>
-                                        {edit ? (
-                                            <div className="value">
-                                                <TextField
-                                                    name="thursdayFrom"
-                                                    type="time"
-                                                    value={this.state.openingHours.thursdayFrom}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                                <TextField
-                                                    name="thursdayTo"
-                                                    type="time"
-                                                    value={this.state.openingHours.thursdayTo}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div
-                                                className="value">{this.state.openingHours.thursdayFrom + " - " + this.state.openingHours.thursdayTo}</div>
-                                        )}
-                                    </div>
-                                    <div className="day">
-                                        <div className="day-name">{t('days.friday') + ":"}</div>
-                                        {edit ? (
-                                            <div className="value">
-                                                <TextField
-                                                    name="fridayFrom"
-                                                    type="time"
-                                                    value={this.state.openingHours.fridayFrom}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                                <TextField
-                                                    name="fridayTo"
-                                                    type="time"
-                                                    value={this.state.openingHours.fridayTo}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div
-                                                className="value">{this.state.openingHours.fridayFrom + " - " + this.state.openingHours.fridayTo}</div>
-                                        )}
-                                    </div>
-                                    <div className="day">
-                                        <div className="day-name">{t('days.saturday') + ":"}</div>
-                                        {edit ? (
-                                            <div className="value">
-                                                <TextField
-                                                    name="saturdayFrom"
-                                                    type="time"
-                                                    value={this.state.openingHours.saturdayFrom}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                                <TextField
-                                                    name="saturdayTo"
-                                                    type="time"
-                                                    value={this.state.openingHours.saturdayTo}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div
-                                                className="value">{this.state.openingHours.saturdayFrom + " - " + this.state.openingHours.saturdayTo}</div>
-                                        )}
-                                    </div>
-                                    <div className="day">
-                                        <div className="day-name">{t('days.sunday') + ":"}</div>
-                                        {edit ? (
-                                            <div className="value">
-                                                <TextField
-                                                    name="sundayFrom"
-                                                    type="time"
-                                                    value={this.state.openingHours.sundayFrom}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                                <TextField
-                                                    name="sundayTo"
-                                                    type="time"
-                                                    value={this.state.openingHours.sundayTo}
-                                                    onChange={this.handleTimeChange}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div
-                                                className="value">{this.state.openingHours.sundayFrom + " - " + this.state.openingHours.sundayTo}</div>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
+                        )}
+
+                    </div>
+                    {type === SHELTER ? (
+                        <>
+                            <div className="review">
+                                <h3>{t('reviews')}</h3>
+                                <div className="reviews"></div>
+                            </div>
+                            <div className="map" id="mapContainer"/>
+                        </>
+                    ) : (
+                        <div className="desc">
+                            <div className="label">{t('animals.desc') + ":"}</div>
+                            {edit ? <textarea className="value" name="phone" value={user.desc || ""}
+                                              onChange={this.handleTextInputChange}/> :
+                                <div className="value">{user.desc}</div>}
                         </div>
-                    </div>
-                    <div className="review">
-                        <h3>{t('reviews')}</h3>
-                        <div className="reviews"></div>
-                    </div>
-                    <div className="map" id="mapContainer"/>
+                    )}
                 </div>
             )
         } else if (this.state.dataLoaded) {
             return (
-                <div className="overlay">
-                    <div className="absolute_center">{t('userNotFound')}</div>
+                <div className="profile">
+                    <div className="overlay">
+                        <div className="absolute_center">{t('userNotFound')}</div>
+                    </div>
                 </div>
             )
         } else {
             return (
-                <div className="overlay">
-                    <div className="absolute_center"><CircularProgress/></div>
+                <div className="profile">
+                    <div className="overlay">
+                        <div className="absolute_center"><CircularProgress/></div>
+                    </div>
                 </div>
             )
         }

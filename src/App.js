@@ -12,6 +12,8 @@ import Registration from "./components/Login/Registration";
 import Messages from "./components/Messages/Messages";
 import MyAnimals from "./components/Animals/MyAnimals";
 import PrivateRoute from "./PrivateRoute";
+import LikedAnimals from "./components/Animals/LikedAnimals";
+import MyProfile from "./components/Profile/MyProfile";
 
 class App extends Component {
     constructor() {
@@ -39,13 +41,17 @@ class App extends Component {
                                       component={Swipe}/>
                         <PrivateRoute path="/profile"
                                       component={Profile}/>
+                        <PrivateRoute path="/my-profile"
+                                      component={MyProfile}/>
                         <Route path="/animals" component={Animals}/>
                         <PrivateRoute path="/add"
                                       component={AddAnimal}/>
                         <PrivateRoute path="/edit"
                                       component={AddAnimal}/>
-                        <PrivateRoute path="/myanimals"
+                        <PrivateRoute path="/my-animals"
                                       component={MyAnimals}/>
+                        <PrivateRoute path="/liked-animals"
+                                      component={LikedAnimals}/>
                         <Route path="/login" component={Login}/>
                         <Route path="/registration" component={Registration}/>
                         <PrivateRoute path="/messages"
