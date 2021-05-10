@@ -30,6 +30,7 @@ class AnimalDetail extends Component {
                     close={this.props.close}
                     animal={this.props.animal}
                     animalId={this.props.animalId}
+                    loggedId={this.props.loggedId}
                 />
             </div>
         )

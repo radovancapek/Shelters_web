@@ -4,13 +4,12 @@
       .MuiRadio-root {
         color: var(--orange-primary);
       }
-
       .MuiRadio-colorSecondary.Mui-checked {
         color: var(--orange-primary);
       }
     }
 
-    &_age {
+    &_age, &_weight {
       .MuiSlider-root {
         color: var(--orange-primary);
       }
@@ -25,6 +24,5 @@
       width: 24px;
       height: 24px;
     }
-
   }
 }

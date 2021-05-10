@@ -7,12 +7,17 @@
   justify-content: center;
   cursor: pointer;
 
+
   * {
     max-height: 100%;
     max-width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  img {
+    border: 2px solid transparent;
   }
 
   &.hover {
@@ -23,10 +28,9 @@
 }
 
 .gallery {
-  grid-row: 7/11;
-  grid-column: 6/8;
   display: grid;
-  grid-template-rows: repeat(3, minmax(0, 1fr)); //minmax zachova stejny pomer velikosti radku nehlede na velikost obsahu
+  height: 100%;
+  grid-template-rows: repeat(2, minmax(0, 50%)); //minmax zachova stejny pomer velikosti radku nehlede na velikost obsahu
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   justify-content: stretch;

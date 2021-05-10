@@ -2,12 +2,12 @@ import React, {Component} from "react";
 import "./Animals.scss";
 import Animals from "./Animals";
 
-class MyAnimals extends Component {
+class LikedAnimals extends Component {
     render() {
         return (
-            <Animals myAnimals={true} />
+            <Animals likedAnimals={true} />
         )
     }
 }
 
-export default MyAnimals;
+export default LikedAnimals;

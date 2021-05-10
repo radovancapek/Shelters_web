@@ -38,6 +38,9 @@
     "firebase": "^8.1.2",
     "fs-extra": "^8.1.0",
     "html-webpack-plugin": "4.0.0-beta.11",
+    "i18next": "^20.2.1",
+    "i18next-browser-languagedetector": "^6.1.0",
+    "i18next-http-backend": "^1.2.1",
     "identity-obj-proxy": "3.0.0",
     "jest": "24.9.0",
     "jest-environment-jsdom-fourteen": "1.0.1",
@@ -57,18 +60,23 @@
     "react-app-polyfill": "^1.0.6",
     "react-circle-progress-bar": "^0.1.4",
     "react-circular-progressbar": "^2.0.3",
+    "react-csv-reader": "^3.3.0",
     "react-dev-utils": "^10.2.1",
     "react-dom": "^16.13.1",
     "react-firebase-file-uploader": "^2.4.4",
     "react-geolocated": "^3.1.0",
     "react-here-map": "^4.0.0-0",
+    "react-i18next": "^11.8.13",
     "react-image-gallery": "^1.0.9",
     "react-modal": "^3.11.2",
     "react-onclickoutside": "^6.9.1",
+    "react-papaparse": "^3.12.1",
     "react-router-dom": "^5.2.0",
     "react-scroll-up-button": "^1.6.4",
     "react-textfit": "^1.1.1",
     "react-time-picker": "^4.2.1",
+    "recompose": "^0.30.0",
+    "redux": "^4.0.5",
     "resolve": "1.15.0",
     "resolve-url-loader": "^3.1.2",
     "sass-loader": "8.0.2",
@@ -160,6 +168,8 @@
     ]
   },
   "devDependencies": {
+    "i18next-xhr-backend": "^3.2.2",
+    "papaparse": "^5.3.0",
     "semantic-ui-react": "^2.0.1"
   }
 }

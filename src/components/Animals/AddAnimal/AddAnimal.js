@@ -1,27 +1,50 @@
 import React, {Component} from "react";
 import "./AddAnimal.scss";
-import {db, storage, auth} from "../../Firebase/Firebase"
+import {auth, db, storage} from "../../Firebase/Firebase"
 import * as Const from "../../../Const"
+import {
+    ACTIVE,
+    ANIMALS,
+    CATS,
+    DISABLED,
+    DOGS,
+    OTHER,
+    SIZE_BIG,
+    SIZE_MEDIUM,
+    SIZE_SMALL,
+    UPLOADING,
+    WAIT_INTERVAL
+} from "../../../Const"
 import Checkbox from '@material-ui/core/Checkbox';
 import {faImage} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import GalleryImage from "../AnimalCard/GalleryImage";
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {ANIMALS, UPLOADING, WAIT_INTERVAL} from "../../../Const";
 import {v4 as uuidv4} from 'uuid';
 import Switch from "@material-ui/core/Switch";
 import {Redirect} from "react-router-dom";
 import {searchService} from "../../../Utils/HERE";
+import Breeds from "../../../assets/files/breeds.json";
+import {withTranslation} from "react-i18next";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import Slider from "@material-ui/core/Slider";
 
 class AddAnimal extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            edit: false,
             animal: {
                 type: Const.DOGS,
                 name: "",
                 age: "",
+                size: SIZE_SMALL,
+                weight: 0,
+                chip: "",
+                breed: "",
                 gender: Const.MALE,
                 desc: "",
                 behaviorMap: {},
@@ -30,6 +53,9 @@ class AddAnimal extends Component {
                 user: auth.currentUser.uid,
                 location: {}
             },
+            breeds: Breeds.breeds,
+            filteredBreeds: Breeds.breeds,
+            showBreeds: false,
             imagesStoragePaths: [],
             genderBool: false,
             image: "",
@@ -49,11 +75,12 @@ class AddAnimal extends Component {
             showImagePlaceholder: true,
             percentUploaded: 0,
             uploadState: null,
-            otherActive: false,
-            catsActive: false,
-            dogsActive: true,
+            otherActive: "",
+            catsActive: "",
+            dogsActive: ACTIVE,
             address: "",
             searchResults: [],
+            showSearchResults: false,
             imageUrlList: [],
             galleryImagesLoaded: false,
             imageCount: 0
@@ -65,20 +92,23 @@ class AddAnimal extends Component {
     }
 
     componentDidMount() {
-        if(this.props.location.state) {
+        if (this.props.location.state) {
             const animal = this.props.location.state.animal
-            console.log("id", this.props.location.state.animalId);
             this.setState({
+                edit: true,
                 animal: animal,
                 animalId: this.props.location.state.animalId,
                 imagesStoragePaths: animal.images || []
             }, () => {
                 console.log("new imagesStoragePaths", this.state.imagesStoragePaths);
             });
-            if(animal.location) {
+            animal.type === DOGS ? this.setState({dogsActive: ACTIVE}) : this.setState({dogsActive: DISABLED});
+            animal.type === CATS ? this.setState({catssActive: ACTIVE}) : this.setState({catsActive: DISABLED});
+            animal.type === OTHER ? this.setState({otherActive: ACTIVE}) : this.setState({otherActive: DISABLED});
+            if (animal.location) {
                 this.setState({address: animal.location.title})
             }
-            if(animal.images && animal.images.length > 0) {
+            if (animal.images && animal.images.length > 0) {
                 this.loadImages();
             }
         } else {
@@ -116,7 +146,6 @@ class AddAnimal extends Component {
     }
 
     updateInput = e => {
-        console.log("target", e.target.name);
         const name = e.target.name;
         const value = e.target.value;
         this.setState(prevState => ({
@@ -127,16 +156,14 @@ class AddAnimal extends Component {
     }
 
     addAnimal = () => {
-        console.log("imageStoragepaths",this.state.imagesStoragePaths);
         const images = this.state.imagesStoragePaths;
-        console.log("images", images);
         this.setState(prevState => ({
             animal: {
                 ...prevState.animal, images: images
             }
         }), () => {
-            console.log("animal images",this.state.animal.images);
-            if(this.state.animalId) {
+            console.log("animal images", this.state.animal.images);
+            if (this.state.animalId) {
                 console.log(this.state.animal);
                 db.collection(ANIMALS).doc(this.state.animalId)
                     .set(this.state.animal, {merge: true})
@@ -166,7 +193,7 @@ class AddAnimal extends Component {
             this.setState({
                 newFile: e.target.files[0],
                 files: [...this.state.files, e.target.files[0]],
-                                        urlList: [...this.state.urlList, url],
+                urlList: [...this.state.urlList, url],
                 showImagePlaceholder: false
             })
             if (!this.state.mainImageUrl) {
@@ -219,6 +246,20 @@ class AddAnimal extends Component {
             .catch(err => console.log(err.code));
     }
 
+    handleCancelChanges = () => {
+        const animal = this.props.location.state.animal;
+        this.setState({
+            animal: animal,
+            urlList: []
+        }, () => {
+            if (animal.images && animal.images.length > 0) {
+                this.loadImages();
+            }
+        })
+        if (animal.location) {
+            this.setState({address: animal.location.title})
+        }
+    }
 
 
     handleGenderChange = e => {
@@ -247,6 +288,9 @@ class AddAnimal extends Component {
     }
 
     changeAnimalType = (type) => {
+        if(this.state.edit) {
+            return;
+        }
         const tmpBehaviorMap = {};
         Const.BEHAVIOR_MAP.get(type).map((behavior) => {
             tmpBehaviorMap[behavior] = false;
@@ -254,29 +298,32 @@ class AddAnimal extends Component {
         });
 
         this.setState(prevState => ({
-            animal: (Object.assign(prevState.animal, {behaviorMap: tmpBehaviorMap}))
+            animal: (Object.assign(prevState.animal, {
+                behaviorMap: tmpBehaviorMap,
+                type: type
+            }))
         }));
 
         switch (type) {
             case Const.DOGS:
                 this.setState(prevState => ({
-                    dogsActive: true,
-                    catsActive: false,
-                    otherActive: false
+                    dogsActive: ACTIVE,
+                    catsActive: "",
+                    otherActive: ""
                 }));
                 break;
             case Const.CATS:
                 this.setState({
-                    dogsActive: false,
-                    catsActive: true,
-                    otherActive: false,
+                    dogsActive: "",
+                    catsActive: ACTIVE,
+                    otherActive: "",
                 });
                 break;
             case Const.OTHER:
                 this.setState({
-                    dogsActive: false,
-                    catsActive: false,
-                    otherActive: true,
+                    dogsActive: "",
+                    catsActive: "",
+                    otherActive: ACTIVE,
                 });
                 break;
             default:
@@ -290,7 +337,7 @@ class AddAnimal extends Component {
             let temp = urlList[index];
             urlList[index] = urlList[0];
             urlList[0] = temp;
-            return { urlList };
+            return {urlList};
         })
 
 
@@ -299,11 +346,37 @@ class AddAnimal extends Component {
         });
     }
 
+    updateBreed = (e) => {
+        let query = e.target.value;
+
+        this.setState(prevState => ({
+            filteredBreeds: this.state.breeds.filter(breed => breed.toLowerCase().includes(query.toLowerCase())),
+            animal: {
+                ...prevState.animal, breed: query
+            },
+            showBreeds: true
+        }));
+    }
+
+    handleBreedInputClick = (e) => {
+        e.preventDefault();
+        this.setState({
+            showBreeds: false
+        })
+    }
+
+    handleBreedClick = (breed) => {
+        this.setState(prevState => ({
+            animal: {
+                ...prevState.animal, breed: breed
+            },
+            showBreeds: false
+        }));
+    }
+
     handleSearchChange = (e) => {
         clearTimeout(this.timer);
-
         this.setState({address: e.target.value});
-
         if (e.target.value.length >= 2) {
             this.timer = setTimeout(this.search, WAIT_INTERVAL);
         }
@@ -314,29 +387,33 @@ class AddAnimal extends Component {
             q: this.state.address,
             in: "countryCode:CZE,SVK,DEU,POL,AUT"
         }, (result) => {
-            //let {position, title} = result.items[0];
             console.log(result.items);
-            this.setState({searchResults: result.items})
+            this.setState({searchResults: result.items, showSearchResults: true})
         }, (error) => {
             console.log("Error", error);
         });
     }
 
     handleSearchItemClick = (result) => {
-        console.log("title", result.title);
-        console.log("address", result.address);
-        console.log(result);
         this.setState(prevState => ({
             address: result.title,
             animal: {
                 ...prevState.animal, location: result
             },
-            searchResults: []
+            showSearchResults: false
         }));
     }
 
+    handleSearchClick = (e) => {
+        e.preventDefault();
+        this.setState({
+            showSearchResults: !this.state.showSearchResults
+        })
+    }
+
     render() {
-        if(this.state.uploadState === "done") {
+        const {t} = this.props;
+        if (this.state.uploadState === "done") {
             return (
                 <Redirect
                     to={{
@@ -345,7 +422,6 @@ class AddAnimal extends Component {
                 />
             );
         }
-        console.log(this.state.animal.gender);
         let galleryImages = this.state.urlList.map((url, i) => {
             if (i !== 0) {
                 return (
@@ -361,7 +437,7 @@ class AddAnimal extends Component {
             Object.entries(this.state.animal.behaviorMap).map(([key, value], i) => {
                 return (
                     <div className={"addAnimal_form_input_behavior_" + i} key={i}>
-                        <label>{key}</label>
+                        <label>{t('animals.behavior.' + key)}</label>
                         <Checkbox type="checkbox"
                                   className="Input Input_checkbox"
                                   name={key}
@@ -374,12 +450,22 @@ class AddAnimal extends Component {
 
         let searchResults = this.state.searchResults.map((result, i) => {
             return (
-                <div className="result_item" key={i} onClick={() => {
-                    this.handleSearchItemClick(result)
+                <div className="result_item" key={i} onMouseDown={(e) => {
+                    e.preventDefault();
+                    this.handleSearchItemClick(result);
                 }}>{result.title}</div>
             );
         });
 
+        let breeds = this.state.filteredBreeds.map((breed, i) => {
+            return (
+                <div className="result_item" key={i} onMouseDown={(e) => {
+                    e.preventDefault();
+                    this.handleBreedClick(breed);
+                }}>{breed}</div>
+            );
+        });
+        console.log("animal type", this.state.animal.type);
         return (
             <div className="addAnimal">
                 <form className="addAnimal_form" onSubmit={this.addAnimal}>
@@ -387,80 +473,139 @@ class AddAnimal extends Component {
                         <div
                             className={"Button Button_light Button_small " + this.state.dogsActive}
                             id="buttonDogs"
-                            onClick={() => this.changeAnimalType(Const.DOGS)}>Pes
+                            onClick={() => this.changeAnimalType(Const.DOGS)}>{t('animals.dogs.dogs')}
                         </div>
                         <div className={"Button Button_light Button_small " + this.state.catsActive}
                              id="buttonCats"
-                             onClick={() => this.changeAnimalType(Const.CATS)}>Kocka
+                             onClick={() => this.changeAnimalType(Const.CATS)}>{t('animals.cats.cats')}
                         </div>
                         <div className={"Button Button_light Button_small " + this.state.otherActive}
                              id="buttonOther"
-                             onClick={() => this.changeAnimalType(Const.OTHER)}>Ostatni
+                             onClick={() => this.changeAnimalType(Const.OTHER)}>{t('animals.other.other')}
                         </div>
                     </div>
-                    <input className="Input Input_text addAnimal_form_name" type="text" name="name"
-                           placeholder="Jmeno"
-                           onChange={this.updateInput} value={this.state.animal.name}/>
-                    <input className="Input Input_text addAnimal_form_age" type="text" name="age" placeholder="Vek"
-                           onChange={this.updateInput} value={this.state.animal.age}/>
-                    <div className="addAnimal_form_behavior">
-                        {behaviorCheckboxes}
-                    </div>
                     <div className="addAnimal_form_gender">
-                        <h4>Pohlaví: </h4>
                         <div className="addAnimal_form_gender_input">
-                            <div>Pes</div>
+                            <div>{t("animals." + this.state.animal.type + ".male")}</div>
                             <Switch
                                 checked={this.state.genderBool}
                                 onChange={this.handleGenderChange}
                                 name="genderBool"
                                 inputProps={{'aria-label': 'secondary checkbox'}}
                             />
-                            <div>Fena</div>
+                            <div>{t("animals." + this.state.animal.type + ".female")}</div>
                         </div>
+                    </div>
+                    <div className="Input_wrapper Input_wrapper_name">
+                        <span className="Input_label">{t('name')}</span>
+                        <input className="Input Input_text addAnimal_form_name" type="text" name="name"
+                               onChange={this.updateInput} value={this.state.animal.name}/>
+                    </div>
+                    <div className="Input_wrapper Input_wrapper_age">
+                        <span className="Input_label">{t('animals.age')}</span>
+                        <input className="Input Input_text addAnimal_form_age" type="text" name="age"
+                               onChange={this.updateInput} value={this.state.animal.age}/>
+                    </div>
+                    <div className="autocomplete breedWrapper" onBlur={this.handleBreedInputClick}>
+                        <div className="Input_wrapper Input_wrapper_breed">
+                            <span className="Input_label">{t('animals.breed') + ":"}</span>
+                            <input className="Input Input_text addAnimal_form_breed" autoComplete="off" type="text" name="breed"
+                                   onChange={this.updateBreed} onFocus={this.updateBreed} value={this.state.animal.breed}/>
+                            {
+                                this.state.showBreeds ?
+                                    <div className="searchResults">{breeds}</div> : null
+                            }
+                        </div>
+                    </div>
+                    <div className="Input_wrapper Input_wrapper_chip">
+                        <span className="Input_label">{t('animals.chip') + ":"}</span>
+                        <input className="Input Input_text addAnimal_form_chip" type="text" name="chip"
+                               onChange={this.updateInput} value={this.state.animal.chip}/>
+                    </div>
+                    <div className="Input_wrapper_size">
+                        <h4>{t('animals.size') + ":"}</h4>
+                        <RadioGroup aria-label="animalSize" name="size" value={this.state.animal.size}
+                                    onChange={this.updateInput}>
+                            <FormControlLabel value={SIZE_SMALL} control={<Radio/>} label={t('animals.' + SIZE_SMALL)}/>
+                            <FormControlLabel value={SIZE_MEDIUM} control={<Radio/>} label={t('animals.' + SIZE_MEDIUM)}/>
+                            <FormControlLabel value={SIZE_BIG} control={<Radio/>} label={t('animals.' + SIZE_BIG)}/>
+                        </RadioGroup>
+                    </div>
+                    <div className="Input_wrapper_weight">
+                        <h4>{t('animals.weight') + ": (kg)"}</h4>
+                        <Slider
+                            defaultValue={0}
+                            name="weight"
+                            onChange={this.updateInput}
+                            valueLabelDisplay="on"
+                            min={0}
+                            max={80}
+                            marks={[
+                                {
+                                    value: 0,
+                                    label: '0',
+                                },
+                                {
+                                    value: 80,
+                                    label: '80',
+                                }]}
+                        />
+                    </div>
+                    <div className="addAnimal_form_behavior">
+                        {behaviorCheckboxes}
                     </div>
                     <div className="addAnimal_form_desc">
-                        <textarea name="desc" placeholder="Popis" onChange={this.updateInput}
+                        <textarea name="desc" placeholder={t('animals.desc') + ":"} onChange={this.updateInput}
                                   className="addAnimal_form_desc_textArea" value={this.state.animal.desc}/>
                     </div>
-                    <div className="addAnimal_form_map">
-                        <input className="Input Input_text" type="text" value={this.state.address}
-                               onChange={this.handleSearchChange}/>
-                        {
-                            this.state.searchResults.length > 0 ?
-                                <div className="searchResults">{searchResults}</div> :
-                                null
-                        }
-
-                        {/*<button onClick={this.search}>Search</button>*/}
-                        {/*<iframe*/}
-                        {/*    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1500.3485347041005!2d15.088005942110781!3d50.77046800835521!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47093416ce5bd3a1%3A0x860b20000c4b372!2sTUL%20Halls%20of%20Residence!5e0!3m2!1scs!2scz!4v1593419624930!5m2!1scs!2scz"*/}
-                        {/*    frameBorder="0"*/}
-                        {/*    allowFullScreen=""*/}
-                        {/*    aria-hidden="false"*/}
-                        {/*    tabIndex="0"*/}
-                        {/*    title="koleje"*/}
-                        {/*    className="addAnimal_form_map_iframe"/>*/}
+                    <div className="addAnimal_form_map autocomplete">
+                        <div className="Input_wrapper">
+                            <span className="Input_label">{t('address') + ":"}</span>
+                            <input className="Input Input_text" type="text" autoComplete="off" value={this.state.address}
+                                   onChange={this.handleSearchChange} onBlur={this.handleSearchClick}/>
+                            {
+                                this.state.showSearchResults ?
+                                    <div className="searchResults">{searchResults}</div> :
+                                    null
+                            }
+                        </div>
                     </div>
-                    <div className="addAnimal_form_mainImage">
-                        {this.state.urlList[0] ?
-                            <GalleryImage main="mainImage" src={this.state.urlList[0]}/>
-                            :
-                            <FontAwesomeIcon className="imageIcon" icon={faImage}/>
-                        }
-                    </div>
-                    <div className="gallery">
-                        {galleryImages}
-                        <div className="addImage galleryImage">
-                            <input id="files" type="file" onChange={this.handleChange} className="addImage_input"/>
-                            <label htmlFor="files" className="addImage_label">+</label>
+                    <div className="addAnimal_form_imagesWrapper">
+                        <div className="mainImage">
+                            {this.state.urlList[0] ?
+                                <GalleryImage main="mainImage" src={this.state.urlList[0]}/>
+                                :
+                                <FontAwesomeIcon className="imageIcon" icon={faImage}/>
+                            }
+                        </div>
+                        <div className="gallery">
+                            {galleryImages}
+                            <div className="addImage galleryImage">
+                                <input id="files" type="file" onChange={this.handleChange} className="addImage_input"/>
+                                <label htmlFor="files" className="addImage_label">+</label>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="Button light submit" onClick={this.handleUpload}>
-                        {this.state.uploadState === "uploading" ?
-                            <CircularProgress progress={this.state.percentUploaded}/>
-                            : "Potvrdit"}</div>
+                    <div className="buttons">
+                        <div className="Button light submit" onClick={this.handleUpload}>
+                            {this.state.uploadState === "uploading" ?
+                                <CircularProgress progress={this.state.percentUploaded}/>
+                                : t('save')}
+                        </div>
+                        {this.state.edit && (
+                            <>
+                                <div className="Button light submit" onClick={this.handleCancelChanges}>
+                                    {t('cancelChanges')}
+                                </div>
+                                <div className="Button light submit" onClick={this.handleUpload}>
+                                    {t('deleteAnimal')}
+                                </div>
+                            </>
+                        )}
+
+                    </div>
+
                 </form>
             </div>
         )
@@ -468,4 +613,4 @@ class AddAnimal extends Component {
 
 }
 
-export default AddAnimal;
+export default withTranslation()(AddAnimal)

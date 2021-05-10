@@ -13,8 +13,21 @@
     }
   }
 
+  .Input_wrapper {
+    margin-bottom: 20px;
+  }
+
   .forgot_password {
     margin-top: 5px;
+    font-size: 11px;
+    color: var(--orange-secondary);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .no_ic {
+    margin-top: -15px;
+    margin-bottom: 5px;
     font-size: 11px;
     color: var(--orange-secondary);
     cursor: pointer;
@@ -26,18 +39,12 @@
   }
 
   .form {
-    width: 300px;
+    width: 500px;
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    .Input, .autocomplete {
-      height: 50px;
-      width: 100%;
-      margin-bottom: 20px;
-    }
-
   }
+
   .error_message {
     margin-top: -15px;
     margin-bottom: 10px;

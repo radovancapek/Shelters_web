@@ -9,6 +9,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import {withTranslation} from "react-i18next";
 
 class Login extends Component {
 
@@ -36,25 +37,6 @@ class Login extends Component {
     componentDidMount() {
     }
 
-    changeType = (type) => {
-        switch (type) {
-            case Const.USER:
-                this.setState(prevState => ({
-                    userActive: true,
-                    sheltersActive: false,
-                }));
-                break;
-            case Const.SHELTER:
-                this.setState({
-                    userActive: false,
-                    sheltersActive: true,
-                });
-                break;
-            default:
-                break;
-        }
-    }
-
     login = () => {
         let email = this.state.email;
         let password = this.state.password;
@@ -74,8 +56,6 @@ class Login extends Component {
                     from = {pathname: '/'}
                 }
                 this.props.history.push(from);
-
-                console.log("history push to " + from);
             })
             .catch((error) => {
                 this.setState({loginState: ""});
@@ -152,32 +132,20 @@ class Login extends Component {
     }
 
     render() {
-        // if (auth.currentUser) {
-        //     return (
-        //         <Redirect to={"/"}/>
-        //     )
-        // }
-
+        const {t} = this.props;
         return (
             <div className="login">
-                <form className="form" onSubmit={this.addAnimal}>
-                    <div className="buttons">
-                        <div
-                            className={"Button Button_small Button_secondary " + this.state.userActive}
-                            id="buttonDogs"
-                            onClick={() => this.changeType(Const.USER)}>Uživatel
-                        </div>
-                        <div className={"Button Button_small Button_secondary " + this.state.sheltersActive}
-                             id="buttonCats"
-                             onClick={() => this.changeType(Const.SHELTER)}>Útulek
-                        </div>
+                <form className="form">
+                    <div className="Input_wrapper">
+                        <span className="Input_label">Email</span>
+                        <input className="Input Input_text" type="text" name="email"
+                               onChange={this.updateInput} value={this.state.email}/>
                     </div>
-                    <input className="Input Input_text" type="text" name="email"
-                           placeholder="Email"
-                           onChange={this.updateInput} value={this.state.email}/>
-                    <input className="Input Input_text" type="password" name="password"
-                           placeholder="Heslo"
-                           onChange={this.updateInput} value={this.state.password}/>
+                    <div className="Input_wrapper">
+                        <span className="Input_label">{t('password')}</span>
+                        <input className="Input Input_text" type="password" name="password"
+                               onChange={this.updateInput} value={this.state.password}/>
+                    </div>
                     {this.state.loginErrorMessage ?
                         <div className="error_message">{this.state.loginErrorMessage}</div>
                         : null
@@ -185,23 +153,24 @@ class Login extends Component {
                     <div className="Button submit" onClick={this.login}>
                         {this.state.loginState === Const.UPLOADING ?
                             <CircularProgress progress={this.state.percentUploaded}/>
-                            : "Přihlásit"}</div>
+                            : t('login')}</div>
                     <div className="forgot_password" onClick={this.forgotPasswordClick}>
-                        Zapomneli jste heslo?
+                        {t('forgotPassword')}
                     </div>
                 </form>
                 <Dialog className="dialog" open={this.state.openForgotPasswordDialog} onClose={this.handleDialogClose}
                         aria-labelledby="form-dialog-title">
-                    <DialogTitle id="form-dialog-title">Zapomenuté heslo</DialogTitle>
+                    <DialogTitle id="form-dialog-title">{t('forgottenPassword')}</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Zadejte e-mailovou adresu, kterou jste použili při registraci a na kterou Vám přijde odkaz
-                            pro resetování hesla.
+                            {t('enterEmailForPassworReset')}
                         </DialogContentText>
-                        <input className="Input dialog_input" type="text" name="resetPasswordEmail"
-                               placeholder="Email"
-                               disabled={this.state.dialogInputDisabled}
-                               onChange={this.updateInput} value={this.state.resetPasswordEmail}/>
+                        <div className="Input_wrapper">
+                            <span className="Input_label">Email</span>
+                            <input className="Input dialog_input" type="text" name="resetPasswordEmail"
+                                   disabled={this.state.dialogInputDisabled}
+                                   onChange={this.updateInput} value={this.state.resetPasswordEmail}/>
+                        </div>
                         {this.state.dialogErrorMessage ?
                             <div className="error_message">{this.state.dialogErrorMessage}</div>
                             : null
@@ -214,11 +183,11 @@ class Login extends Component {
                     </DialogContent>
                     <DialogActions>
                         <button className="Button dialog_confirm_button" onClick={this.handleDialogClose}>
-                            Zavrit
+                            {t('close')}
                         </button>
                         <button className="Button dialog_close_button" disabled={this.state.dialogSendButtonDisabled}
                                 onClick={this.sendPasswordReset}>
-                            Odeslat
+                            {t('sent')}
                         </button>
                     </DialogActions>
                 </Dialog>
@@ -227,4 +196,6 @@ class Login extends Component {
     }
 }
 
-export default withRouter(Login);
+export default withRouter(
+    withTranslation()(Login)
+)

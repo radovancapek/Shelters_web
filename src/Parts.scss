@@ -1,4 +1,5 @@
 @import "~react-image-gallery/styles/scss/image-gallery.scss";
+
 .Button {
   appearance: none;
   background-color: var(--orange-primary);
@@ -23,7 +24,7 @@
   &_small {
     font-size: 14px;
   }
-  
+
   &_secondary {
     background-color: var(--grad-second);
   }
@@ -62,6 +63,8 @@
 
 .autocomplete {
   position: relative;
+  width: 100%;
+
   .searchResults {
     position: absolute;
     top: 50px;
@@ -71,6 +74,7 @@
     max-height: 150px;
     overflow: scroll;
     background-color: var(--secondary);
+    z-index: 1000;
 
     .result_item {
       margin-top: 5px;
@@ -84,6 +88,56 @@
   }
 }
 
+
+.MuiDialog-container {
+  .Input_wrapper {
+    border: 1px solid lightgray;
+    height: 40px;
+  }
+}
+
+.Input_wrapper {
+  position: relative;
+  border: none;
+  height: 50px;
+  background-color: var(--secondary);
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  width: 100%;
+
+  .Input_label {
+    display: flex;
+    align-items: center;
+    padding: 5px 20px;
+    font-size: 14px;
+  }
+
+  .Input {
+    border-left: 1px solid lightgray;
+    padding: 5px 20px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+    }
+  }
+  input {
+    border: 0;
+  }
+
+  .breeds {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    right: 0;
+    max-height: 100px;
+    overflow: scroll;
+  }
+
+  &.error {
+    border: 1px solid red;
+  }
+}
 
 .dialog {
   .dialog_success_message {

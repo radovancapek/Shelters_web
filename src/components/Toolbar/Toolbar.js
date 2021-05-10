@@ -3,23 +3,43 @@ import "./Toolbar.scss";
 import {Link, withRouter} from "react-router-dom";
 import PrivateToolbar from "./PrivateToolbar";
 import PublicToolbar from "./PublicToolbar";
-import { auth } from "../Firebase/Firebase"
+import {auth, db} from "../Firebase/Firebase"
+import {withTranslation} from 'react-i18next';
 
 class Toolbar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            toolbar: null
+            toolbar: null,
+            user: null
         };
     }
 
     componentDidMount() {
         auth.onAuthStateChanged((user) => {
             if (user) {
-                this.setState({toolbar: <PrivateToolbar logout={this.logout} />});
+                this.loadData(user.uid);
             } else {
-                this.setState({toolbar: <PublicToolbar />});
+                this.setState({toolbar: <PublicToolbar/>});
             }
+        });
+    }
+
+    loadData = (uid) => {
+        const userRef = db.collection("users").doc(uid);
+        userRef.get().then((doc) => {
+            if (doc.exists) {
+                this.setState({
+                    user: doc.data(),
+                    toolbar: <PrivateToolbar logout={this.logout} user={doc.data()}/>
+                });
+            } else {
+                this.setState({
+                    dataLoaded: true
+                })
+            }
+        }).catch((error) => {
+            console.log("Firestore error", error);
         });
     }
 
@@ -31,28 +51,21 @@ class Toolbar extends Component {
         });
     }
 
-
     render() {
-
-        let toolbar;
-        if(auth.currentUser) {
-            toolbar = <PrivateToolbar />
-        } else {
-            toolbar = <PublicToolbar />
-        }
-
-
+        const {t} = this.props;
         return (
             <div className="toolbar">
                 <div className="toolbar_logo">
                     {!this.props.home ?
-                        <Link to="/home" className="toolbar_items_item_home">HOME</Link>
+                        <Link to="/home" className="toolbar_items_item_home">{t('toolbar.home')}</Link>
                         : null}
                 </div>
-                {this.state.toolbar || toolbar}
+                {this.state.toolbar}
             </div>
         );
     }
 }
 
-export default withRouter(Toolbar);
+export default withRouter(
+    withTranslation()(Toolbar)
+)

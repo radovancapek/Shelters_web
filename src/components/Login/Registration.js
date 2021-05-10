@@ -6,6 +6,7 @@ import {auth, db} from "../Firebase/Firebase"
 import {Redirect} from "react-router-dom";
 import {searchService} from "../../Utils/HERE";
 import {WAIT_INTERVAL} from "../../Const";
+import {withTranslation} from "react-i18next";
 
 class Registration extends Component {
 
@@ -15,7 +16,7 @@ class Registration extends Component {
             name: "",
             surname: "",
             shelterName: "",
-            shelterIc: "",
+            registrationNumber: "",
             email: "",
             password: "",
             password2: "",
@@ -25,7 +26,7 @@ class Registration extends Component {
             sheltersActive: false,
             registrationState: "",
             logInRedirect: false,
-            wrongIc: false,
+            wrongRegistrationNumber: false,
             searchResults: [],
             address: "",
             location: null
@@ -38,7 +39,7 @@ class Registration extends Component {
 
     changeType = (type) => {
         this.setState({
-            wrongIc: "",
+            wrongRegistrationNumber: "",
             shelterNameError: "",
             emailError: "",
             passwordError: "",
@@ -66,7 +67,7 @@ class Registration extends Component {
     }
 
     validateIC = () => {
-        let ic = this.state.shelterIc;
+        let ic = this.state.registrationNumber;
         let sum = 0;
         const lastDigit = parseInt(ic.charAt(7));
         if (ic.length !== 8 || isNaN(parseInt(ic))) {
@@ -93,7 +94,7 @@ class Registration extends Component {
             if (!this.validateIC()) {
                 valid = false;
                 this.setState({
-                    wrongIc: "error"
+                    wrongRegistrationNumber: "error"
                 });
             }
         }
@@ -176,7 +177,7 @@ class Registration extends Component {
                 {
                     type: Const.SHELTER,
                     name: this.state.shelterName,
-                    ic: this.state.shelterIc,
+                    ic: this.state.registrationNumber,
                     location: this.state.location,
                     email: this.state.email
                 }
@@ -211,8 +212,8 @@ class Registration extends Component {
                 case "shelterName":
                     this.setState({shelterNameError: ""});
                     break;
-                case "shelterIc":
-                    this.setState({wrongIc: ""});
+                case "registrationNumber":
+                    this.setState({wrongRegistrationNumber: ""});
                     break;
                 default:
                     break;
@@ -229,6 +230,8 @@ class Registration extends Component {
 
         if (e.target.value.length >= 2) {
             this.timer = setTimeout(this.search, WAIT_INTERVAL);
+        } else {
+            this.setState({searchResults: []});
         }
     }
 
@@ -246,9 +249,6 @@ class Registration extends Component {
     }
 
     handleSearchItemClick = (result) => {
-        console.log("title", result.title);
-        console.log("address", result.address);
-        console.log(result);
         this.setState({
             address: result.title,
             location: result,
@@ -257,6 +257,7 @@ class Registration extends Component {
     }
 
     render() {
+        const {t} = this.props;
         console.log(this.state.errorMessages);
         if (this.state.logInRedirect) {
             return (
@@ -274,80 +275,107 @@ class Registration extends Component {
 
         return (
             <div className="login">
-                <div className="buttons">
-                    <div
-                        className={"Button Button_small Button_secondary " + this.state.userActive}
-                        id="buttonDogs"
-                        onClick={() => this.changeType(Const.USER)}>Uživatel
-                    </div>
-                    <div className={"Button Button_small Button_secondary " + this.state.sheltersActive}
-                         id="buttonCats"
-                         onClick={() => this.changeType(Const.SHELTER)}>Útulek
-                    </div>
-                </div>
-                {this.state.userActive && (
-                    <>
-                        <input className={"Input Input_text " + this.state} type="text" name="name"
-                               placeholder="Jmeno"
-                               onChange={this.updateInput} value={this.state.name}/>
-                        <input className="Input Input_text" type="text" name="surname"
-                               placeholder="Příjmení"
-                               onChange={this.updateInput} value={this.state.surname}/>
-                    </>
-                )}
-                {this.state.sheltersActive && (
-                    <>
-                        <input className={"Input Input_text " + this.state.shelterNameError} type="text"
-                               name="shelterName"
-                               placeholder="Název"
-                               onChange={this.updateInput} value={this.state.shelterName}/>
-                        {this.state.shelterNameError && <div className="error_message">{Const.EMPTY_FIELD}</div>}
-                        <input className={"Input Input_text " + this.state.wrongIc} type="text" name="shelterIc"
-                               placeholder="IČ"
-                               onChange={this.updateInput} value={this.state.shelterIc}/>
-                        {this.state.wrongIc && <div className="error_message">{Const.WRONG_IC}</div>}
-                        <div className="autocomplete">
-                            <input className="Input Input_text" type="text" value={this.state.address}
-                                   placeholder="Adresa"
-                                   onChange={this.handleSearchChange}/>
-                            {
-                                this.state.searchResults.length > 0 ?
-                                    <div className="searchResults">{searchResults}</div> :
-                                    null
-                            }
+                <form className="form">
+                    <div className="buttons">
+                        <div
+                            className={"Button Button_small Button_secondary " + this.state.userActive}
+                            id="buttonDogs"
+                            onClick={() => this.changeType(Const.USER)}>{t('interested')}
                         </div>
+                        <div className={"Button Button_small Button_secondary " + this.state.sheltersActive}
+                             id="buttonCats"
+                             onClick={() => this.changeType(Const.SHELTER)}>{t('shelter')}
+                        </div>
+                    </div>
+                    {this.state.userActive && (
+                        <>
+                            <div className="Input_wrapper">
+                                <span className="Input_label">{t('name')}</span>
+                                <input className={"Input Input_text " + this.state} type="text" name="name"
+                                       onChange={this.updateInput} value={this.state.name}/>
+                            </div>
+                            <div className="Input_wrapper">
+                                <span className="Input_label">{t('surname')}</span>
+                                <input className="Input Input_text" type="text" name="surname"
+                                       onChange={this.updateInput} value={this.state.surname}/>
+                            </div>
+                        </>
+                    )}
+                    {this.state.sheltersActive && (
+                        <>
+                            <div className={"Input_wrapper " + this.state.shelterNameError}>
+                                <span className="Input_label">{t('shelterName')}</span>
+                                <input className={"Input Input_text "} type="text"
+                                       name="shelterName"
+                                       onChange={this.updateInput} value={this.state.shelterName}/>
+                            </div>
+                            {this.state.shelterNameError &&
+                            <div className="error_message">{Const.EMPTY_FIELD}</div>}
+                            <div className={"Input_wrapper " + this.state.wrongRegistrationNumber}>
+                                <span className="Input_label">{t('registrationNumber')}</span>
+                                <input className={"Input Input_text "} type="text"
+                                       name="registrationNumber"
+                                       onChange={this.updateInput} value={this.state.registrationNumber}/>
+                            </div>
+                            {this.state.wrongRegistrationNumber ? (
+                                <div className="error_message">{t('wrongRegistrationNumber')}</div>
+                            ) : (
+                                <div className="no_ic" onClick={this.forgotPasswordClick}>{t('dontHaveRegistrationNumber')}</div>
+                            )}
+                            <div className="autocomplete">
+                                <div className="Input_wrapper">
+                                    <span className="Input_label">{t('address')}</span>
 
-                    </>
-                )}
-                <input
-                    className={"Input Input_text " + this.state.emailError + this.state.firebaseEmailFormatError + this.state.firebaseEmailExistsError}
-                    type="email" name="email"
-                    placeholder="E-mail"
-                    onChange={this.updateInput} value={this.state.mail}/>
-                {this.state.emailError && <div className="error_message">{Const.EMPTY_FIELD}</div>}
-                {this.state.firebaseEmailFormatError &&
-                <div className="error_message">{Const.FIREBASE_EMAIL_FORMAT_ERROR}</div>}
-                {this.state.firebaseEmailExistsError &&
-                <div className="error_message">{Const.FIREBASE_EMAIL_EXISTS}</div>}
-                <input className={"Input Input_text " + this.state.passwordError + this.state.firebasePasswordError}
-                       type="password" name="password"
-                       placeholder="Heslo"
-                       onChange={this.updateInput} value={this.state.password}/>
-                {this.state.passwordError && <div className="error_message">{Const.EMPTY_FIELD}</div>}
-                {this.state.firebasePasswordError &&
-                <div className="error_message">{Const.FIREBASE_WEAK_PASSWORD}</div>}
-                <input className={"Input Input_text " + this.state.passwordMismatch} type="password" name="password2"
-                       placeholder="Heslo podruhé"
-                       onChange={this.updateInput} value={this.state.password2}/>
-                {this.state.passwordMismatch && <div className="error_message">{Const.PASSWORD_MISMATCH}</div>}
-                <div className="Button submit" onClick={this.register}>
-                    {this.state.registrationState === Const.UPLOADING ?
-                        <CircularProgress progress={this.state.percentUploaded}/>
-                        : "Registrovat"}</div>
-                {this.state.firebaseError && <div className="error_message">{this.state.firebaseError}</div>}
+                                    <input className="Input Input_text" type="text" value={this.state.address}
+                                           onChange={this.handleSearchChange}/>
+
+                                </div>
+                                {
+                                    this.state.searchResults.length > 0 ?
+                                        <div className="searchResults">{searchResults}</div> :
+                                        null
+                                }
+                            </div>
+                        </>
+                    )}
+                    <div className={"Input_wrapper " + this.state.emailError + this.state.firebaseEmailFormatError + this.state.firebaseEmailExistsError}>
+                        <span className="Input_label">E-mail</span>
+                        <input
+                            className={"Input Input_text "}
+                            type="email" name="email"
+                            onChange={this.updateInput} value={this.state.mail}/>
+                    </div>
+                    {this.state.emailError && <div className="error_message">{Const.EMPTY_FIELD}</div>}
+                    {this.state.firebaseEmailFormatError &&
+                    <div className="error_message">{Const.FIREBASE_EMAIL_FORMAT_ERROR}</div>}
+                    {this.state.firebaseEmailExistsError &&
+                    <div className="error_message">{Const.FIREBASE_EMAIL_EXISTS}</div>}
+                    <div className={"Input_wrapper " + this.state.passwordError + this.state.firebasePasswordError}>
+                        <span className="Input_label">{t('password')}</span>
+                        <input
+                            className={"Input Input_text "}
+                            type="password" name="password"
+                            onChange={this.updateInput} value={this.state.password}/>
+                    </div>
+                    {this.state.passwordError && <div className="error_message">{Const.EMPTY_FIELD}</div>}
+                    {this.state.firebasePasswordError &&
+                    <div className="error_message">{Const.FIREBASE_WEAK_PASSWORD}</div>}
+                    <div className={"Input_wrapper " + this.state.passwordMismatch}>
+                        <span className="Input_label">{t('repeatPassword')}</span>
+                        <input className={"Input Input_text "} type="password"
+                               name="password2"
+                               onChange={this.updateInput} value={this.state.password2}/>
+                    </div>
+                    {this.state.passwordMismatch && <div className="error_message">{Const.PASSWORD_MISMATCH}</div>}
+                    <div className="Button submit" onClick={this.register}>
+                        {this.state.registrationState === Const.UPLOADING ?
+                            <CircularProgress progress={this.state.percentUploaded}/>
+                            : "Registrovat"}</div>
+                    {this.state.firebaseError && <div className="error_message">{this.state.firebaseError}</div>}
+                </form>
             </div>
         )
     }
 }
 
-export default Registration;
+export default withTranslation()(Registration);

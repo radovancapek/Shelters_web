@@ -3,9 +3,9 @@
   overflow: hidden;
   background-color: var(--white);
   display: flex;
+  justify-content: space-between;
   height: 35vh;
   flex-direction: column;
-  justify-content: space-between;
   -webkit-box-shadow: 0px 0px 15px 4px var(--primary-transparent);
   box-shadow: 0px 0px 15px 4px var(--primary-transparent);
   padding: 10px;
@@ -67,12 +67,43 @@
     .info {
       display: flex;
       justify-content: space-between;
+      padding: 0 20px;
       * {
         display: flex;
         align-items: center;
       }
+
+      h3 {
+        margin-right: 5px;
+      }
+
+      .animal_card_info_age {
+
+      }
+    }
+    .behavior {
+      display: flex;
+      margin-top: 20px;
+      padding: 0 20px;
+
+      h3 {
+      }
+
+      &_content {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        width: 100%;
+
+        &_item {
+          margin-left: 10px;
+        }
+      }
     }
     .desc {
+      padding: 0 20px;
+      margin-top: 20px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       .desc_text {
@@ -80,10 +111,16 @@
       }
     }
     .buttons {
+      justify-self: flex-end;
       margin: auto;
-      .contact {
-        width: fit-content;
+      display: flex;
+      .Button {
+        margin-left: 5px;
+        &.contact {
+          width: fit-content;
+        }
       }
+
     }
   }
 
@@ -111,6 +148,10 @@
     height: auto;
     width: auto;
     margin: auto;
+
+    &.large {
+      height: 50vh;
+    }
 
     .MuiCircularProgress-colorPrimary {
       color: var(--orange-primary);
