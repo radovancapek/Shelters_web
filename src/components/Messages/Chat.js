@@ -18,10 +18,12 @@ class Chat extends React.Component {
             messagesLoaded: false,
             clickedMessage: null
         }
+        this.messageInput = React.createRef();
     }
 
     componentDidMount() {
         this.fetchMessages();
+        this.messageInput.current.focus();
     }
 
     getMessages = (messages) => {
@@ -68,7 +70,7 @@ class Chat extends React.Component {
     }
 
     componentWillUnmount() {
-        if(this.unsubscribe) this.unsubscribe();
+        if (this.unsubscribe) this.unsubscribe();
     }
 
     handleSendClick = () => {
@@ -92,7 +94,7 @@ class Chat extends React.Component {
                 .then(doc => {
                     console.log("Message sent", doc);
                 }).catch(error => {
-                            console.log("Error", error);
+                console.log("Error", error);
             })
 
 
@@ -101,9 +103,8 @@ class Chat extends React.Component {
     }
 
     handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            this.sendMessage()
+        if(e.key === 'Enter' && !e.shiftKey) {
+            this.sendMessage();
         }
     }
 
@@ -115,7 +116,7 @@ class Chat extends React.Component {
     };
 
     handleMessageClick = (i) => {
-        if(i === this.state.clickedMessage)
+        if (i === this.state.clickedMessage)
             this.setState({clickedMessage: null});
         else
             this.setState({clickedMessage: i});
@@ -131,7 +132,7 @@ class Chat extends React.Component {
                             const {message, from, sent} = messageObj;
                             let dateTime = sent.toDate();
                             let time;
-                            if(this.isToday(dateTime)) {
+                            if (this.isToday(dateTime)) {
                                 time = dateTime.toLocaleTimeString("cs-CZ");
                             } else {
                                 time = dateTime.toLocaleDateString("cs-CZ");
@@ -143,22 +144,21 @@ class Chat extends React.Component {
                                 messageCN = "left";
                             }
                             return (
-                                <>
-                                    <div className={"messageWrapper " + messageCN} key={i} onClick={() => {this.handleMessageClick(i)}}>
-                                        <div className="messageText">{message}</div>
-                                        {i === this.state.clickedMessage && <div className="messageTime">{time}</div>}
-                                    </div>
-
-                                </>
+                                <div className={"messageWrapper " + messageCN} key={i} onClick={() => {
+                                    this.handleMessageClick(i)
+                                }}>
+                                    <div className="messageText">{message}</div>
+                                    {i === this.state.clickedMessage && <div className="messageTime">{time}</div>}
+                                </div>
                             );
                         })}
                     </div>
                 )}
 
                 <div className="newMessageWrap">
-                    <input className="Input Input_text" type="text" name="newMessage"
+                    <textarea className="Input Input_text" name="newMessage"
                            onChange={this.handleNewMessageChange} value={this.state.newMessage}
-                           onKeyDown={this.handleKeyDown}
+                           onKeyDown={this.handleKeyDown} ref={this.messageInput} autoComplete="off"
                     />
                     <Button
                         variant="contained"

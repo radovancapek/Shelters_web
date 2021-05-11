@@ -9,6 +9,7 @@ import onClickOutside from "react-onclickoutside";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {withTranslation} from 'react-i18next';
 import Tooltip from '@material-ui/core/Tooltip';
+import Button from "@material-ui/core/Button";
 
 
 //TODO vzdalenost podle polohy nas a zvirete
@@ -95,7 +96,6 @@ class AnimalCard extends Component {
     }
 
     getDistance = () => {
-        //console.log(this.props.location);
         if (this.props.location && this.props.animal.location) {
             this.setState({location: this.props.animal.location.position.lat});
         }
@@ -116,6 +116,7 @@ class AnimalCard extends Component {
     render() {
         const {t} = this.props;
         const loggedIn = this.props.loggedId != null;
+        const adopted = this.props.animal.adopted ? " adopted" : "";
         if (this.state.editAnimal) {
             return (
                 <Redirect
@@ -220,7 +221,7 @@ class AnimalCard extends Component {
         });
 
         return (
-            <div className="animal_card" onClick={this.props.onClick}>
+            <div className={"animal_card" + adopted} onClick={this.props.onClick}>
                 {this.props.largeCard ? (
                         <div className="close">
                             <FontAwesomeIcon className="closeIcon" icon={faTimes} onClick={this.props.close}/>
@@ -255,7 +256,23 @@ class AnimalCard extends Component {
                                 {this.props.animal.breed ? (
                                     <span>{this.props.animal.breed}</span>
                                 ) : (
-                                    <span>Neuvedeno</span>
+                                    <span>{t('unspecified')}</span>
+                                )}
+                            </div>
+                            <div className="animal_card_size">
+                                <h3>{t('animals.size') + ":"}</h3>
+                                {this.props.animal.size ? (
+                                    <span>{t('animals.' + this.props.animal.size)}</span>
+                                ) : (
+                                    <span>{t('unspecified')}</span>
+                                )}
+                            </div>
+                            <div className="animal_card_weight">
+                                <h3>{t('animals.weight') + ":"}</h3>
+                                {this.props.animal.weight ? (
+                                    <span>{this.props.animal.weight + " kg"}</span>
+                                ) : (
+                                    <span>{t('unspecified')}</span>
                                 )}
                             </div>
                             <div className="animal_card_info_dist">
@@ -263,7 +280,7 @@ class AnimalCard extends Component {
                                 {this.props.animal.location ? (
                                     <span>{this.props.animal.location.address.city}</span>
                                 ) : (
-                                    <span>Neznámá</span>
+                                    <span>{t('unspecified')}</span>
                                 )}
                                 <span>{this.state.location}</span>
                             </div>
@@ -277,17 +294,34 @@ class AnimalCard extends Component {
                             <div className="desc_text">{this.props.animal.desc}</div>
                         </div>
                         <div className="buttons">
-                            {!this.state.isUsersAnimal && (<>
-                                <Tooltip title="Musíte se přihlásit" placement="top" arrow enterDelay={0}
-                                         enterNextDelay={0} leaveDelay={200}>
-                                    <span>
+                            {!this.state.isUsersAnimal && (
+                                this.props.loggedId ? (
+                                    <>
                                         <button className="Button contact" disabled={!loggedIn}
                                                 onClick={this.contact}>{t('contact')}</button>
-                                    </span>
-                                </Tooltip>
-                                <button className="Button contact" disabled={!loggedIn}
-                                        onClick={this.shelterProfile}>{t('shelterProfile')}</button>
-                            </>)}
+                                        <button className="Button contact" disabled={!loggedIn}
+                                                onClick={this.shelterProfile}>{t('shelterProfile')}</button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Tooltip title={t('needToLogin')} placement="top" arrow enterDelay={0}
+                                                 enterNextDelay={0} leaveDelay={200}>
+                                            <span>
+                                                <Button className="Button contact" disabled={!loggedIn}
+                                                        onClick={this.contact}>{t('contact')}</Button>
+                                            </span>
+                                        </Tooltip>
+                                        <Tooltip title={t('needToLogin')} placement="top" arrow enterDelay={0}
+                                                 enterNextDelay={0} leaveDelay={200}>
+                                            <span>
+                                                <Button className="Button contact" disabled={!loggedIn}
+                                                        onClick={this.shelterProfile}>{t('shelterProfile')}</Button>
+                                            </span>
+                                        </Tooltip>
+                                    </>
+                                )
+
+                            )}
                             {this.state.isUsersAnimal &&
                             <button className="Button edit" onClick={this.editAnimal}>{t('edit')}</button>}
                         </div>
@@ -318,6 +352,11 @@ class AnimalCard extends Component {
                                 </div>
                             </div>
                         )
+                )}
+                {this.props.animal.adopted && (
+                    <div className="small_card_content_adopted">
+                        <span className="adopted-text">{t('adopted')}</span>
+                    </div>
                 )}
             </div>
         )

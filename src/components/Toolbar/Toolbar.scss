@@ -4,7 +4,7 @@
   flex-direction: row;
   height: 70px;
   width: 100%;
-  //justify-content: space-between;
+  justify-content: space-between;
 
   * {
     background: transparent;
@@ -117,59 +117,20 @@
 
   &_menuIcon {
     height: 100%;
-    border-left: 1px solid black;
-    justify-content: center;
-    text-align: center;
-    margin: auto;
-    transform: skewX(-35deg);
     display: none;
-
-    &_icon {
-      visibility: hidden;
-      transform: skewX(35deg);
-      position: relative;
-      margin-top: 40px;
-
-      &,
-      &::before,
-      &::after {
-        width: 30px;
-        height: 2px;
-        background-color: var(--gray-dark);
-        display: inline-block;
-      }
-
-      &::before,
-      &::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        transition: all 0.2s;
-      }
-
-      &::before {
-        top: -10px;
-      }
-      &::after {
-        top: 10px;
-      }
-    }
-    &:hover &_icon::before {
-      top: -12px;
-    }
-    &:hover &_icon::after {
-      top: 12px;
-    }
+    align-items: center;
+    justify-content: center;
+    padding-right: 40px;
   }
 }
 
-@media only screen and (max-width: 400px) {
+@media only screen and (max-width: 700px) {
   .toolbar {
     &_items {
       display: none;
     }
     &_menuIcon {
-      display: block;
+      display: flex;
       width: 100%;
       pointer-events: all;
       cursor: pointer;

@@ -11,7 +11,8 @@ class Toolbar extends Component {
         super(props);
         this.state = {
             toolbar: null,
-            user: null
+            user: null,
+            anchorEl: null
         };
     }
 
@@ -61,6 +62,7 @@ class Toolbar extends Component {
                         : null}
                 </div>
                 {this.state.toolbar}
+
             </div>
         );
     }

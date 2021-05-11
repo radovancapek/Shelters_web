@@ -187,11 +187,11 @@ class Swipe extends Component {
                                         <div className="buttons">
                                             <button className="Button" onClick={() => {
                                                 this.swipe("likedAnimals")
-                                            }}>{t('like')}
+                                            }}>{t('addToFavorites')}
                                             </button>
                                             <button className="Button" onClick={() => {
                                                 this.swipe("dislikedAnimals")
-                                            }}>{t('dislike')}
+                                            }}>{t('next')}
                                             </button>
                                         </div>
                                     </>

@@ -69,21 +69,24 @@
         }
 
         .MuiSlider-root {
-          margin-left: 30px;
-          margin-right: 10px;
+          margin-left: 10px;
+          width: 150px;
           color: var(--orange-primary);
 
-          .PrivateValueLabel-circle-11 {
-            width: 25px;
-            height: 25px;
-          }
-
-          .PrivateValueLabel-thumb-8.PrivateValueLabel-open-9 .PrivateValueLabel-offset-10 {
-            transform: scale(1) translateY(5px);
-          }
-
           .MuiSlider-valueLabel {
-            left: calc(-25% - 4px);
+            left: auto;
+          }
+
+          .MuiSlider-thumb {
+            .MuiSlider-valueLabel {
+              transform: scale(0.8) translateY(20px) rotate(180deg);
+
+              [class*="PrivateValueLabel-circle"] {
+                [class*="PrivateValueLabel-label"] {
+                  transform: rotate(225deg);
+                }
+              }
+            }
           }
         }
       }
@@ -95,21 +98,21 @@
         flex-direction: row;
         align-items: center;
 
-        h4 {
-          width: 130px;
-        }
-
         .MuiFormGroup-root {
           display: flex;
           flex-direction: row;
-          //margin-left: 20px;
 
           .MuiTypography-body1 {
             font-family: Montserrat;
           }
 
           .MuiFormControlLabel-root {
-            margin: 0 0 0 10px;
+            margin-left: 5px;
+            margin-right: 0;
+
+            .MuiButtonBase-root {
+              padding: 0;
+            }
 
             .PrivateSwitchBase-root-1 {
               padding: 0;

@@ -11,6 +11,16 @@
   padding: 10px;
   cursor: pointer;
 
+  &.adopted {
+    :not(.small_card_content_adopted):not(.adopted-text) {
+      opacity: 0.5;
+    }
+  }
+
+  h3 {
+    font-weight: bolder;
+  }
+
   .placeholder {
     position: relative;
     .placeholder_text {
@@ -57,6 +67,22 @@
     justify-content: space-between;
     align-items: center;
     font-size: 12px;
+
+    &_adopted {
+      position: absolute;
+      top: 15vh;
+      left: 0;
+      right: 0;
+      width: 100%;
+      margin: auto;
+      transform: rotate(-40deg);
+
+      .adopted-text {
+        color: var(--orange-primary);
+        font-size: 2vw;
+        font-family: "Emblema One";
+      }
+    }
   }
 
   .large_card_content {
@@ -116,6 +142,7 @@
       display: flex;
       .Button {
         margin-left: 5px;
+        text-transform: unset;
         &.contact {
           width: fit-content;
         }
@@ -247,4 +274,27 @@
     }
   }
 
+}
+
+@media only screen and (max-width: 1100px) {
+  .animal_card {
+    .small_card_content {
+      &_adopted {
+        .adopted-text {
+          font-size: 4vw;
+        }
+      }
+    }
+  }
+}
+@media only screen and (max-width: 700px) {
+  .animal_card {
+    .small_card_content {
+      &_adopted {
+        .adopted-text {
+          font-size: 10vw;
+        }
+      }
+    }
+  }
 }

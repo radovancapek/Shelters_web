@@ -187,7 +187,7 @@ class Login extends Component {
                         </button>
                         <button className="Button dialog_close_button" disabled={this.state.dialogSendButtonDisabled}
                                 onClick={this.sendPasswordReset}>
-                            {t('sent')}
+                            {t('send')}
                         </button>
                     </DialogActions>
                 </Dialog>

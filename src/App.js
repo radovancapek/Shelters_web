@@ -24,10 +24,6 @@ class App extends Component {
         }
     }
 
-    componentDidMount() {
-        console.log("app did mount");
-    }
-
     render() {
         return (
             <div id="App" className={style.lighttheme}>

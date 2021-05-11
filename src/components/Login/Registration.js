@@ -12,6 +12,7 @@ class Registration extends Component {
 
     constructor(props) {
         super(props);
+        this.timer = null;
         this.state = {
             name: "",
             surname: "",
@@ -31,10 +32,6 @@ class Registration extends Component {
             address: "",
             location: null
         }
-    }
-
-    componentWillMount() {
-        this.timer = null;
     }
 
     changeType = (type) => {
@@ -122,7 +119,6 @@ class Registration extends Component {
             this.setState({registrationState: Const.UPLOADING});
             auth.createUserWithEmailAndPassword(this.state.email, this.state.password)
                 .then((userCredential) => {
-                    console.log("user signed up");
                     this.addUserToFirestore(userCredential.user.uid);
                     this.setState({
                         registrationState: ""
@@ -200,7 +196,6 @@ class Registration extends Component {
     updateInput = e => {
         let name = e.target.name;
         let val = e.target.value;
-        console.log(name);
         if (val.length > 0) {
             switch (name) {
                 case "email":
@@ -240,8 +235,6 @@ class Registration extends Component {
             q: this.state.address,
             in: "countryCode:CZE,SVK,DEU,POL,AUT"
         }, (result) => {
-            //let {position, title} = result.items[0];
-            console.log(result.items);
             this.setState({searchResults: result.items})
         }, (error) => {
             console.log("Error", error);
@@ -258,7 +251,6 @@ class Registration extends Component {
 
     render() {
         const {t} = this.props;
-        console.log(this.state.errorMessages);
         if (this.state.logInRedirect) {
             return (
                 <Redirect to="/"/>

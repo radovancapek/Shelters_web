@@ -16,7 +16,7 @@ class PrivateRoute extends React.Component {
     }
 
     checkIsLogged = () => {
-        auth.onAuthStateChanged((user) => {
+        this.unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
                 this.setState({
                     isLogged: true,
@@ -29,6 +29,10 @@ class PrivateRoute extends React.Component {
                 });
             }
         })
+    }
+
+    componentWillUnmount() {
+        if(this.unsubscribe) this.unsubscribe();
     }
 
     render() {

@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import "./AddAnimal.scss";
-import {auth, db, storage} from "../../Firebase/Firebase"
+import {auth, db, storage, timestamp} from "../../Firebase/Firebase"
 import * as Const from "../../../Const"
 import {
     ACTIVE,
@@ -30,15 +30,24 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Slider from "@material-ui/core/Slider";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import Dialog from "@material-ui/core/Dialog";
 
 class AddAnimal extends Component {
 
     constructor(props) {
         super(props);
+        this.timer = null;
         this.state = {
             edit: false,
+            back: false,
+            adopted: false,
+            delete: false,
+            openDeleteDialog: false,
             animal: {
                 type: Const.DOGS,
+                adopted: false,
                 name: "",
                 age: "",
                 size: SIZE_SMALL,
@@ -87,21 +96,16 @@ class AddAnimal extends Component {
         };
     }
 
-    componentWillMount() {
-        this.timer = null;
-    }
-
     componentDidMount() {
         if (this.props.location.state) {
             const animal = this.props.location.state.animal
-            this.setState({
+            const mergedAnimal = {...this.state.animal, ...animal};
+            this.setState(prevState => ({
+                animal: mergedAnimal,
                 edit: true,
-                animal: animal,
                 animalId: this.props.location.state.animalId,
                 imagesStoragePaths: animal.images || []
-            }, () => {
-                console.log("new imagesStoragePaths", this.state.imagesStoragePaths);
-            });
+            }));
             animal.type === DOGS ? this.setState({dogsActive: ACTIVE}) : this.setState({dogsActive: DISABLED});
             animal.type === CATS ? this.setState({catssActive: ACTIVE}) : this.setState({catsActive: DISABLED});
             animal.type === OTHER ? this.setState({otherActive: ACTIVE}) : this.setState({otherActive: DISABLED});
@@ -162,9 +166,7 @@ class AddAnimal extends Component {
                 ...prevState.animal, images: images
             }
         }), () => {
-            console.log("animal images", this.state.animal.images);
             if (this.state.animalId) {
-                console.log(this.state.animal);
                 db.collection(ANIMALS).doc(this.state.animalId)
                     .set(this.state.animal, {merge: true})
                     .then(() => {
@@ -174,14 +176,20 @@ class AddAnimal extends Component {
                         console.log("addAnimal error", error);
                     })
             } else {
-                db.collection(ANIMALS)
-                    .add(this.state.animal)
-                    .then(() => {
-                        this.setState({uploadState: 'done'});
-                    })
-                    .catch((error) => {
-                        console.log("addAnimal error", error);
-                    })
+                this.setState(prevState => ({
+                    animal: {
+                        ...prevState.animal, created: timestamp.now(),
+                    }
+                }), () => {
+                    db.collection(ANIMALS)
+                        .add(this.state.animal)
+                        .then(() => {
+                            this.setState({uploadState: 'done'});
+                        })
+                        .catch((error) => {
+                            console.log("addAnimal error", error);
+                        })
+                })
             }
         });
     };
@@ -246,19 +254,40 @@ class AddAnimal extends Component {
             .catch(err => console.log(err.code));
     }
 
-    handleCancelChanges = () => {
-        const animal = this.props.location.state.animal;
+    handleBack = () => {
         this.setState({
-            animal: animal,
-            urlList: []
-        }, () => {
-            if (animal.images && animal.images.length > 0) {
-                this.loadImages();
-            }
-        })
-        if (animal.location) {
-            this.setState({address: animal.location.title})
-        }
+            back: true
+        });
+    }
+
+    handleOpenDialog = () => {
+        this.setState({openDeleteDialog: true});
+    }
+
+    handleDialogClose = () => {
+        this.setState({
+            openDeleteDialog: false
+        });
+    }
+
+    handleAdopted = () => {
+        db.collection(ANIMALS).doc(this.state.animalId)
+            .update({"adopted": !this.state.animal.adopted})
+            .then(() => {
+                this.setState({adopted: true});
+            })
+            .catch((error) => {
+                console.log("adopt animal error", error);
+            })
+    }
+
+    handleDelete = () => {
+        db.collection("animals").doc(this.state.animalId).delete().then(() => {
+            console.log("Document successfully deleted!");
+            this.setState({delete: true});
+        }).catch((error) => {
+            console.error("Error removing document: ", error);
+        });
     }
 
 
@@ -287,8 +316,17 @@ class AddAnimal extends Component {
         }));
     }
 
+    handleWeightChange = (event, newValue) => {
+        const newWeight = newValue;
+        this.setState(prevState => ({
+            animal: {
+                ...prevState.animal, weight: newWeight
+            }
+        }));
+    }
+
     changeAnimalType = (type) => {
-        if(this.state.edit) {
+        if (this.state.edit) {
             return;
         }
         const tmpBehaviorMap = {};
@@ -387,7 +425,6 @@ class AddAnimal extends Component {
             q: this.state.address,
             in: "countryCode:CZE,SVK,DEU,POL,AUT"
         }, (result) => {
-            console.log(result.items);
             this.setState({searchResults: result.items, showSearchResults: true})
         }, (error) => {
             console.log("Error", error);
@@ -413,11 +450,11 @@ class AddAnimal extends Component {
 
     render() {
         const {t} = this.props;
-        if (this.state.uploadState === "done") {
+        if ((this.state.uploadState === "done") || this.state.back || this.state.delete || this.state.adopted) {
             return (
                 <Redirect
                     to={{
-                        pathname: "/myanimals"
+                        pathname: "/my-animals"
                     }}
                 />
             );
@@ -465,7 +502,6 @@ class AddAnimal extends Component {
                 }}>{breed}</div>
             );
         });
-        console.log("animal type", this.state.animal.type);
         return (
             <div className="addAnimal">
                 <form className="addAnimal_form" onSubmit={this.addAnimal}>
@@ -509,8 +545,10 @@ class AddAnimal extends Component {
                     <div className="autocomplete breedWrapper" onBlur={this.handleBreedInputClick}>
                         <div className="Input_wrapper Input_wrapper_breed">
                             <span className="Input_label">{t('animals.breed') + ":"}</span>
-                            <input className="Input Input_text addAnimal_form_breed" autoComplete="off" type="text" name="breed"
-                                   onChange={this.updateBreed} onFocus={this.updateBreed} value={this.state.animal.breed}/>
+                            <input className="Input Input_text addAnimal_form_breed" autoComplete="off" type="text"
+                                   name="breed"
+                                   onChange={this.updateBreed} onFocus={this.updateBreed}
+                                   value={this.state.animal.breed}/>
                             {
                                 this.state.showBreeds ?
                                     <div className="searchResults">{breeds}</div> : null
@@ -527,16 +565,17 @@ class AddAnimal extends Component {
                         <RadioGroup aria-label="animalSize" name="size" value={this.state.animal.size}
                                     onChange={this.updateInput}>
                             <FormControlLabel value={SIZE_SMALL} control={<Radio/>} label={t('animals.' + SIZE_SMALL)}/>
-                            <FormControlLabel value={SIZE_MEDIUM} control={<Radio/>} label={t('animals.' + SIZE_MEDIUM)}/>
+                            <FormControlLabel value={SIZE_MEDIUM} control={<Radio/>}
+                                              label={t('animals.' + SIZE_MEDIUM)}/>
                             <FormControlLabel value={SIZE_BIG} control={<Radio/>} label={t('animals.' + SIZE_BIG)}/>
                         </RadioGroup>
                     </div>
                     <div className="Input_wrapper_weight">
                         <h4>{t('animals.weight') + ": (kg)"}</h4>
                         <Slider
-                            defaultValue={0}
+                            value={this.state.animal.weight}
                             name="weight"
-                            onChange={this.updateInput}
+                            onChange={this.handleWeightChange}
                             valueLabelDisplay="on"
                             min={0}
                             max={80}
@@ -561,7 +600,8 @@ class AddAnimal extends Component {
                     <div className="addAnimal_form_map autocomplete">
                         <div className="Input_wrapper">
                             <span className="Input_label">{t('address') + ":"}</span>
-                            <input className="Input Input_text" type="text" autoComplete="off" value={this.state.address}
+                            <input className="Input Input_text" type="text" autoComplete="off"
+                                   value={this.state.address}
                                    onChange={this.handleSearchChange} onBlur={this.handleSearchClick}/>
                             {
                                 this.state.showSearchResults ?
@@ -595,18 +635,42 @@ class AddAnimal extends Component {
                         </div>
                         {this.state.edit && (
                             <>
-                                <div className="Button light submit" onClick={this.handleCancelChanges}>
-                                    {t('cancelChanges')}
+                                <div className="Button light submit" onClick={this.handleBack}>
+                                    {t('back')}
                                 </div>
-                                <div className="Button light submit" onClick={this.handleUpload}>
-                                    {t('deleteAnimal')}
+                                {this.state.animalId && (
+                                    this.state.animal.adopted ? (
+                                        <div className="Button light submit" onClick={this.handleAdopted}>
+                                            {t('returnToOffer')}
+                                        </div>
+                                    ) : (
+                                        <div className="Button light submit" onClick={this.handleAdopted}>
+                                            {t('adopted')}
+                                        </div>
+                                    )
+                                )}
+
+                                <div className="Button light submit" onClick={this.handleOpenDialog}>
+                                    {t('delete')}
                                 </div>
                             </>
                         )}
-
                     </div>
 
                 </form>
+                <Dialog className="dialog" open={this.state.openDeleteDialog} onClose={this.handleDialogClose}
+                        aria-labelledby="form-dialog-title">
+                    <DialogTitle id="form-dialog-title">{t('reallyWantToDelete')}</DialogTitle>
+                    <DialogActions>
+                        <button className="Button dialog_confirm_button" onClick={this.handleDialogClose}>
+                            {t('close')}
+                        </button>
+                        <button className="Button dialog_close_button"
+                                onClick={this.handleDelete}>
+                            {t('delete')}
+                        </button>
+                    </DialogActions>
+                </Dialog>
             </div>
         )
     }

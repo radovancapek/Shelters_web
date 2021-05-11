@@ -11,7 +11,6 @@
   justify-content: center;
   cursor: pointer;
   border: none;
-  text-transform: capitalize;
 
   &_light {
     color: var(--secondary);
@@ -151,4 +150,8 @@
   color: red;
   font-style: italic;
   font-size: 14px;
+}
+
+.MuiCircularProgress-colorPrimary {
+  color: var(--orange-primary);
 }

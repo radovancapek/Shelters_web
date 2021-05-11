@@ -20,22 +20,20 @@ class Conversations extends React.Component {
     }
 
     componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS) {
-        console.log("prevCons " + prevProps.conversations + "Cons " + this.props.conversations);
-        if(prevProps.conversations !== this.props.conversations) {
-            console.log("loadConversations");
+        if (prevProps.conversations !== this.props.conversations) {
             this.loadConversations();
         }
     }
 
     loadUsers = (userIds) => {
         let users = [];
-        if(userIds.length > 0) {
+        if (userIds.length > 0) {
             this.unsubscribe = db.collection("users").where(fieldPath.documentId(), "in", userIds)
                 .onSnapshot(querySnapshot => {
                     querySnapshot.forEach(doc => {
                         users.push(doc);
                     })
-                    if(users)
+                    if (users)
                         this.setState({users: [...this.state.users, ...users]});
                 })
         }
@@ -44,12 +42,12 @@ class Conversations extends React.Component {
     loadConversations = () => {
         let userIds = [];
         let conversations = [];
-        if(this.props.conversations.length > 0) {
+        if (this.props.conversations.length > 0) {
             this.unsubscribe2 = db.collection(CONVERSATIONS).where(fieldPath.documentId(), "in", this.props.conversations)
                 .onSnapshot(querySnapshot => {
                     querySnapshot.forEach(doc => {
                         let con = doc.data();
-                        if(con.user1 === this.props.loggedId) {
+                        if (con.user1 === this.props.loggedId) {
                             userIds.push(con.user2);
                         } else {
                             userIds.push(con.user1);
@@ -57,7 +55,7 @@ class Conversations extends React.Component {
                         conversations.push(doc);
                     })
 
-                    if(conversations) {
+                    if (conversations) {
                         this.setState({conversations: [...this.state.conversations, ...conversations]});
                         this.loadUsers(userIds);
                     }
@@ -69,8 +67,8 @@ class Conversations extends React.Component {
     }
 
     componentWillUnmount() {
-        if(this.unsubscribe) this.unsubscribe();
-        if(this.unsubscribe2) this.unsubscribe2();
+        if (this.unsubscribe) this.unsubscribe();
+        if (this.unsubscribe2) this.unsubscribe2();
     }
 
     handleConversationClick = (index) => {
@@ -79,15 +77,18 @@ class Conversations extends React.Component {
     }
 
     render() {
-        const conversations = this.state.users.map((userDoc, i) => {
+
+        const conversations = (this.state.conversations.length > 0) ? this.state.users.map((userDoc, i) => {
             const user = userDoc.data();
             const clicked = ((this.state.activeConIndex === i) || (this.state.conversations[i].id === this.props.activeCon)) ? " active" : "";
             return (
-                <div className={"conversation" + clicked} onClick={() => {this.handleConversationClick(i)}} key={i}>
+                <div className={"conversation" + clicked} onClick={() => {
+                    this.handleConversationClick(i)
+                }} key={i}>
                     {user.name}
                 </div>
             );
-        })
+        }) : null;
 
         return (
             <div className="conversations">

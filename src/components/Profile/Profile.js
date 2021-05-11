@@ -4,7 +4,7 @@ import {auth, db, storage} from "../Firebase/Firebase";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {defaultLayers, searchService} from "../../Utils/HERE";
 import * as Const from "../../Const";
-import {SHELTER, UPLOADING, WAIT_INTERVAL} from "../../Const";
+import {SHELTER, UPLOADING, USER, WAIT_INTERVAL} from "../../Const";
 import TextField from '@material-ui/core/TextField';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUserCircle} from "@fortawesome/free-solid-svg-icons";
@@ -219,7 +219,23 @@ class Profile extends Component {
                 this.setState({errorMessage: "Chyba"});
             })
         } else {
-
+            db.collection("users").doc(this.state.id).update(
+                {
+                    name: this.state.user.name,
+                    phone: this.state.user.phone || "",
+                    image: this.state.imageStoragePath,
+                    desc: this.state.user.desc
+                }
+            ).then(() => {
+                this.setState({
+                    logInRedirect: true,
+                    uploadState: "",
+                    editMode: false
+                });
+            }).catch((error) => {
+                console.log(error.message);
+                this.setState({errorMessage: "Chyba"});
+            })
         }
     }
 
@@ -246,9 +262,6 @@ class Profile extends Component {
     }
 
     handleSearchItemClick = (result) => {
-        console.log("title", result.title);
-        console.log("address", result.address);
-        console.log(result);
         this.setState(prevState => ({
             address: result.title,
             user: {
@@ -283,7 +296,6 @@ class Profile extends Component {
     render() {
         const {t} = this.props;
         const edit = this.state.editMode;
-        console.log(this.state.dataLoaded + " " + this.state.user);
         if (this.state.dataLoaded && this.state.user) {
             const user = this.state.user;
             const type = this.state.user.type;
@@ -380,6 +392,14 @@ class Profile extends Component {
                             <div className="label">E-mail:</div>
                             <div className="value">{user.email}</div>
                         </div>
+                        {type === USER && (
+                            <div className="desc">
+                                <div className="label">{t('aboutMe') + ":"}</div>
+                                {edit ? <textarea className="value" name="desc" value={user.desc || ""}
+                                                  onChange={this.handleTextInputChange}/> :
+                                    <div className="value">{user.desc}</div>}
+                            </div>
+                        )}
                         {edit && type === SHELTER && (
                             <FormControlLabel
                                 control={<Checkbox checked={this.state.user.showOpenHours}
@@ -554,7 +574,7 @@ class Profile extends Component {
                         )}
 
                     </div>
-                    {type === SHELTER ? (
+                    {type === SHELTER && (
                         <>
                             <div className="review">
                                 <h3>{t('reviews')}</h3>
@@ -562,13 +582,6 @@ class Profile extends Component {
                             </div>
                             <div className="map" id="mapContainer"/>
                         </>
-                    ) : (
-                        <div className="desc">
-                            <div className="label">{t('animals.desc') + ":"}</div>
-                            {edit ? <textarea className="value" name="phone" value={user.desc || ""}
-                                              onChange={this.handleTextInputChange}/> :
-                                <div className="value">{user.desc}</div>}
-                        </div>
                     )}
                 </div>
             )
@@ -584,7 +597,7 @@ class Profile extends Component {
             return (
                 <div className="profile">
                     <div className="overlay">
-                        <div className="absolute_center"><CircularProgress/></div>
+                        <CircularProgress/>
                     </div>
                 </div>
             )

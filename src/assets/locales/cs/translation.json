@@ -72,6 +72,7 @@
   "contact": "Kontaktovat",
   "shelterProfile": "Profil útulku",
   "location": "Poloha",
+  "aboutMe": "O mně",
   "uploadImage": "Nahrát obrázek",
   "filter": "Filtrovat",
   "order": "Seřadit",
@@ -82,6 +83,9 @@
   "login": "Přihlásit",
   "cancelChanges": "Vrátit změny",
   "delete": "Smazat",
+  "adopted": "Adoptováno",
+  "returnToOffer": "Vrátit do nabídky",
+  "reallyWantToDelete": "Opravdu chcete zvíře smazat?",
   "back": "Zpět",
   "close": "Zavřít",
   "phone": "Telefon",
@@ -105,8 +109,12 @@
     "6": "Sobota",
     "7": "Neděle"
   },
+  "unspecified": "Neuvedeno",
   "reviews": "Recenze",
   "send": "Odeslat",
   "like": "Mám zájem",
-  "dislike": "Nemám zájem"
+  "dislike": "Nemám zájem",
+  "addToFavorites": "Přidat k oblíbeným",
+  "next": "Další",
+  "needToLogin": "Pro tuto akci musíte být přihlášeni."
 }

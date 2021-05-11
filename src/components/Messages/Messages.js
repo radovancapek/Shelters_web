@@ -28,7 +28,9 @@ class Messages extends Component {
             selected: 0,
             contactUserId: "",
             selectedConversation: null,
-            finishedTasks: 0
+            finishedTasks: 0,
+            task1Finished: false,
+            task2Finished: false
         }
     }
 
@@ -46,10 +48,16 @@ class Messages extends Component {
                     querySnapshot.forEach(doc => {
                         id = doc.id;
                     })
-                    this.setState(prevState => ({
-                        activeConId: id,
-                        finishedTasks: prevState.finishedTasks + 1
-                    }));
+                    if(id) {
+                        this.setState({
+                            activeConId: id,
+                            task1Finished: true
+                        });
+                    } else {
+                        this.setState({
+                            task1Finished: true
+                        });
+                    }
                 })
             this.unsubscribe3 = db.collection(CONVERSATIONS)
                 .where("user2", "==", this.props.location.state.animal.user)
@@ -59,16 +67,24 @@ class Messages extends Component {
                     querySnapshot.forEach(doc => {
                         id = doc.id;
                     })
-                    this.setState(prevState => ({
-                        activeConId: id,
-                        finishedTasks: prevState.finishedTasks + 1
-                    }));
+                    if(id) {
+                        this.setState({
+                            activeConId: id,
+                            task2Finished: true
+                        });
+                    } else {
+                        this.setState({
+                            task2Finished: true
+                        });
+                    }
+
                 })
 
         } else {
-            this.setState({mounted: true})
+            this.setState({mounted: true});
+            this.loadData();
         }
-        this.loadData();
+
 
     }
 
@@ -85,8 +101,13 @@ class Messages extends Component {
     }
 
     componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS): void {
-        if((prevState.finishedTasks === 1) && (this.state.finishedTasks === 2) && !this.state.activeConId) {
-            this.createConversation();
+        if(this.state.task1Finished && this.state.task2Finished) {
+            if(this.state.activeConId === null) {
+                this.createConversation();
+            } else {
+                this.loadData();
+            }
+            this.setState({task1Finished: false, task2Finished: false});
         }
     }
 

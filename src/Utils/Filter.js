@@ -17,7 +17,7 @@ class Filter extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            animalType: Const.DOGS,
+            animalType: this.props.animalType || Const.DOGS,
             small: false,
             medium: false,
             big: false,
@@ -41,15 +41,18 @@ class Filter extends Component {
 
     componentDidMount() {
         this.setBehaviorMap(this.state.animalType);
+        if(this.props.animalType) {
+            this.setState({[this.props.animalType]: true}, () => {
+                this.filter();
+            })
+        }
     }
 
     handleClickOutside = evt => {
-        console.log("click outside");
         this.props.onClose();
     };
 
     handleSizeChange = (event) => {
-        console.log("size " + event.target.checked);
         this.setState({
             [event.target.name]: event.target.checked
         });
@@ -98,7 +101,6 @@ class Filter extends Component {
     }
 
     handleAgeChange = (event, newValue) => {
-        console.log(newValue);
         this.setState({age: newValue});
     }
 
@@ -144,9 +146,9 @@ class Filter extends Component {
         if (this.state.small) result.size.push(SIZE_SMALL);
         if (this.state.medium) result.size.push(SIZE_MEDIUM);
         if (this.state.big) result.size.push(SIZE_BIG);
-        if (this.state.dogs) result.size.push(DOGS);
-        if (this.state.cats) result.size.push(CATS);
-        if (this.state.other) result.size.push(OTHER);
+        if (this.state.dogs) result.type.push(DOGS);
+        if (this.state.cats) result.type.push(CATS);
+        if (this.state.other) result.type.push(OTHER);
         if (this.state.male) result.gender.push(MALE);
         if (this.state.female) result.gender.push(FEMALE);
         result.age = this.state.age;
