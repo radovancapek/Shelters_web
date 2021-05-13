@@ -229,6 +229,8 @@
 
 @media only screen and (max-width: 1100px) {
   .animals {
+    grid-template-rows: auto;
+    padding-bottom: 20px;
     .wrapper {
       grid-template-columns: repeat(3, 1fr);
     }
@@ -240,6 +242,30 @@
     .wrapper {
       grid-template-columns: repeat(1, 1fr);
     }
+    .actions {
+      .filter.open {
+        .filter_obsah{
+          display: flex;
+          flex-direction: column;
+          max-width: 85vw;
+          row-gap: 10px;
+          &_type, &_size, &_age, &_weight, &_gender {
+            align-items: flex-start;
+            flex-direction: column;
+            .MuiFormGroup-root {
+              flex-wrap: unset;
+            }
+            .MuiSlider-root {
+              width: 90%;
+              margin-bottom: 10px;
+            }
+          }
+          h3 {
+            min-width: auto;
+          }
+        }
+      }
+    } 
   }
 }
 

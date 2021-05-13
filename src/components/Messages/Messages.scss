@@ -28,3 +28,10 @@
   }
 }
 
+@media only screen and (max-width: 700px) {
+  .messages {
+    .chatWrapper, .conversationsWrapper {
+      min-width: auto;
+    }
+  }
+}
