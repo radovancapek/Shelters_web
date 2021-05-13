@@ -37,6 +37,7 @@ class AnimalCard extends Component {
         this.loadImage();
         this.getDistance();
         if (this.props.gallery && this.props.animal.images) {
+            console.log("has gallery");
             this.loadImages();
         }
 
@@ -70,6 +71,7 @@ class AnimalCard extends Component {
             const imageRef = ref.child(imageUrl)
             return imageRef.getDownloadURL()
                 .then((url) => {
+                    console.log("loadImages", url);
                     images.push(url.toString());
                     this.setState({imageUrlList: [...this.state.imageUrlList, url]});
                 })
@@ -160,6 +162,7 @@ class AnimalCard extends Component {
         const gallery = () => {
             if (this.props.gallery) {
                 if (this.state.galleryImagesLoaded) {
+                    console.log("imageCount", this.state.imageCount);
                     if (this.state.imageCount > 0) {
                         return (
                             <ImageGallery items={images} showBullets={true} lazyLoad={true}/>
@@ -220,6 +223,8 @@ class AnimalCard extends Component {
             return null;
         });
 
+        const hasCity = this.props.animal.location && this.props.animal.location.address && this.props.animal.location.address.city;
+
         return (
             <div className={"animal_card" + adopted} onClick={this.props.onClick}>
                 {this.props.largeCard ? (
@@ -277,7 +282,7 @@ class AnimalCard extends Component {
                             </div>
                             <div className="animal_card_info_dist">
                                 <h3>{t('location') + ":"}</h3>
-                                {this.props.animal.location ? (
+                                {hasCity ? (
                                     <span>{this.props.animal.location.address.city}</span>
                                 ) : (
                                     <span>{t('unspecified')}</span>
@@ -337,7 +342,7 @@ class AnimalCard extends Component {
                                     </div>
                                     <div className="animal_card_info_dist">
                                         <h3>{t('location') + ":"}</h3>
-                                        {this.props.animal.location &&
+                                        {hasCity &&
                                         <span>{this.props.animal.location.address.city}</span>}
                                     </div>
                                 </div>
@@ -348,7 +353,8 @@ class AnimalCard extends Component {
                                     <span>{age}</span>
                                 </div>
                                 <div className="animal_card_info_dist">
-                                    {this.props.animal.location && <span>{this.props.animal.location.address.city}</span>}
+                                    {hasCity &&
+                                    <span>{this.props.animal.location.address.city}</span>}
                                 </div>
                             </div>
                         )

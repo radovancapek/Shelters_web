@@ -161,11 +161,14 @@ class AddAnimal extends Component {
 
     addAnimal = () => {
         const images = this.state.imagesStoragePaths;
+
         this.setState(prevState => ({
             animal: {
-                ...prevState.animal, images: images
+                ...prevState.animal, images: images,
+                ...prevState.animal, age: parseInt(prevState.animal.age)
             }
         }), () => {
+            console.log("typeof", typeof this.state.animal.age);
             if (this.state.animalId) {
                 db.collection(ANIMALS).doc(this.state.animalId)
                     .set(this.state.animal, {merge: true})
@@ -223,7 +226,8 @@ class AddAnimal extends Component {
                 this.setState(prevState => ({
                     animal: {
                         ...prevState.animal, image: imageStoragePath
-                    }
+                    },
+                    imagesStoragePaths: [...this.state.imagesStoragePaths, imageStoragePath]
                 }));
             }
             const uploadTask = storage.ref(imageStoragePath).put(files[i]);
@@ -240,8 +244,7 @@ class AddAnimal extends Component {
                 () => {
                     const downloadURL = uploadTask.snapshot.ref.getDownloadURL();
                     this.setState({
-                        downloadURLs: [...this.state.downloadURLs, downloadURL],
-                        imagesStoragePaths: [...this.state.imagesStoragePaths, imageStoragePath]
+                        downloadURLs: [...this.state.downloadURLs, downloadURL]
                     });
                 });
 
