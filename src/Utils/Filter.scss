@@ -26,3 +26,311 @@
     }
   }
 }
+
+.animals {
+  .actions {
+    .filter {
+      &_icon {
+        display: none;
+      }
+
+      &_label {
+        cursor: pointer;
+      }
+
+      &_obsah {
+        display: none;
+        position: absolute;
+        z-index: 1000;
+        background-color: var(--secondary);
+      }
+
+      &.open {
+        .filter_obsah {
+          padding: 10px;
+          display: grid;
+          grid-template-rows: repeat(6, 50px);
+          grid-template-columns: repeat(6, 1fr);
+          column-gap: 10px;
+
+          h3 {
+            min-width: 180px;
+          }
+
+          &_breed {
+            grid-row: 1 / 2;
+            grid-column: 5 / 7;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+
+            h3 {
+              width: fit-content;
+              min-width: unset;
+              margin-right: 15px;
+            }
+
+            .Input_text {
+              border: 1px solid var(--orange-primary);
+              border-radius: 5px;
+              outline: none;
+            }
+          }
+
+          &_type, &_size, &_gender {
+            grid-column: 1 / 5;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+
+            .MuiFormGroup-root {
+              display: flex;
+              flex-direction: row;
+              // margin-left: 30px;
+              .MuiFormControlLabel-root {
+                margin: 0;
+
+                .PrivateSwitchBase-root-1 {
+                  padding: 0;
+                }
+
+                .MuiFormControlLabel-label {
+                  min-width: 70px;
+                  margin-left: 10px;
+                }
+              }
+            }
+          }
+
+          &_type {
+            grid-row: 1 / 2;
+          }
+
+          &_size {
+            grid-row: 2 / 3;
+          }
+
+          &_age {
+            grid-row: 4 / 5;
+          }
+
+          &_weight {
+            grid-row: 3 / 4;
+          }
+
+          &_gender {
+            grid-row: 5 / 6;
+            grid-column: 1 / 4;
+
+            .MuiFormGroup-root {
+              display: flex;
+              flex-direction: row;
+              flex-wrap: unset;
+
+            }
+
+          }
+
+          &_age, &_weight {
+            grid-column: 1 / 4;
+            display: flex;
+            align-items: center;
+
+            .MuiSlider-root {
+              margin-left: 10px;
+              width: 150px;
+
+              .MuiSlider-valueLabel {
+                left: auto;
+              }
+
+              .MuiSlider-thumb {
+                .MuiSlider-valueLabel {
+                  transform: scale(0.8) translateY(20px) rotate(180deg);
+
+                  [class*="PrivateValueLabel-circle"] {
+                    [class*="PrivateValueLabel-label"] {
+                      transform: rotate(225deg);
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          &_behavior {
+            grid-row: 3 / 6;
+            grid-column: 4 / 6;
+            margin-left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            &_item {
+              display: flex;
+              justify-content: flex-start;
+            }
+
+            .MuiFormControlLabel-root {
+              margin: 0;
+            }
+          }
+
+          .filter_button {
+            grid-row: 6 / 7;
+            grid-column: 3 / 4;
+            height: 40px;
+          }
+
+        }
+      }
+    }
+  }
+}
+
+.swipe {
+  .filter {
+    grid-area: filter;
+    align-self: center;
+    height: 150px;
+    width: 75px;
+    border-bottom-right-radius: 100px;
+    border-top-right-radius: 100px;
+    background-color: var(--secondary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: all 0.5s ease;
+    -webkit-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+
+    &_label {
+      display: none;
+    }
+
+    &_icon {
+      position: relative;
+      width: 30px !important;
+      height: 30px !important;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    &_obsah {
+      opacity: 0;
+      height: 0;
+      transition: opacity 0s;
+
+      h3 {
+        margin-bottom: 5px;
+      }
+
+      .MuiTypography-body1 {
+        font-size: 14px !important;
+        margin-left: 5px;
+      }
+
+      .MuiFormControlLabel-root {
+        margin-left: 0;
+      }
+
+      &_gender {
+        display: flex;
+        flex-direction: row;
+
+        .gender_group {
+          display: flex;
+          flex-direction: row;
+          margin-left: 30px;
+        }
+      }
+
+      &_size {
+        display: flex;
+        flex-direction: column;
+        .size_group {
+          display: flex;
+          flex-direction: row;
+        }
+      }
+      &_age, &_weight {
+        padding-right: 10%;
+
+        .MuiSlider-root {
+          margin-left: 10px;
+          .MuiSlider-valueLabel {
+            left: auto;
+          }
+          .MuiSlider-thumb {
+            .MuiSlider-valueLabel {
+              transform: scale(0.8) translateY(25px);
+              [class*="PrivateValueLabel-circle"] {
+                border-radius: 50%;
+                transform: rotate(0);
+                [class*="PrivateValueLabel-label"] {
+                  transform: rotate(0);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      &_breed {
+        .Input_text {
+          border: 1px solid var(--orange-primary);
+          border-radius: 5px;
+          outline: none;
+        }
+      }
+
+      .MuiSlider-markLabel {
+        display: none;
+      }
+
+      &_behavior {
+        height: 125px;
+      }
+    }
+
+    &_button {
+      max-width: 50%;
+      margin-top: 25px;
+    }
+  }
+
+  .open {
+    height: 650px;
+    width: 325px;
+    border-bottom-right-radius: 325px;
+    border-top-right-radius: 325px;
+    margin-top: -30px;
+
+    .filter_icon {
+      display: none;
+    }
+
+    .filter_obsah {
+      height: auto;
+      opacity: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding-left: 15px;
+      padding-right: 25px;
+      overflow: hidden;
+
+      transition: opacity 0.5s ease;
+      -webkit-transition: opacity 0.5s ease;
+      -o-transition: opacity 0.5s ease;
+      -moz-transition: opacity 0.5s ease;
+      -webkit-transition-delay: 0.5s;
+      transition-delay: 0.4s;
+
+    }
+  }
+}

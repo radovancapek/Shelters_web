@@ -23,10 +23,12 @@
 
   .placeholder {
     position: relative;
+    display: flex;
+
     .placeholder_text {
       position: absolute;
       left: 50%;
-      top:50%;
+      top: 50%;
       transform: translate(-50%, -50%);
       width: 100%;
       text-align: center;
@@ -90,10 +92,12 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
     .info {
       display: flex;
       justify-content: space-between;
       padding: 0 20px;
+
       * {
         display: flex;
         align-items: center;
@@ -107,6 +111,7 @@
 
       }
     }
+
     .behavior {
       display: flex;
       margin-top: 20px;
@@ -126,23 +131,28 @@
         }
       }
     }
+
     .desc {
       padding: 0 20px;
       margin-top: 20px;
       margin-bottom: 10px;
       display: flex;
       align-items: center;
+
       .desc_text {
         margin-left: 20px;
       }
     }
+
     .buttons {
       justify-self: flex-end;
       margin: auto;
       display: flex;
+
       .Button {
         margin-left: 5px;
         text-transform: unset;
+
         &.contact {
           width: fit-content;
         }
@@ -187,6 +197,7 @@
     .animal_card_image {
       height: auto;
       max-width: 100%;
+      object-fit: contain;
     }
 
     .image-gallery {
@@ -212,27 +223,29 @@
             height: 100%;
 
           }
-            .image-gallery-slides {
+
+          .image-gallery-slides {
+            height: 100%;
+
+            .image-gallery-slide {
               height: 100%;
 
-              .image-gallery-slide {
+              div {
                 height: 100%;
 
-                div {
-                  height: 100%;
-
-                  .image-gallery-image {
-                    max-height: 100%;
-                  }
+                .image-gallery-image {
+                  max-height: 100%;
                 }
-
               }
+
+            }
 
           }
 
           .image-gallery-bullet:hover {
             background: var(--orange-transparent);
           }
+
           .image-gallery-bullet.active {
             background: var(--orange-transparent);
           }
@@ -241,14 +254,15 @@
         .image-gallery-thumbnails-wrapper {
           flex-grow: 1;
           max-height: 25%;
+
           .image-gallery-thumbnails {
             height: 100%;
 
-              .image-gallery-thumbnails-container {
-                height: 100%;
+            .image-gallery-thumbnails-container {
+              height: 100%;
 
-                .image-gallery-thumbnail {
-                  height: 100%;
+              .image-gallery-thumbnail {
+                height: 100%;
 
                 .image-gallery-thumbnail-inner {
                   height: 100%;
@@ -287,17 +301,36 @@
     }
   }
 }
+
 @media only screen and (max-width: 700px) {
   .animal_card {
     overflow: auto;
     width: 100%;
-    height: 100%;
+    //height: 100%;
     &_name {
       min-height: 30px;
     }
+
     .gallery_wrapper.large {
       height: auto;
+
+      .image-gallery {
+        max-width: 100%;
+        width: 100%;
+        min-height: 300px;
+        height: 100%;
+        margin: auto;
+
+        .image-gallery-content {
+          .image-gallery-thumbnails-wrapper {
+            .image-gallery-thumbnails {
+              display: none;
+            }
+          }
+        }
+      }
     }
+
     .small_card_content {
       &_adopted {
         .adopted-text {
@@ -305,20 +338,36 @@
         }
       }
     }
+
     .large_card_content {
       .info {
         padding: 0;
         flex-direction: column;
+
+        * {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 5px;
+        }
       }
+
+      h3 {
+        margin: 5px 0;
+      }
+
       .behavior {
         flex-direction: column;
         padding: 0;
+
         .behavior_content {
           flex-direction: column;
           align-items: flex-start;
         }
       }
+
       .desc {
+        align-items: flex-start;
+        flex-direction: column;
         padding: 0;
       }
     }

@@ -287,7 +287,6 @@ class AnimalCard extends Component {
                                 ) : (
                                     <span>{t('unspecified')}</span>
                                 )}
-                                <span>{this.state.location}</span>
                             </div>
                         </div>
                         <div className="behavior">

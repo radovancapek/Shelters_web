@@ -57,7 +57,7 @@
   "repeatPassword": "Heslo znovu",
   "address": "Adresa",
   "registrationNumber": "Registrační číslo",
-  "dontHaveRegistrationNumber": "Nemáte registrační číslo?",
+  "dontHaveRegistrationNumber": "Nemáte registrační číslo nebo nebylo nalezeno?",
   "wrongRegistrationNumber": "Registrační číslo nebylo nalezeneno.",
   "userNotFound": "Uživatel nebyl nalezen.",
   "userEmailNotFound": "Uživatel s touto e-mailovou adresou nebyl nalezen.",

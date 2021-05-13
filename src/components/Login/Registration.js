@@ -7,6 +7,7 @@ import {Redirect} from "react-router-dom";
 import {searchService} from "../../Utils/HERE";
 import {WAIT_INTERVAL} from "../../Const";
 import {withTranslation} from "react-i18next";
+import {shelters} from "../../assets/files/shelters.json";
 
 class Registration extends Component {
 
@@ -63,18 +64,17 @@ class Registration extends Component {
         }
     }
 
-    validateIC = () => {
-        let ic = this.state.registrationNumber;
-        let sum = 0;
-        const lastDigit = parseInt(ic.charAt(7));
-        if (ic.length !== 8 || isNaN(parseInt(ic))) {
-            return false;
-        }
-        for (let i = 0; i < 7; i++) {
-            let digit = parseInt(ic.charAt(i))
-            sum += digit * (8 - i);
-        }
-        return lastDigit === (11 - (sum % 11)) % 10;
+    validateRegistrationNumber = () => {
+        let rn = this.state.registrationNumber;
+        let value = false;
+        shelters.forEach(shelter => {
+            let shelterString = shelter.replace(/\s+/g, '');
+            let rnString = rn.replace(/\s+/g, '');
+            if (shelterString.toLowerCase() === rnString.toLowerCase()) {
+                value = true;
+            }
+        })
+        return value;
     }
 
     validate = () => {
@@ -88,7 +88,7 @@ class Registration extends Component {
                 this.setState({shelterNameError: "error"});
                 valid = false;
             }
-            if (!this.validateIC()) {
+            if (!this.validateRegistrationNumber()) {
                 valid = false;
                 this.setState({
                     wrongRegistrationNumber: "error"
@@ -196,6 +196,7 @@ class Registration extends Component {
     updateInput = e => {
         let name = e.target.name;
         let val = e.target.value;
+
         if (val.length > 0) {
             switch (name) {
                 case "email":
@@ -309,11 +310,10 @@ class Registration extends Component {
                                        name="registrationNumber"
                                        onChange={this.updateInput} value={this.state.registrationNumber}/>
                             </div>
-                            {this.state.wrongRegistrationNumber ? (
-                                <div className="error_message">{t('wrongRegistrationNumber')}</div>
-                            ) : (
-                                <div className="no_ic" onClick={this.forgotPasswordClick}>{t('dontHaveRegistrationNumber')}</div>
-                            )}
+                            {this.state.wrongRegistrationNumber && (
+                                <div className="error_message">{t('wrongRegistrationNumber')}</div>)}
+                            <div className="no_ic"
+                                 onClick={this.forgotPasswordClick}>{t('dontHaveRegistrationNumber')}</div>
                             <div className="autocomplete">
                                 <div className="Input_wrapper">
                                     <span className="Input_label">{t('address')}</span>
@@ -330,7 +330,8 @@ class Registration extends Component {
                             </div>
                         </>
                     )}
-                    <div className={"Input_wrapper " + this.state.emailError + this.state.firebaseEmailFormatError + this.state.firebaseEmailExistsError}>
+                    <div
+                        className={"Input_wrapper " + this.state.emailError + this.state.firebaseEmailFormatError + this.state.firebaseEmailExistsError}>
                         <span className="Input_label">E-mail</span>
                         <input
                             className={"Input Input_text "}
