@@ -148,10 +148,18 @@
 
               .MuiSlider-thumb {
                 .MuiSlider-valueLabel {
+                  -ms-transform: scale(0.8) translateY(20px) rotate(180deg);
+                  -webkit-transform: scale(0.8) translateY(20px) rotate(180deg);
+                  -moz-transform: scale(0.8) translateY(20px) rotate(180deg);
+                  -o-transform: scale(0.8) translateY(20px) rotate(180deg);
                   transform: scale(0.8) translateY(20px) rotate(180deg);
 
-                  [class*="PrivateValueLabel-circle"] {
-                    [class*="PrivateValueLabel-label"] {
+                  span, [class*="PrivateValueLabel-circle"] {
+                    span, [class*="PrivateValueLabel-label"] {
+                      -ms-transform: rotate(225deg);
+                      -webkit-transform: rotate(225deg);
+                      -moz-transform: rotate(225deg);
+                      -o-transform: rotate(225deg);
                       transform: rotate(225deg);
                     }
                   }
@@ -267,11 +275,23 @@
           }
           .MuiSlider-thumb {
             .MuiSlider-valueLabel {
+              -ms-transform: scale(0.8) translateY(25px);
+              -webkit-transform: scale(0.8) translateY(25px);
+              -moz-transform: scale(0.8) translateY(25px);
+              -o-transform: scale(0.8) translateY(25px);
               transform: scale(0.8) translateY(25px);
-              [class*="PrivateValueLabel-circle"] {
+              span, [class*="PrivateValueLabel-circle"] {
                 border-radius: 50%;
+                -ms-transform: rotate(0);
+                -webkit-transform: rotate(0);
+                -moz-transform: rotate(0);
+                -o-transform: rotate(0);
                 transform: rotate(0);
-                [class*="PrivateValueLabel-label"] {
+                span, [class*="PrivateValueLabel-label"] {
+                  -ms-transform: rotate(0);
+                  -webkit-transform: rotate(0);
+                  -moz-transform: rotate(0);
+                  -o-transform: rotate(0);
                   transform: rotate(0);
                 }
               }
@@ -331,6 +351,52 @@
       -webkit-transition-delay: 0.5s;
       transition-delay: 0.4s;
 
+    }
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .swipe {
+    .filter {
+      height: 100px;
+      width: 50px;
+    }
+    .open {
+      height: 100%;
+      width: 90vw;
+    }
+  }
+  .animals {
+    .wrapper {
+      grid-template-columns: repeat(1, 1fr);
+    }
+    .actions {
+      .filter.open {
+        .filter_obsah{
+          display: flex;
+          flex-direction: column;
+          max-width: 85vw;
+          row-gap: 10px;
+          &_type, &_size, &_age, &_weight, &_gender {
+            align-items: flex-start;
+            flex-direction: column;
+            .MuiFormGroup-root {
+              flex-wrap: unset;
+            }
+            .MuiSlider-root {
+              width: 90%;
+              margin-bottom: 10px;
+            }
+          }
+          *{
+            font-size: 14px;
+          }
+          h3 {
+            min-width: auto;
+            font-size: 18px;
+          }
+        }
+      }
     }
   }
 }

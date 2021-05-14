@@ -6,8 +6,6 @@
   grid-template-rows: minmax(400px, auto) 1fr;
   grid-template-areas: "filter swipe ." "filter buttons ." ". . .";
 
-
-
   .MuiCircularProgress-root {
     margin: auto;
     &.MuiCircularProgress-colorPrimary {
