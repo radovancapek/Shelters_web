@@ -1,7 +1,7 @@
 .animal_card {
   position: relative;
   overflow: hidden;
-  background-color: var(--white);
+  background-color: var(--secondary);
   display: flex;
   justify-content: space-between;
   height: 35vh;
@@ -11,6 +11,9 @@
   padding: 10px;
   cursor: pointer;
 
+  * {
+    color: var(--primary);
+  }
   &.adopted {
     :not(.small_card_content_adopted):not(.adopted-text) {
       opacity: 0.5;
@@ -90,7 +93,7 @@
       .adopted-text {
         color: var(--orange-primary);
         font-size: 2vw;
-        font-family: "Emblema One";
+        font-family: "Emblema One", serif;
       }
     }
   }
@@ -102,8 +105,10 @@
     justify-content: space-between;
 
     .info {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-rows: 1fr;
+      grid-template-columns: repeat(6, auto);
+      gap: 10px;
       padding: 0 20px;
 
       * {
@@ -196,6 +201,7 @@
 
     &.large {
       height: 50vh;
+      width: 100%;
     }
 
     .MuiCircularProgress-colorPrimary {
@@ -227,9 +233,15 @@
           width: 100%;
           flex-grow: 3;
 
+          button {
+            * {
+              color: var(--orange-primary);
+            }
+
+          }
+
           .image-gallery-swipe {
             height: 100%;
-
           }
 
           .image-gallery-slides {
@@ -274,6 +286,8 @@
 
                 .image-gallery-thumbnail-inner {
                   height: 100%;
+                  display: flex;
+                  align-items: center;
 
                   .image-gallery-thumbnail-image {
                     object-fit: contain;
@@ -305,6 +319,17 @@
         .adopted-text {
           font-size: 4vw;
         }
+      }
+    }
+    .large_card_content {
+      justify-self: flex-end;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .info {
+        grid-template-rows: repeat(2, 1fr);
+        grid-template-columns: repeat(3, auto);
       }
     }
   }

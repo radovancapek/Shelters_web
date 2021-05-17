@@ -1,32 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Emblema+One&family=Montserrat&display=swap");
 
-.lighttheme {
-  --primary: #1a1c20;
-  --secondary: #f5f7fa;
-  --grad-first: #f5f7fa;
-  --grad-second: #b3b7c7;
-  --primary-transparent: rgba(31, 41, 51, 0.2);
-  --secondary-transparent: rgba(245, 247, 250, 0.2);
-  --orange-primary: #f0a500;
-  --orange-secondary: #cf7500;
-  --orange-therciary: #ffc000;
-  --orange-transparent: rgba(240, 165, 0, 0.33);
-  --white: #f5f7fa;
-}
-
-.darktheme {
-  --primary: #f5f7fa;
-  --secondary: #1a1c20;
-  --grad-first: #121415;
-  --grad-second: #323f4b;
-  --primary-transparent: rgba(245, 247, 250, 0.2);
-  --secondary-transparent: rgba(31, 41, 51, 0.2);
-  --orange-primary: #f0a500;
-  --orange-secondary: #cf7500;
-  --orange-therciary: #ffc000;
-  --orange-transparent: rgba(240, 165, 0, 0.33);
-}
-
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
@@ -49,7 +22,7 @@ html {
 
 body {
   margin: 1px;
-  font-family: "Montserrat";
+  font-family: "Montserrat", serif;
   font-weight: 400;
   height: 100%;
 }

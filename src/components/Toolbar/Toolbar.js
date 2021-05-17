@@ -5,6 +5,7 @@ import PrivateToolbar from "./PrivateToolbar";
 import PublicToolbar from "./PublicToolbar";
 import {auth, db} from "../Firebase/Firebase"
 import {withTranslation} from 'react-i18next';
+import i18n from '../../i18nextConf';
 
 class Toolbar extends Component {
     constructor(props) {
@@ -12,7 +13,8 @@ class Toolbar extends Component {
         this.state = {
             toolbar: null,
             user: null,
-            anchorEl: null
+            anchorEl: null,
+            language: i18n.language
         };
     }
 
@@ -21,7 +23,7 @@ class Toolbar extends Component {
             if (user) {
                 this.loadData(user.uid);
             } else {
-                this.setState({toolbar: <PublicToolbar/>});
+                this.setState({toolbar: <PublicToolbar changeTheme={this.props.changeTheme}/>});
             }
         });
     }
@@ -32,7 +34,9 @@ class Toolbar extends Component {
             if (doc.exists) {
                 this.setState({
                     user: doc.data(),
-                    toolbar: <PrivateToolbar logout={this.logout} user={doc.data()}/>
+                    toolbar: <PrivateToolbar logout={this.logout} user={doc.data()}
+                                             languageChange={this.handleLanguageChange}
+                                             changeTheme={this.props.changeTheme}/>
                 });
             } else {
                 this.setState({
@@ -62,7 +66,6 @@ class Toolbar extends Component {
                         : null}
                 </div>
                 {this.state.toolbar}
-
             </div>
         );
     }

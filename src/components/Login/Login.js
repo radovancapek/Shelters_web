@@ -35,6 +35,13 @@ class Login extends Component {
     }
 
     componentDidMount() {
+        document.addEventListener("keydown", this.handleKeyDown, false);
+    }
+
+    handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            this.login();
+        }
     }
 
     login = () => {

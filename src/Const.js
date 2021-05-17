@@ -7,6 +7,7 @@ export const SHELTER = "shelter";
 export const MALE = "male";
 export const FEMALE = "female";
 export const CONVERSATIONS = "conversations";
+export const REVIEWS = "reviews";
 export const DISABLED = "disabled";
 
 export const SIZE_BIG = "size_big";

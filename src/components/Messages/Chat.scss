@@ -15,12 +15,12 @@
     display: flex;
     flex-direction: column-reverse;
     overflow: auto;
-    background-color: white;
+    background-color: var(--secondary-transparent);
     padding: 3%;
   }
 
   .messageWrapper {
-    border: 1px solid white;
+    border: 1px solid var(--primary-transparent);
     display: flex;
     flex-direction: column;
     border-radius: 5px;
@@ -29,6 +29,7 @@
     padding: 5px 10px;
     cursor: pointer;
     max-width: 80%;
+    margin-bottom: 3px;
 
     .messageTime {
       text-align: right;
@@ -38,7 +39,7 @@
     }
 
     .messageText {
-
+      color: var(--primary);
     }
   }
 
@@ -46,7 +47,7 @@
   .left {
     justify-content: flex-start;
     margin-right: auto;
-    background-color: var(--secondary);
+    background-color: var(--primary-transparent);
 
     .seenAt {
       display: none;

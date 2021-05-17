@@ -10,12 +10,16 @@ import Fade from "@material-ui/core/Fade";
 import MenuItem from "@material-ui/core/MenuItem";
 import {faBars} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import Select from "@material-ui/core/Select";
+import i18n from "../../i18nextConf";
+import Switch from "react-switch";
 
 class PrivateToolbar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            anchorEl: null
+            anchorEl: null,
+            checked: false
         };
     }
 
@@ -38,8 +42,12 @@ class PrivateToolbar extends Component {
             })
     }
 
-    loadConversations = (ids) => {
+    handleChange = (checked) => {
+        this.setState({ checked });
+        this.props.changeTheme();
+    }
 
+    loadConversations = (ids) => {
         ids.forEach(id => {
             this.unsubscribe2 = db.collection(CONVERSATIONS).doc(id).collection("messages").where("read", "==", true)
                 .onSnapshot(querySnapshot => {
@@ -61,10 +69,14 @@ class PrivateToolbar extends Component {
         });
     };
 
+    handleLanguageChange = (e) => {
+        i18n.changeLanguage(e.target.value);
+    }
+
     render() {
         const {t} = this.props;
         return (
-            <div>
+            <>
                 <ul className="toolbar_items">
                     <li className="toolbar_items_item">
                         <NavLink to="/choice" className="toolbar_items_item_link">
@@ -109,6 +121,49 @@ class PrivateToolbar extends Component {
                     <li className="toolbar_items_item">
                         <div className="toolbar_items_item_link">
                             <p className="toolbar_items_item_text" onClick={this.props.logout}>{t('toolbar.logout')}</p>
+                        </div>
+                    </li>
+                    <li className="toolbar_items_item">
+                        <div className="toolbar_items_item_link">
+                            <div className="language">
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={i18n.language}
+                                    onChange={this.handleLanguageChange}
+                                >
+                                    <MenuItem value={'cs'}>CZ</MenuItem>
+                                    <MenuItem value={'en'}>EN</MenuItem>
+                                </Select>
+                            </div>
+                        </div>
+                    </li>
+                    <li className="toolbar_items_item">
+                        <div className="toolbar_items_item_link">
+                            <Switch onChange={this.handleChange}
+                                    checked={this.state.checked}
+                                    offHandleColor="#f0a500"
+                                    onHandleColor="#f0a500"
+                                    onColor="#f5f7fa"
+                                    offColor="#1a1c20"
+                                    height={20}
+                                    width={40}
+                                    activeBoxShadow="null"
+                                    checkedIcon={<span
+                                        style={{display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        height: "100%",
+                                        color: "#1a1c20"}}
+                                    >☼</span>}
+                                    uncheckedIcon={<span
+                                        style={{display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        height: "100%",
+                                        color: "#f5f7fa"}}
+                                    >☾</span>}
+                            />
                         </div>
                     </li>
                 </ul>
@@ -168,7 +223,7 @@ class PrivateToolbar extends Component {
                         </div>
                     </MenuItem>
                 </Menu>
-            </div>
+            </>
 
         );
     }

@@ -12,7 +12,6 @@ class Swipe extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            animals: [],
             animalDocuments: [],
             animalDocumentsFull: [],
             currentUser: auth.currentUser,
@@ -41,15 +40,15 @@ class Swipe extends Component {
 
     loadData = () => {
         let likedAnimals = [];
-        let dislikedAnimals = [];
+        let skippedAnimals = [];
         let swipedAnimals = [];
         const userRef = db.collection("users").doc(this.state.currentUser.uid);
         userRef.get().then((user) => {
             if (user.exists) {
                 likedAnimals = user.data().likedAnimals || [];
-                dislikedAnimals = user.data().dislikedAnimals || [];
-                swipedAnimals = likedAnimals.concat(dislikedAnimals);
-                this.queryAnimals(swipedAnimals);
+                skippedAnimals = user.data().dislikedAnimals || [];
+                swipedAnimals = likedAnimals.concat(skippedAnimals);
+                this.queryAnimals(swipedAnimals, skippedAnimals);
 
             } else {
                 console.log("Firestore error");
@@ -57,22 +56,24 @@ class Swipe extends Component {
         });
     }
 
-    queryAnimals = (swipedAnimals) => {
-        let animals = [];
+    queryAnimals = (swipedAnimals, skippedAnimals) => {
         let animalDocuments = [];
-        db.collection("animals").get()
+        let skippedDocuments = [];
+        db.collection("animals").where("adopted", "==", false).get()
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
                     if (!swipedAnimals.includes(doc.id)) {
-                        animals.push(doc.data());
                         animalDocuments.push(doc);
+                    }
+                    if (skippedAnimals.includes(doc.id)) {
+                        skippedDocuments.push(doc);
                     }
                 });
                 // animals.sort(() => Math.random() - 0.5);
+                animalDocuments = animalDocuments.concat(skippedDocuments);
                 let animal = animalDocuments.pop();
                 this.setState({
                     animalsLoaded: true,
-                    animals: animals,
                     animal: animal,
                     animalDocuments: animalDocuments,
                     animalDocumentsFull: animalDocuments
@@ -80,20 +81,40 @@ class Swipe extends Component {
             });
     }
 
-    swipe = (list) => {
+    like = () => {
         let array = [...this.state.animalDocuments];
-        let animal = array.pop();
         let full = [...this.state.animalDocumentsFull];
-        let index = full.indexOf(animal)
-        if (index !== -1) {
-            full.splice(index, 1);
-            this.setState({animalDocumentsFull: array});
-        }
         const userRef = db.collection("users").doc(this.state.currentUser.uid);
         userRef.update({
-            [list]: firebase.firestore.FieldValue.arrayUnion(this.state.animal.id)
+            "likedAnimals": firebase.firestore.FieldValue.arrayUnion(this.state.animal.id),
+            "dislikedAnimals": firebase.firestore.FieldValue.arrayRemove(this.state.animal.id)
         }).then(() => {
-            this.setState({animalDocuments: array, animal: animal});
+            let animal = array.pop();
+            let index = full.indexOf(animal);
+            if (index !== -1) {
+                full.splice(index, 1);
+            }
+            this.setState({animal: animal, animalDocuments: array, animalDocumentsFull: full})
+        }).catch(e => {
+            console.log("error " + e.message);
+        })
+    }
+
+    skip = () => {
+        let array = [...this.state.animalDocuments];
+        let full = [...this.state.animalDocumentsFull];
+        array.unshift(this.state.animal);
+        full.unshift(this.state.animal);
+        const userRef = db.collection("users").doc(this.state.currentUser.uid);
+        userRef.update({
+            "dislikedAnimals": firebase.firestore.FieldValue.arrayUnion(this.state.animal.id)
+        }).then(() => {
+            let animal = array.pop();
+            let index = full.indexOf(animal);
+            if (index !== -1) {
+                full.splice(index, 1);
+            }
+            this.setState({animal: animal, animalDocuments: array, animalDocumentsFull: full})
         }).catch(e => {
             console.log("error " + e.message);
         })
@@ -105,11 +126,9 @@ class Swipe extends Component {
         }
     }
     close = () => {
-        if (!this.state.selectedAnimalDocument) {
-            this.setState({
-                menuOpen: false
-            });
-        }
+        this.setState({
+            menuOpen: false
+        });
     }
 
     filter = (filterData) => {
@@ -119,10 +138,10 @@ class Swipe extends Component {
             array.push(this.state.animal);
         }
         if (array.length > 0) {
+            const filterBehavior = filterData.behaviorMap;
             array = array.filter(animalDocument => {
                 if (animalDocument !== undefined) {
                     const animal = animalDocument.data();
-                    const filterBehavior = filterData.behaviorMap;
                     for (let key in filterBehavior) {
                         if (filterBehavior[key]) {
                             if (!animal.behaviorMap[key]) {
@@ -138,7 +157,7 @@ class Swipe extends Component {
                         (filterData.type.includes(animal.type) || (filterData.type.length === 0)) &&
                         (filterData.size.includes(animal.size) || (filterData.size.length === 0)) &&
                         (((animal.age >= filterData.age[0]) && (animal.age <= filterData.age[1])) || ((filterData.age[0] === 0) && (filterData.age[1] === 20))) &&
-                        (((animal.weight >= filterData.animalWeight[0]) && (animal.weight <= filterData.animalWeight[1])) || ((filterData.animalWeight[0] === 0) && (filterData.weight[1] === 80))) &&
+                        (((animal.weight >= filterData.animalWeight[0]) && (animal.weight <= filterData.animalWeight[1])) || ((filterData.animalWeight[0] === 0) && (filterData.animalWeight[1] === 80))) &&
                         ((filterData.gender.includes(animal.gender) || (filterData.gender.length === 0)) &&
                             breedFilter)
                     );
@@ -185,18 +204,14 @@ class Swipe extends Component {
                                                         onClick={() => this.openDetail(this.state.animal)}/>
                                         </div>
                                         <div className="buttons">
-                                            <button className="Button" onClick={() => {
-                                                this.swipe("likedAnimals")
-                                            }}>{t('addToFavorites')}
+                                            <button className="Button" onClick={this.like}>{t('addToFavorites')}
                                             </button>
-                                            <button className="Button" onClick={() => {
-                                                this.swipe("dislikedAnimals")
-                                            }}>{t('next')}
+                                            <button className="Button" onClick={this.skip}>{t('next')}
                                             </button>
                                         </div>
                                     </>
                                 )
-                        ) : <div>Žádná další zvířata.</div>
+                        ) : <div className="noMoreAnimals">{t('noMoreAnimals')}</div>
                     ) : <CircularProgress/>
                 }
             </div>

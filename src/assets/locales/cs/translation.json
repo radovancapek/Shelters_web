@@ -11,7 +11,7 @@
     "login": "Přihlášení",
     "registration": "Registrace",
     "messages": "Zprávy",
-    "myAnimals": "Moje zvířata",
+    "myAnimals": "Naše zvířata",
     "likedAnimals": "Oblíbená zvířata",
     "addAnimal": "Přidat zvíře"
   },
@@ -33,6 +33,7 @@
     },
     "gender": "Pohlaví",
     "breed": "Rasa",
+    "genus": "Druh",
     "desc": "Popis",
     "age": "Věk",
     "size": "Velikost",
@@ -81,6 +82,7 @@
   "editInfo": "Upravit info",
   "save": "Uložit",
   "login": "Přihlásit",
+  "signUp": "Registrovat",
   "cancelChanges": "Vrátit změny",
   "delete": "Smazat",
   "adopted": "Adoptováno",
@@ -116,5 +118,10 @@
   "dislike": "Nemám zájem",
   "addToFavorites": "Přidat k oblíbeným",
   "next": "Další",
-  "needToLogin": "Pro tuto akci musíte být přihlášeni."
+  "needToLogin": "Pro tuto akci musíte být přihlášeni.",
+  "addReview": "Přidat recenzi",
+  "anonymous": "Anonym",
+  "noAnimals": "Žádná zvířata",
+  "noMoreAnimals": "Žádná další zvířata",
+  "pageNotFound": "Stránka nebyla nalezena"
 }

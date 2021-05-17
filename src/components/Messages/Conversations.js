@@ -77,7 +77,6 @@ class Conversations extends React.Component {
     }
 
     render() {
-
         const conversations = (this.state.conversations.length > 0) ? this.state.users.map((userDoc, i) => {
             const user = userDoc.data();
             const clicked = ((this.state.activeConIndex === i) || (this.state.conversations[i].id === this.props.activeCon)) ? " active" : "";

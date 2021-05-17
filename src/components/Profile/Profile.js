@@ -11,6 +11,7 @@ import {faUserCircle} from "@fortawesome/free-solid-svg-icons";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import {withTranslation} from "react-i18next";
+import Reviews from "./Reviews";
 
 class Profile extends Component {
     constructor(props) {
@@ -344,7 +345,7 @@ class Profile extends Component {
                         {photo()}
                         {edit && (
                             <div className="addPhoto">
-                                <input id="files" type="file" onChange={this.handlePhotoChange}
+                                <input id="files" type="file" accept="image/*" onChange={this.handlePhotoChange}
                                        className="addPhoto_input"/>
                                 <label htmlFor="files" className="addPhoto_label">{t('uploadImage')}</label>
                             </div>
@@ -576,10 +577,7 @@ class Profile extends Component {
                     </div>
                     {type === SHELTER && (
                         <>
-                            <div className="review">
-                                <h3>{t('reviews')}</h3>
-                                <div className="reviews"></div>
-                            </div>
+                            <Reviews uid={this.state.id}/>
                             <div className="map" id="mapContainer"/>
                         </>
                     )}

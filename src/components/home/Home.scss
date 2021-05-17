@@ -10,3 +10,18 @@
   width: 100%;
   //min-height: 100%;
 }
+
+@media only screen and (max-width: 600px) {
+  .Home {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    padding: 5px;
+
+    &_item {
+      max-width: 400px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+  }
+}

@@ -4,7 +4,7 @@ import Toolbar from "../Toolbar/Toolbar";
 
 const layout = (props) => (
   <div className="layout">
-      <Toolbar home={false} logged={false} shelterLogged={false} />
+      <Toolbar home={false} logged={false} shelterLogged={false} changeTheme={props.changeTheme}/>
       <main className="Main">{props.children}</main>
   </div>
 );

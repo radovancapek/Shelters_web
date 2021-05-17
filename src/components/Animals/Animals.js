@@ -65,32 +65,60 @@ class Animals extends Component {
 
     loadData(likedAnimals) {
         if (this.props.myAnimals) {
-            const task = db.collection("animals").where("user", "==", auth.currentUser.uid).orderBy("adopted", "asc").orderBy("created", "desc");
+            const task = db.collection("animals")
+                .where("user", "==", auth.currentUser.uid)
+                .orderBy("adopted", "asc").orderBy("created", "desc");
             this.sendTask(task);
         } else if (this.props.likedAnimals) {
-            if(likedAnimals.length > 0) {
-                const task = db.collection("animals").where(fieldPath.documentId(), "in", likedAnimals);
-                this.sendTask(task);
+            if (likedAnimals.length > 0) {
+                let promises = [];
+                while (likedAnimals.length) {
+                    const array = likedAnimals.splice(0, 10);
+                    promises.push(
+                        new Promise(response => {
+                            db.collection("animals")
+                                .where(fieldPath.documentId(), "in", [...array])
+                                .get()
+                                .then(results => {
+                                    response(results.docs);
+                                });
+                        })
+                    )
+                }
+
+                Promise.all(promises).then(content => {
+                    let animals = [];
+                    content.forEach(array => {
+                        animals = animals.concat(array);
+                    });
+                    this.setState({
+                        animalsLoaded: true,
+                        animalDocuments: animals,
+                        animalDocumentsFull: animals
+                    });
+                })
+            } else {
+                this.setState({
+                    animalsLoaded: true
+                })
             }
         } else {
-            const task = db.collection("animals").where("adopted", "!=", true).orderBy("adopted", "asc").orderBy("created", "desc");
+            const task = db.collection("animals")
+                .where("adopted", "!=", true)
+                .orderBy("adopted", "asc").orderBy("created", "desc");
             this.sendTask(task);
         }
     }
 
     sendTask = (task) => {
-        let animals = [];
         let animalDocuments = [];
         task.get()
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
-                    animals.push(doc.data());
                     animalDocuments.push(doc);
                 });
                 this.setState({
                     animalsLoaded: true,
-                    animals: animals,
-                    animalsFull: animals,
                     animalDocuments: animalDocuments,
                     animalDocumentsFull: animalDocuments
                 });
@@ -118,7 +146,7 @@ class Animals extends Component {
         this.setState({chip: chip})
         if (chip.length > 0) {
             const filteredAnimalDocuments = this.state.animalDocumentsFull.filter(animalDocument => {
-                if(!animalDocument.data().chip) return false;
+                if (!animalDocument.data().chip) return false;
                 return (animalDocument.data().chip.includes(chip));
             })
             this.setState({animalDocuments: filteredAnimalDocuments});
@@ -170,7 +198,7 @@ class Animals extends Component {
         let animalCards;
         let receivedAnimalType = null;
         if (mounted) {
-            if(this.props.location && this.props.location.animalType) {
+            if (this.props.location && this.props.location.animalType) {
                 receivedAnimalType = this.props.location.animalType;
             }
             animalCards = this.state.animalDocuments.map((animalDocument, i) => {
@@ -214,16 +242,21 @@ class Animals extends Component {
                         </div>
 
                         <div className="wrapper">
-                            {
+                            {animalCards.length ? (
                                 this.state.selectedAnimalDocument ?
                                     <AnimalDetail animal={this.state.selectedAnimalDocument.data()}
                                                   animalId={this.state.selectedAnimalDocument.id}
                                                   close={this.closeDetail}
                                                   loggedId={this.state.loggedId}/> :
                                     animalCards
-                            }
+                            ) : (
+                                <div className="overlay">
+                                    <div className="noMoreAnimals">{t('noAnimals')}</div>
+                                </div>
+                            )}
                         </div>
                     </>
+
                 ) : (
                     <div className="overlay">
                         <CircularProgress/>
@@ -235,5 +268,6 @@ class Animals extends Component {
         )
     }
 }
+
 export default withTranslation()(Animals)
 

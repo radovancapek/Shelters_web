@@ -11,12 +11,11 @@ class Chat extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            conversation: props.conversation,
             messages: [],
             name: props.name,
             newMessage: "",
             messagesLoaded: false,
-            clickedMessage: null
+            clickedMessage: null,
         }
         this.messageInput = React.createRef();
     }
@@ -31,7 +30,6 @@ class Chat extends React.Component {
     }
 
     fetchMessages = () => {
-
         this.unsubscribe = db.collection(CONVERSATIONS).doc(this.props.id).collection("messages").orderBy("sent", "desc")
             .onSnapshot(querySnapshot => {
                 let messages = [];
@@ -53,19 +51,14 @@ class Chat extends React.Component {
             })
     }
 
-    newMessage = (message) => {
-        if (message.from === this.props.conversation || message.from === this.props.loggedUser.id) {
-        }
-    }
-
     componentDidUpdate(prevProps, prevState, snapshot) {
-
         if (this.props.name !== this.state.name) {
             this.setState({name: this.props.name})
             this.setState({messages: []});
         }
-        if (this.props.conversation !== this.state.conversation) {
-
+        if (this.props.id !== prevProps.id) {
+            if(this.unsubscribe) this.unsubscribe();
+            this.fetchMessages();
         }
     }
 
@@ -83,7 +76,7 @@ class Chat extends React.Component {
     }
 
     sendMessage() {
-        if (this.state.newMessage.length > 0) {
+        if (this.state.newMessage.replace(/\s+/g, '').length > 0) {
             db.collection(CONVERSATIONS).doc(this.props.id).collection("messages")
                 .add({
                     from: this.props.loggedId,

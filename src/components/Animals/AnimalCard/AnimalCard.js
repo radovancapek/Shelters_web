@@ -37,7 +37,6 @@ class AnimalCard extends Component {
         this.loadImage();
         this.getDistance();
         if (this.props.gallery && this.props.animal.images) {
-            console.log("has gallery");
             this.loadImages();
         }
 
@@ -71,7 +70,6 @@ class AnimalCard extends Component {
             const imageRef = ref.child(imageUrl)
             return imageRef.getDownloadURL()
                 .then((url) => {
-                    console.log("loadImages", url);
                     images.push(url.toString());
                     this.setState({imageUrlList: [...this.state.imageUrlList, url]});
                 })
@@ -162,7 +160,6 @@ class AnimalCard extends Component {
         const gallery = () => {
             if (this.props.gallery) {
                 if (this.state.galleryImagesLoaded) {
-                    console.log("imageCount", this.state.imageCount);
                     if (this.state.imageCount > 0) {
                         return (
                             <ImageGallery items={images} showBullets={true} lazyLoad={true}/>

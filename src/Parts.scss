@@ -109,6 +109,7 @@
     align-items: center;
     padding: 5px 20px;
     font-size: 14px;
+    color: var(--primary);
   }
 
   .Input {
@@ -122,6 +123,7 @@
   }
   input {
     border: 0;
+    color: var(--primary);
   }
 
   .breeds {
@@ -154,4 +156,12 @@
 
 .MuiCircularProgress-colorPrimary {
   color: var(--orange-primary);
+}
+
+.notFound {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 10vh;
 }

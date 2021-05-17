@@ -21,9 +21,9 @@
     height: calc(100vh - 80px);
     z-index: 1000000;
     background-image: linear-gradient(
-      to bottom,
-      var(--light-white),
-      var(--primary)
+                    to bottom,
+                    var(--light-white),
+                    var(--primary)
     );
 
     &_item {
@@ -36,6 +36,7 @@
       }
     }
   }
+
   .opened {
     display: block;
   }
@@ -49,17 +50,18 @@
     padding-left: 40px;
     align-items: center;
     cursor: pointer;
+    justify-self: flex-start;
   }
 
   &_items {
     margin-left: 30px;
-    width: 85%;
+    margin-right: 30px;
+    width: 90%;
     height: 100%;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-    padding-right: 20px;
 
     &_item {
       display: flex;
@@ -67,8 +69,7 @@
       text-align: center;
       justify-content: center;
       height: 30px;
-      margin-left: 15px;
-
+      margin-left: 10px;
 
       &_link {
         display: flex;
@@ -79,9 +80,34 @@
         width: 100%;
         height: 100%;
         cursor: pointer;
+        white-space: nowrap;
+
         &:hover,
         &.active {
           border-bottom: 2px solid var(--orange-secondary);
+        }
+
+        .language {
+          .MuiInput-underline:hover:not(.Mui-disabled):before{
+            border: 0;
+          }
+          .MuiInput-underline:after {
+            border: 0;
+          }
+          .MuiInputBase-root {
+            &:before {
+              border: 0;
+            }
+            .MuiSelect-root {
+              font-size: 12px;
+              font-family: Montserrat, serif;
+              padding: 0 20px 0 0;
+              color: var(--primary);
+            }
+            .MuiSelect-icon {
+              color: var(--orange-primary);
+            }
+          }
         }
       }
 
@@ -89,7 +115,7 @@
         display: flex;
         align-items: center;
         text-decoration: none;
-        font-family: "Emblema One";
+        font-family: "Emblema One", serif;
         font-size: x-large;
         color: var(--primary);
         width: 100%;
@@ -105,9 +131,10 @@
           font-size: 15px;
         }
       }
+
       &.bordered {
         p {
-          font-family: "Emblema One";
+          font-family: "Emblema One", serif;
           color: var(--orange-primary);
         }
       }
@@ -119,8 +146,21 @@
     height: 100%;
     display: none;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     padding-right: 40px;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .toolbar {
+    &_items {
+      &_item {
+        margin-left: 5px;
+        &_text {
+          font-size: 10px;
+        }
+      }
+    }
   }
 }
 
@@ -129,6 +169,7 @@
     &_items {
       display: none;
     }
+
     &_menuIcon {
       display: flex;
       width: 100%;
@@ -139,8 +180,16 @@
         visibility: visible;
       }
     }
+
     &_logo {
       width: 100%;
+    }
+  }
+}
+.MuiPopover-root {
+  .MuiPaper-root {
+    .MuiButtonBase-root {
+      font-size: 12px;
     }
   }
 }

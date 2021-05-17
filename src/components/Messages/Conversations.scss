@@ -2,6 +2,9 @@
   padding: 0px !important;
   overflow: auto;
 
+  * {
+    color: var(--primary);
+  }
   .first-child {
     border-top: 0px;
   }

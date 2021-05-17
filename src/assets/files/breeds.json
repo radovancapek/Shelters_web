@@ -414,5 +414,15 @@
     "Patterdale terier",
     "Pražský krysařík",
     "Pudl vícebarevný"
+  ],
+  "catBreeds": [
+    "domaci",
+    "kocka",
+    "kocka2"
+  ],
+  "otherBreeds": [
+    "osmak",
+    "kralik",
+    "krecek"
   ]
 }

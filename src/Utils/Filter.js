@@ -10,7 +10,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Slider from '@material-ui/core/Slider';
 import * as Const from "../Const"
 import {CATS, DOGS, FEMALE, MALE, OTHER, SIZE_BIG, SIZE_MEDIUM, SIZE_SMALL} from "../Const"
-import {breeds} from "../assets/files/breeds.json";
+import Breeds from "../assets/files/breeds.json";
 import {withTranslation} from "react-i18next";
 
 class Filter extends Component {
@@ -33,7 +33,8 @@ class Filter extends Component {
             male: false,
             female: false,
             selectedBreeds: [],
-            filteredBreeds: breeds,
+            breeds: Breeds.breeds.concat(Breeds.catBreeds, Breeds.otherBreeds),
+            filteredBreeds: Breeds.breeds.concat(Breeds.catBreeds, Breeds.otherBreeds),
             showBreeds: false,
             breed: ""
         }
@@ -118,7 +119,7 @@ class Filter extends Component {
         let query = e.target.value;
 
         this.setState(prevState => ({
-            filteredBreeds: breeds.filter(breed => breed.toLowerCase().includes(query.toLowerCase())),
+            filteredBreeds: this.state.breeds.filter(breed => breed.toLowerCase().includes(query.toLowerCase())),
             breed: query,
             showBreeds: true
         }));

@@ -63,6 +63,7 @@ class AddAnimal extends Component {
                 location: {}
             },
             breeds: Breeds.breeds,
+            catBreeds: Breeds.catBreeds,
             filteredBreeds: Breeds.breeds,
             showBreeds: false,
             imagesStoragePaths: [],
@@ -106,9 +107,9 @@ class AddAnimal extends Component {
                 animalId: this.props.location.state.animalId,
                 imagesStoragePaths: animal.images || []
             }));
-            animal.type === DOGS ? this.setState({dogsActive: ACTIVE}) : this.setState({dogsActive: DISABLED});
-            animal.type === CATS ? this.setState({catssActive: ACTIVE}) : this.setState({catsActive: DISABLED});
-            animal.type === OTHER ? this.setState({otherActive: ACTIVE}) : this.setState({otherActive: DISABLED});
+            animal.type === DOGS ? this.setState({dogsActive: ACTIVE, breeds: Breeds.breeds}) : this.setState({dogsActive: DISABLED});
+            animal.type === CATS ? this.setState({catsActive: ACTIVE, breeds: Breeds.catBreeds}) : this.setState({catsActive: DISABLED});
+            animal.type === OTHER ? this.setState({otherActive: ACTIVE, breeds: Breeds.otherBreeds}) : this.setState({otherActive: DISABLED});
             if (animal.location) {
                 this.setState({address: animal.location.title})
             }
@@ -168,7 +169,6 @@ class AddAnimal extends Component {
                 ...prevState.animal, age: parseInt(prevState.animal.age)
             }
         }), () => {
-            console.log("typeof", typeof this.state.animal.age);
             if (this.state.animalId) {
                 db.collection(ANIMALS).doc(this.state.animalId)
                     .set(this.state.animal, {merge: true})
@@ -347,14 +347,16 @@ class AddAnimal extends Component {
 
         switch (type) {
             case Const.DOGS:
-                this.setState(prevState => ({
+                this.setState({
+                    breeds: Breeds.breeds,
                     dogsActive: ACTIVE,
                     catsActive: "",
                     otherActive: ""
-                }));
+                });
                 break;
             case Const.CATS:
                 this.setState({
+                    breeds: Breeds.catBreeds,
                     dogsActive: "",
                     catsActive: ACTIVE,
                     otherActive: "",
@@ -362,6 +364,7 @@ class AddAnimal extends Component {
                 break;
             case Const.OTHER:
                 this.setState({
+                    breeds: Breeds.otherBreeds,
                     dogsActive: "",
                     catsActive: "",
                     otherActive: ACTIVE,
@@ -525,14 +528,14 @@ class AddAnimal extends Component {
                     </div>
                     <div className="addAnimal_form_gender">
                         <div className="addAnimal_form_gender_input">
-                            <div>{t("animals." + this.state.animal.type + ".male")}</div>
+                            <label>{t("animals." + this.state.animal.type + ".male")}</label>
                             <Switch
                                 checked={this.state.genderBool}
                                 onChange={this.handleGenderChange}
                                 name="genderBool"
                                 inputProps={{'aria-label': 'secondary checkbox'}}
                             />
-                            <div>{t("animals." + this.state.animal.type + ".female")}</div>
+                            <label className="Input_label">{t("animals." + this.state.animal.type + ".female")}</label>
                         </div>
                     </div>
                     <div className="Input_wrapper Input_wrapper_name">
@@ -547,7 +550,11 @@ class AddAnimal extends Component {
                     </div>
                     <div className="autocomplete breedWrapper" onBlur={this.handleBreedInputClick}>
                         <div className="Input_wrapper Input_wrapper_breed">
-                            <span className="Input_label">{t('animals.breed') + ":"}</span>
+                            {this.state.animal.type === OTHER ? (
+                                <span className="Input_label">{t('animals.genus') + ":"}</span>
+                            ) : (
+                                <span className="Input_label">{t('animals.breed') + ":"}</span>
+                            )}
                             <input className="Input Input_text addAnimal_form_breed" autoComplete="off" type="text"
                                    name="breed"
                                    onChange={this.updateBreed} onFocus={this.updateBreed}
@@ -574,7 +581,7 @@ class AddAnimal extends Component {
                         </RadioGroup>
                     </div>
                     <div className="Input_wrapper_weight">
-                        <h4>{t('animals.weight') + ": (kg)"}</h4>
+                        <h4>{t('animals.weight') + "(kg): "}</h4>
                         <Slider
                             value={this.state.animal.weight}
                             name="weight"
@@ -582,15 +589,6 @@ class AddAnimal extends Component {
                             valueLabelDisplay="on"
                             min={0}
                             max={80}
-                            marks={[
-                                {
-                                    value: 0,
-                                    label: '0',
-                                },
-                                {
-                                    value: 80,
-                                    label: '80',
-                                }]}
                         />
                     </div>
                     <div className="addAnimal_form_behavior">
@@ -624,7 +622,7 @@ class AddAnimal extends Component {
                         <div className="gallery">
                             {galleryImages}
                             <div className="addImage galleryImage">
-                                <input id="files" type="file" onChange={this.handleChange} className="addImage_input"/>
+                                <input id="files" type="file" accept="image/*" onChange={this.handleChange} className="addImage_input"/>
                                 <label htmlFor="files" className="addImage_label">+</label>
                             </div>
                         </div>

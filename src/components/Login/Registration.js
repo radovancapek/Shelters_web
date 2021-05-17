@@ -35,6 +35,16 @@ class Registration extends Component {
         }
     }
 
+    componentDidMount() {
+        document.addEventListener("keydown", this.handleKeyDown, false);
+    }
+
+    handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            this.register();
+        }
+    }
+
     changeType = (type) => {
         this.setState({
             wrongRegistrationNumber: "",
@@ -120,6 +130,11 @@ class Registration extends Component {
             auth.createUserWithEmailAndPassword(this.state.email, this.state.password)
                 .then((userCredential) => {
                     this.addUserToFirestore(userCredential.user.uid);
+                    if(this.state.name) {
+                        userCredential.user.updateProfile({displayName: this.state.name});
+                    } else if(this.state.surname) {
+                        userCredential.user.updateProfile({displayName: this.state.surname});
+                    }
                     this.setState({
                         registrationState: ""
                     });
@@ -363,7 +378,7 @@ class Registration extends Component {
                     <div className="Button submit" onClick={this.register}>
                         {this.state.registrationState === Const.UPLOADING ?
                             <CircularProgress progress={this.state.percentUploaded}/>
-                            : "Registrovat"}</div>
+                            : t('signUp')}</div>
                     {this.state.firebaseError && <div className="error_message">{this.state.firebaseError}</div>}
                 </form>
             </div>
